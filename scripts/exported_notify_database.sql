@@ -1,13 +1,14 @@
 -- phpMyAdmin SQL Dump
--- version 4.6.6deb5
+-- version 5.0.2
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3306
--- Generation Time: Mar 31, 2020 at 11:27 PM
+-- Generation Time: Apr 01, 2020 at 09:25 PM
 -- Server version: 5.7.29-0ubuntu0.18.04.1
 -- PHP Version: 7.2.24-0ubuntu0.18.04.3
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
+START TRANSACTION;
 SET time_zone = "+00:00";
 
 
@@ -23,20 +24,38 @@ SET time_zone = "+00:00";
 -- --------------------------------------------------------
 
 --
--- Table structure for table `car_make`
+-- Table structure for table `body_styles`
 --
 
-CREATE TABLE `car_make` (
-  `car_id` int(11) NOT NULL,
-  `make_id` int(11) NOT NULL
+CREATE TABLE `body_styles` (
+  `name` varchar(50) DEFAULT NULL,
+  `autoplius_id` int(11) DEFAULT NULL,
+  `autobilis_id` int(11) DEFAULT NULL,
+  `id` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
--- Dumping data for table `car_make`
+-- Dumping data for table `body_styles`
 --
 
-INSERT INTO `car_make` (`car_id`, `make_id`) VALUES
-(3, 175);
+INSERT INTO `body_styles` (`name`, `autoplius_id`, `autobilis_id`, `id`) VALUES
+('Coupe', 1, 5, 6),
+('Hečbekas', 2, 1, 2),
+('Kabrioletas', 3, 7, 7),
+('Sedanas', 4, 0, 1),
+('Universalas', 5, 2, 3),
+('Vienatūris', 6, 3, 5),
+('Visureigis', 7, 4, 4),
+('Keleivinis mikroautobusas', 28055, NULL, 9),
+('Kombi mikroautobusas', NULL, NULL, 10),
+('Krovininis mikroautobusas', NULL, NULL, 11),
+('Komercinis auto(su būda)', 9, 6, 12),
+('Pikapas', 10, 8, 13),
+('Limuzinas', 16098, NULL, 14),
+('Savadarbis auto', NULL, NULL, 15),
+('Kita', 8, 9, 16),
+('Minivenas', NULL, 10, 17),
+('SUV', NULL, 11, 18);
 
 -- --------------------------------------------------------
 
@@ -64,6 +83,32 @@ INSERT INTO `car_queries` (`id`, `price_from`, `price_to`, `year_from`, `search_
 (7, NULL, NULL, NULL, NULL, NULL),
 (8, NULL, NULL, NULL, NULL, NULL),
 (9, NULL, NULL, NULL, 'test', NULL);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `fuel_types`
+--
+
+CREATE TABLE `fuel_types` (
+  `fuel_name` varchar(100) NOT NULL,
+  `autoplius_fuel_id` int(11) DEFAULT NULL,
+  `autobilis_fuel_id` int(11) DEFAULT NULL,
+  `id` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Dumping data for table `fuel_types`
+--
+
+INSERT INTO `fuel_types` (`fuel_name`, `autoplius_fuel_id`, `autobilis_fuel_id`, `id`) VALUES
+('Dyzelinas', 32, 1, 1),
+('Benzinas', 30, 0, 2),
+('Benzinas/Dujos', 31, 2, 3),
+('Benzinas/Elektra', 36, 3, 4),
+('Elektra', 35, 6, 5),
+('Dyzelinas/Elektra', 17378, NULL, 6),
+('Kitas', 33, 11, 7);
 
 -- --------------------------------------------------------
 
@@ -304,10 +349,7 @@ CREATE TABLE `models` (
 --
 
 INSERT INTO `models` (`model_name`, `make_id`, `autobilis_model_id`, `autoplius_model_id`, `id`) VALUES
-('', 2, NULL, NULL, 5931),
-('', 3, NULL, NULL, 5933),
 ('Legend', 3, NULL, NULL, 5937),
-('', 4, NULL, NULL, 5950),
 ('300', 4, NULL, NULL, 5951),
 ('A721', 4, NULL, NULL, 5954),
 ('A741', 4, NULL, NULL, 5955),
@@ -322,12 +364,9 @@ INSERT INTO `models` (`model_name`, `make_id`, `autobilis_model_id`, `autoplius_
 ('MultiTruck', 4, NULL, NULL, 5968),
 ('Roadline', 4, 280, NULL, 5969),
 ('Scouty R', 4, NULL, NULL, 5971),
-('', 5, NULL, NULL, 5973),
 ('Crosswagon', 5, NULL, NULL, 5991),
 ('RS/SZ', 5, NULL, NULL, 5999),
 ('Stelvio', 5, 10107, 27271, 6004),
-('', 6, NULL, NULL, 6006),
-('', 7, NULL, NULL, 6018),
 ('10-4', 7, NULL, NULL, 6019),
 ('11-4', 7, NULL, NULL, 6020),
 ('Dragon', 7, NULL, NULL, 6023),
@@ -336,8 +375,6 @@ INSERT INTO `models` (`model_name`, `make_id`, `autobilis_model_id`, `autoplius_
 ('Series 10', 7, NULL, NULL, 6026),
 ('Series 240', 7, NULL, NULL, 6027),
 ('Series 320', 7, NULL, NULL, 6028),
-('', 8, NULL, NULL, 6031),
-('', 145, NULL, NULL, 6033),
 ('Bulldog', 145, NULL, NULL, 6035),
 ('DB11', 145, 10115, NULL, 6038),
 ('DB6', 145, NULL, NULL, 6039),
@@ -347,7 +384,6 @@ INSERT INTO `models` (`model_name`, `make_id`, `autobilis_model_id`, `autoplius_
 ('V8', 145, 1917, NULL, 6048),
 ('Valkyrie', 145, NULL, NULL, 6049),
 ('Vanquish S', 145, NULL, NULL, 6051),
-('', 10, NULL, NULL, 6056),
 ('A4 Allroad', 10, 966, 16208, 6066),
 ('A7', 10, 971, NULL, 6069),
 ('A9', 10, NULL, NULL, 6071),
@@ -355,7 +391,6 @@ INSERT INTO `models` (`model_name`, `make_id`, `autobilis_model_id`, `autoplius_
 ('e-tron Sportback', 10, NULL, NULL, 6077),
 ('SQ2', 10, NULL, NULL, 6101),
 ('TT S', 10, NULL, NULL, 6106),
-('', 11, NULL, NULL, 6109),
 ('Allegro', 11, NULL, NULL, 6110),
 ('Ambasador', 11, NULL, NULL, 6111),
 ('Healey', 11, 301, NULL, 6112),
@@ -363,12 +398,10 @@ INSERT INTO `models` (`model_name`, `make_id`, `autobilis_model_id`, `autoplius_
 ('Metro', 11, 303, NULL, 6114),
 ('Mini', 11, 304, NULL, 6115),
 ('Montego', 11, NULL, NULL, 6116),
-('', 12, NULL, NULL, 6118),
 ('A 1000', 12, NULL, NULL, 6119),
 ('A 112', 12, NULL, NULL, 6120),
 ('Bianchina', 12, NULL, NULL, 6121),
 ('Y10', 12, NULL, NULL, 6122),
-('', 13, NULL, NULL, 6124),
 ('B40', 13, NULL, NULL, 6125),
 ('BJ20', 13, NULL, NULL, 6126),
 ('BJ40', 13, NULL, NULL, 6127),
@@ -377,7 +410,6 @@ INSERT INTO `models` (`model_name`, `make_id`, `autobilis_model_id`, `autoplius_
 ('Senova X35', 13, NULL, NULL, 6130),
 ('Senova X55', 13, NULL, NULL, 6131),
 ('Senova X65', 13, NULL, NULL, 6132),
-('', 14, NULL, NULL, 6134),
 ('Asso', 14, NULL, NULL, 6135),
 ('B8', 14, NULL, NULL, 6136),
 ('Divane', 14, NULL, NULL, 6137),
@@ -386,13 +418,11 @@ INSERT INTO `models` (`model_name`, `make_id`, `autobilis_model_id`, `autoplius_
 ('Opale', 14, NULL, NULL, 6140),
 ('Vario 50', 14, NULL, NULL, 6141),
 ('VX', 14, NULL, NULL, 6142),
-('', 15, NULL, NULL, 6144),
 ('Continental Flying Spur', 15, 1338, NULL, 6150),
 ('S2', 15, 1346, NULL, 6154),
 ('S3', 15, 1347, NULL, 6155),
 ('Turbo RT', 15, NULL, NULL, 6157),
 ('Turbo S', 15, NULL, NULL, 6158),
-('', 16, NULL, NULL, 6160),
 ('Series 1', 16, NULL, NULL, 6161),
 ('114', 16, NULL, NULL, 6162),
 ('116', 16, NULL, NULL, 6163),
@@ -536,25 +566,20 @@ INSERT INTO `models` (`model_name`, `make_id`, `autobilis_model_id`, `autoplius_
 ('Z3', 16, 10139, NULL, 6301),
 ('Z4', 16, 10141, NULL, 6302),
 ('Z8', 16, 10143, NULL, 6303),
-('', 17, NULL, NULL, 6305),
 ('Granse', 17, NULL, NULL, 6310),
 ('Jinbei', 17, NULL, NULL, 6311),
 ('Zhonghua', 17, NULL, NULL, 6312),
 ('Zunchi', 17, NULL, NULL, 6313),
-('', 18, NULL, NULL, 6315),
 ('Chiron', 18, 10146, NULL, 6316),
 ('EB 110', 18, NULL, NULL, 6317),
-('', 19, NULL, NULL, 6320),
 ('Cascada', 19, NULL, NULL, 6321),
 ('Centurion', 19, NULL, NULL, 6322),
 ('Reatta', 19, 10152, NULL, 6332),
 ('Skyhawk', 19, NULL, NULL, 6337),
-('', 20, NULL, NULL, 6341),
 ('Brougham', 20, 10153, NULL, 6345),
 ('Cimarron', 20, 570, NULL, 6347),
 ('Deville', 20, 572, 1282, 6350),
 ('ELR', 20, 10156, NULL, 6353),
-('', 21, NULL, NULL, 6363),
 ('Kerry', 21, NULL, NULL, 6364),
 ('M10', 21, NULL, NULL, 6365),
 ('M12', 21, NULL, NULL, 6366),
@@ -563,13 +588,11 @@ INSERT INTO `models` (`model_name`, `make_id`, `autobilis_model_id`, `autoplius_
 ('Sulky', 21, NULL, NULL, 6369),
 ('Sulkycar', 21, NULL, NULL, 6370),
 ('Sulkydea/Ydea', 21, NULL, NULL, 6371),
-('', 22, NULL, NULL, 6373),
 ('Academy', 22, NULL, NULL, 6374),
 ('CSR', 22, 10159, NULL, 6375),
 ('Roadsport', 22, NULL, NULL, 6376),
 ('Seven', 22, 314, NULL, 6377),
 ('Super Seven', 22, NULL, NULL, 6378),
-('', 23, NULL, NULL, 6380),
 ('Barooder', 23, NULL, NULL, 6381),
 ('CH26', 23, NULL, NULL, 6382),
 ('CH28', 23, NULL, NULL, 6383),
@@ -579,7 +602,6 @@ INSERT INTO `models` (`model_name`, `make_id`, `autobilis_model_id`, `autoplius_
 ('Media', 23, NULL, NULL, 6388),
 ('Speedino', 23, NULL, NULL, 6389),
 ('Stella', 23, NULL, NULL, 6390),
-('', 24, NULL, NULL, 6391),
 ('1500', 24, NULL, NULL, 6392),
 ('3500', 24, NULL, NULL, 6394),
 ('Apache', 24, NULL, NULL, 6396),
@@ -593,11 +615,9 @@ INSERT INTO `models` (`model_name`, `make_id`, `autobilis_model_id`, `autoplius_
 ('K30', 24, NULL, NULL, 6430),
 ('Nova', 24, 10166, NULL, 6438),
 ('Spectrum', 24, NULL, NULL, 6445),
-('', 25, NULL, NULL, 6457),
 ('Caravan', 25, NULL, NULL, 6463),
 ('GS', 25, NULL, NULL, 6472),
 ('GTS', 25, NULL, NULL, 6473),
-('', 26, NULL, NULL, 6494),
 ('Axel', 26, NULL, NULL, 6497),
 ('C-Elysée', 26, 9908, 18541, 6501),
 ('C3 Picasso', 26, 881, 16126, 6509),
@@ -608,10 +628,7 @@ INSERT INTO `models` (`model_name`, `make_id`, `autobilis_model_id`, `autoplius_
 ('Jumpy Combi', 26, NULL, NULL, 6531),
 ('Relay', 26, NULL, NULL, 6533),
 ('SpaceTourer', 26, 10197, 25159, 6536),
-('', 27, NULL, NULL, 6545),
-('', 28, NULL, NULL, 6546),
 ('S1', 28, NULL, NULL, 6547),
-('', 29, NULL, NULL, 6548),
 ('1300', 29, NULL, NULL, 6549),
 ('1310', 29, 10198, NULL, 6550),
 ('1400', 29, NULL, NULL, 6551),
@@ -623,11 +640,8 @@ INSERT INTO `models` (`model_name`, `make_id`, `autobilis_model_id`, `autoplius_
 ('Sandero Stepway', 29, NULL, NULL, 6562),
 ('Solenza', 29, 10200, NULL, 6563),
 ('Super Nova', 29, NULL, NULL, 6564),
-('', 30, NULL, NULL, 6566),
 ('Chairman', 30, 10202, NULL, 6567),
 ('Cielo', 30, NULL, NULL, 6568),
-('', 31, NULL, NULL, 6592),
-('', 32, NULL, NULL, 6599),
 ('Atrai', 32, 10215, NULL, 6601),
 ('Cast', 32, NULL, NULL, 6602),
 ('Domino', 32, NULL, NULL, 6607),
@@ -641,34 +655,26 @@ INSERT INTO `models` (`model_name`, `make_id`, `autobilis_model_id`, `autoplius_
 ('Taft', 32, NULL, NULL, 6623),
 ('Tanto', 32, 10229, NULL, 6624),
 ('Tocot', 32, NULL, NULL, 6626),
-('', 153, NULL, NULL, 6631),
 ('DMC 12', 153, NULL, NULL, 6632),
-('', 34, NULL, NULL, 6634),
 ('Double Cab', 34, NULL, NULL, 6635),
 ('Mini Bus', 34, NULL, NULL, 6636),
 ('Mini Van', 34, NULL, NULL, 6637),
 ('Pick Up', 34, NULL, NULL, 6638),
-('', 35, NULL, NULL, 6639),
-('', 36, NULL, NULL, 6641),
 ('Daytona', 36, NULL, NULL, 6649),
 ('Diplomat', 36, 1255, NULL, 6651),
 ('Dynasty', 36, NULL, NULL, 6653),
 ('Monaco', 36, 10233, NULL, 6659),
 ('Omni', 36, NULL, NULL, 6662),
 ('RAM', 36, 1262, 1111, 6663),
-('', 37, NULL, NULL, 6670),
 ('Medallion', 37, NULL, NULL, 6671),
 ('Premier', 37, NULL, NULL, 6672),
-('', 38, NULL, NULL, 6677),
 ('HQ', 38, NULL, NULL, 6678),
-('', 39, NULL, NULL, 6679),
 ('248', 39, NULL, NULL, 6681),
 ('458 Italia', 39, NULL, NULL, 6693),
 ('599GTB', 39, NULL, NULL, 6697),
 ('Dino GT4', 39, NULL, NULL, 6702),
 ('F12berlinetta', 39, 10245, NULL, 6704),
 ('F550', 39, NULL, NULL, 6710),
-('', 40, NULL, NULL, 6718),
 ('124 Spider', 40, NULL, NULL, 6720),
 ('125p', 40, NULL, NULL, 6721),
 ('128', 40, NULL, NULL, 6724),
@@ -679,12 +685,10 @@ INSERT INTO `models` (`model_name`, `make_id`, `autobilis_model_id`, `autoplius_
 ('Inka', 40, NULL, NULL, 6751),
 ('Siena', 40, 10251, NULL, 6767),
 ('Spider', 40, NULL, NULL, 6768),
-('', 41, NULL, NULL, 6778),
 ('EMotion', 41, NULL, NULL, 6779),
 ('Karma', 41, 8967, 18543, 6780),
 ('Latigo CS', 41, NULL, NULL, 6781),
 ('Orbit', 41, NULL, NULL, 6782),
-('', 42, NULL, NULL, 6783),
 ('Crown', 42, NULL, NULL, 6795),
 ('EDGE', 42, 608, 16016, 6799),
 ('F150', 42, 614, NULL, 6806),
@@ -704,40 +708,30 @@ INSERT INTO `models` (`model_name`, `make_id`, `autobilis_model_id`, `autoplius_
 ('T', 42, NULL, NULL, 6849),
 ('Tourneo Courier', 42, NULL, NULL, 6856),
 ('Transit Courier', 42, 9962, NULL, 6860),
-('', 43, NULL, NULL, 6864),
 ('Super Exceed', 43, NULL, NULL, 6865),
-('', 44, NULL, NULL, 6867),
 ('20', 44, NULL, NULL, 6873),
 ('69', 44, NULL, NULL, 6888),
-('', 45, NULL, NULL, 6896),
 ('Ck', 45, NULL, NULL, 6897),
-('', 46, NULL, NULL, 6898),
 ('Coupe', 46, NULL, NULL, 6899),
 ('G70', 46, NULL, NULL, 6900),
 ('G80', 46, NULL, NULL, 6901),
 ('G90', 46, NULL, NULL, 6902),
 ('GV70 SUV', 46, NULL, NULL, 6903),
 ('GV80 SUV', 46, NULL, NULL, 6904),
-('', 47, NULL, NULL, 6905),
 ('Canyon', 47, NULL, NULL, 6907),
 ('Savana', 47, 1357, NULL, 6911),
 ('Vandura', 47, NULL, NULL, 6918),
-('', 48, NULL, NULL, 6921),
-('', 49, NULL, NULL, 6922),
 ('G1', 49, NULL, NULL, 6923),
 ('G2', 49, NULL, NULL, 6924),
 ('G3', 49, NULL, NULL, 6925),
 ('G4', 49, NULL, NULL, 6926),
 ('GEM', 49, NULL, NULL, 6927),
-('', 50, NULL, NULL, 6928),
 ('Sonique', 50, NULL, NULL, 6929),
-('', 51, NULL, NULL, 6930),
 ('Cowry', 51, NULL, NULL, 6931),
 ('Haval H5', 51, NULL, NULL, 6932),
 ('Hover', 51, NULL, NULL, 6933),
 ('Steed', 51, NULL, NULL, 6934),
 ('Voleex', 51, NULL, NULL, 6935),
-('', 52, NULL, NULL, 6936),
 ('Adventra', 52, NULL, NULL, 6937),
 ('Astra', 52, NULL, NULL, 6938),
 ('Barina', 52, NULL, NULL, 6939),
@@ -756,15 +750,12 @@ INSERT INTO `models` (`model_name`, `make_id`, `autobilis_model_id`, `autoplius_
 ('Statesman', 52, NULL, NULL, 6952),
 ('Ute', 52, NULL, NULL, 6953),
 ('Viva', 52, NULL, NULL, 6954),
-('', 53, NULL, NULL, 6955),
 ('Clarity Fuel Cell', 53, NULL, NULL, 6962),
 ('CR-Z', 53, 10270, NULL, 6965),
 ('e', 53, NULL, NULL, 6969),
 ('Fit', 53, 10277, 973, 6971),
 ('LaGreat', 53, 1215, 967, 6978),
-('', 54, NULL, NULL, 6994),
 ('HX', 54, NULL, NULL, 6998),
-('', 55, NULL, NULL, 7000),
 ('Avante', 55, 10297, NULL, 7003),
 ('Genesis Coupe', 55, NULL, NULL, 7012),
 ('H-1', 55, 10304, NULL, 7016),
@@ -772,12 +763,9 @@ INSERT INTO `models` (`model_name`, `make_id`, `autobilis_model_id`, `autoplius_
 ('i25', 55, NULL, NULL, 7023),
 ('Ioniq', 55, 10307, 25163, 7027),
 ('XG 30', 55, NULL, NULL, 7051),
-('', 56, NULL, NULL, 7054),
 ('G', 56, NULL, NULL, 7062),
 ('M', 56, 823, NULL, 7067),
-('', 57, NULL, NULL, 7082),
 ('VehiCROSS', 57, 1276, NULL, 7101),
-('', 58, NULL, NULL, 7104),
 ('29-11', 58, NULL, NULL, 7105),
 ('29L10', 58, NULL, NULL, 7106),
 ('29L14', 58, NULL, NULL, 7107),
@@ -794,21 +782,15 @@ INSERT INTO `models` (`model_name`, `make_id`, `autobilis_model_id`, `autoplius_
 ('50C18', 58, NULL, NULL, 7119),
 ('65C15', 58, NULL, NULL, 7120),
 ('Daily 35', 58, NULL, NULL, 7122),
-('', 59, NULL, NULL, 7124),
 ('XJ-E', 59, NULL, NULL, 7137),
 ('XJS', 59, 1004, 21489, 7140),
-('', 60, NULL, NULL, 7144),
-('', 61, NULL, NULL, 7158),
 ('47', 61, NULL, NULL, 7159),
-('', 62, NULL, NULL, 7161),
 ('Asia Rocsta', 62, NULL, NULL, 7162),
 ('Cee\'d', 62, 2013, 859, 7167),
 ('e-Niro', 62, NULL, NULL, 7170),
 ('K900', 62, 10343, NULL, 7175),
 ('Seltos', 62, NULL, NULL, 7191),
-('', 63, NULL, NULL, 7202),
 ('One:1', 63, NULL, NULL, 7205),
-('', 64, NULL, NULL, 7206),
 ('1117', 64, NULL, NULL, 7209),
 ('1118', 64, NULL, NULL, 7210),
 ('1119', 64, NULL, NULL, 7211),
@@ -817,9 +799,6 @@ INSERT INTO `models` (`model_name`, `make_id`, `autobilis_model_id`, `autoplius_
 ('2170', 64, NULL, NULL, 7246),
 ('Granta', 64, NULL, NULL, 7250),
 ('XRAY', 64, NULL, NULL, 7259),
-('', 65, NULL, NULL, 7261),
-('', 66, NULL, NULL, 7274),
-('', 67, NULL, NULL, 7295),
 ('Defender', 67, 1058, NULL, 7296),
 ('Discovery', 67, 1059, NULL, 7297),
 ('Discovery Sport', 67, 10359, NULL, 7298),
@@ -828,7 +807,6 @@ INSERT INTO `models` (`model_name`, `make_id`, `autobilis_model_id`, `autoplius_
 ('Range Rover Evoque', 67, 1063, NULL, 7301),
 ('Range Rover Sport', 67, 1064, NULL, 7302),
 ('Range Rover Velar', 67, 10360, NULL, 7303),
-('', 68, NULL, NULL, 7305),
 ('Forward', 68, NULL, NULL, 7307),
 ('Rongyao', 68, NULL, NULL, 7308),
 ('X2', 68, NULL, NULL, 7309),
@@ -838,10 +816,8 @@ INSERT INTO `models` (`model_name`, `make_id`, `autobilis_model_id`, `autoplius_
 ('X8', 68, NULL, NULL, 7313),
 ('X9', 68, NULL, NULL, 7314),
 ('Xiaoyao', 68, NULL, NULL, 7315),
-('', 69, NULL, NULL, 7316),
 ('Convoy', 69, NULL, NULL, 7317),
 ('Maxus', 69, 9977, NULL, 7318),
-('', 70, NULL, NULL, 7320),
 ('Serija CT', 70, NULL, NULL, 7321),
 ('Series ES', 70, NULL, NULL, 7323),
 ('ES 300', 70, NULL, NULL, 7324),
@@ -919,30 +895,18 @@ INSERT INTO `models` (`model_name`, `make_id`, `autobilis_model_id`, `autoplius_
 ('SC 430', 70, NULL, NULL, 7397),
 ('Series UX', 70, NULL, NULL, 7398),
 ('UX 250h', 70, NULL, NULL, 7399),
-('', 71, NULL, NULL, 7402),
-('', 72, NULL, NULL, 7408),
 ('Mark LT', 72, NULL, NULL, 7413),
-('', 73, NULL, NULL, 7422),
 ('340R', 73, NULL, NULL, 7423),
 ('Evija', 73, NULL, NULL, 7430),
-('', 74, NULL, NULL, 7437),
 ('Fairway', 74, NULL, NULL, 7438),
 ('TX2', 74, NULL, NULL, 7439),
 ('TX4', 74, 377, NULL, 7440),
-('', 75, NULL, NULL, 7441),
 ('969', 75, NULL, NULL, 7442),
-('', 76, NULL, NULL, 7443),
-('', 77, NULL, NULL, 7445),
-('Kitas', 77, NULL, NULL, 7446),
 ('TGE', 77, NULL, NULL, 7447),
-('', 78, NULL, NULL, 7448),
 ('800', 78, NULL, NULL, 7449),
-('', 79, NULL, NULL, 7451),
 ('Coupe', 79, NULL, NULL, 7463),
 ('MC Stradale', 79, NULL, NULL, 7471),
 ('Shamal', 79, 1088, NULL, 7475),
-('', 80, NULL, NULL, 7478),
-('', 81, NULL, NULL, 7482),
 ('B2500', 81, NULL, NULL, 7492),
 ('CX-4', 81, NULL, NULL, 7497),
 ('MX-30', 81, NULL, NULL, 7505),
@@ -950,12 +914,10 @@ INSERT INTO `models` (`model_name`, `make_id`, `autobilis_model_id`, `autoplius_
 ('Series B', 81, NULL, NULL, 7514),
 ('Series E', 81, NULL, NULL, 7515),
 ('Xedos', 81, NULL, NULL, 7517),
-('', 82, NULL, NULL, 7521),
 ('570GT', 82, NULL, NULL, 7523),
 ('720S', 82, NULL, NULL, 7530),
 ('F1', 82, NULL, NULL, 7532),
 ('Senna', 82, NULL, NULL, 7535),
-('', 83, NULL, NULL, 7537),
 ('180', 83, NULL, NULL, 7541),
 ('209', 83, NULL, NULL, 7546),
 ('210', 83, NULL, NULL, 7547),
@@ -1244,16 +1206,13 @@ INSERT INTO `models` (`model_name`, `make_id`, `autobilis_model_id`, `autoplius_
 ('X 220', 83, NULL, NULL, 7862),
 ('X 250', 83, NULL, NULL, 7863),
 ('X 350', 83, NULL, NULL, 7864),
-('', 84, NULL, NULL, 7866),
 ('Comet', 84, NULL, NULL, 7867),
 ('Marquis', 84, NULL, NULL, 7871),
 ('Montego', 84, NULL, NULL, 7873),
 ('Monterey', 84, NULL, NULL, 7874),
 ('Zephyr', 84, NULL, NULL, 7879),
-('', 85, NULL, NULL, 7881),
 ('F', 85, NULL, NULL, 7882),
 ('TD', 85, 1241, NULL, 7888),
-('', 86, NULL, NULL, 7894),
 ('Cargo', 86, NULL, NULL, 7895),
 ('Due', 86, NULL, NULL, 7896),
 ('Ecology/Lyra', 86, NULL, NULL, 7897),
@@ -1264,21 +1223,17 @@ INSERT INTO `models` (`model_name`, `make_id`, `autobilis_model_id`, `autoplius_
 ('MC2', 86, 388, NULL, 7902),
 ('Sherpa', 86, NULL, NULL, 7903),
 ('Virgo', 86, 389, NULL, 7904),
-('', 87, NULL, NULL, 7906),
 ('Cooper SE', 87, NULL, NULL, 7913),
 ('Countryman S', 87, NULL, NULL, 7915),
 ('EV', 87, NULL, NULL, 7916),
 ('ONE', 87, 397, 649, 7917),
-('', 88, NULL, NULL, 7920),
 ('Cosmos', 88, NULL, NULL, 7927),
 ('i-MiEV', 88, 10401, NULL, 7938),
 ('Tredia', 88, NULL, NULL, 7961),
-('', 89, NULL, NULL, 7963),
 ('3-Wheeler', 89, NULL, NULL, 7964),
 ('Aero Max', 89, NULL, NULL, 7967),
 ('Plus E', 89, NULL, NULL, 7970),
 ('Supersport Pedal', 89, NULL, NULL, 7972),
-('', 90, NULL, NULL, 7974),
 ('1500', 90, NULL, NULL, 7975),
 ('2138', 90, NULL, NULL, 7976),
 ('2142', 90, NULL, NULL, 7979),
@@ -1302,7 +1257,6 @@ INSERT INTO `models` (`model_name`, `make_id`, `autobilis_model_id`, `autoplius_
 ('G3', 90, NULL, NULL, 8004),
 ('G4', 90, NULL, NULL, 8005),
 ('G5', 90, NULL, NULL, 8006),
-('', 91, NULL, NULL, 8011),
 ('350 Z', 91, NULL, NULL, 8017),
 ('370 Z', 91, NULL, NULL, 8018),
 ('Figaro', 91, 10431, NULL, 8030),
@@ -1312,27 +1266,21 @@ INSERT INTO `models` (`model_name`, `make_id`, `autobilis_model_id`, `autoplius_
 ('PickUp', 91, NULL, NULL, 8053),
 ('Stanza', 91, 10461, NULL, 8068),
 ('Xterra', 91, 10466, NULL, 8080),
-('', 92, NULL, NULL, 8082),
 ('1000', 92, NULL, NULL, 8083),
 ('RO 80', 92, NULL, NULL, 8084),
-('', 93, NULL, NULL, 8086),
 ('Series 500', 93, NULL, NULL, 8087),
 ('Series N', 93, NULL, NULL, 8088),
-('', 94, NULL, NULL, 8090),
 ('Dynamic 88', 94, NULL, NULL, 8097),
 ('Eighty - Eight', 94, NULL, NULL, 8098),
 ('Regency', 94, NULL, NULL, 8100),
 ('Supreme', 94, NULL, NULL, 8102),
-('', 95, NULL, NULL, 8105),
 ('Club', 95, NULL, NULL, 8106),
 ('Special', 95, NULL, NULL, 8107),
-('', 96, NULL, NULL, 8109),
 ('Ampera-e', 96, NULL, NULL, 8113),
 ('B6', 96, NULL, NULL, 8118),
 ('Commodore', 96, NULL, NULL, 8123),
 ('Pick up Sportcap', 96, NULL, NULL, 8142),
 ('Zafira Tourer', 96, NULL, 17314, 8152),
-('', 97, NULL, NULL, 8154),
 ('206 CC', 97, NULL, NULL, 8164),
 ('206 plus', 97, NULL, NULL, 8165),
 ('207 CC', 97, NULL, NULL, 8168),
@@ -1340,10 +1288,7 @@ INSERT INTO `models` (`model_name`, `make_id`, `autobilis_model_id`, `autoplius_
 ('308 CC', 97, NULL, NULL, 8178),
 ('395', 97, NULL, NULL, 8180),
 ('e-208', 97, NULL, NULL, 8198),
-('', 98, NULL, NULL, 8206),
 ('Porter', 98, NULL, NULL, 8208),
-('', 99, NULL, NULL, 8209),
-('', 100, NULL, NULL, 8210),
 ('Belvedere', 100, NULL, NULL, 8211),
 ('Caravelle', 100, NULL, NULL, 8212),
 ('Duster', 100, NULL, NULL, 8213),
@@ -1357,26 +1302,21 @@ INSERT INTO `models` (`model_name`, `make_id`, `autobilis_model_id`, `autoplius_
 ('Superbird', 100, NULL, NULL, 8223),
 ('Turismo', 100, NULL, NULL, 8224),
 ('Valiant', 100, NULL, NULL, 8225),
-('', 101, NULL, NULL, 8228),
 ('1.5', 101, NULL, NULL, 8229),
 ('1.6', 101, NULL, NULL, 8230),
 ('Atu', 101, NULL, NULL, 8231),
 ('Caro', 101, NULL, NULL, 8232),
-('', 102, NULL, NULL, 8234),
 ('1000', 102, NULL, NULL, 8235),
 ('Chieftain', 102, NULL, NULL, 8240),
 ('Firebird / Trans Am', 102, NULL, NULL, 8242),
 ('G5', 102, NULL, NULL, 8243),
 ('Le Mans', 102, NULL, NULL, 8249),
-('', 103, NULL, NULL, 8259),
 ('718', 103, NULL, NULL, 8261),
 ('962', 103, NULL, NULL, 8269),
 ('Mission E', 103, NULL, NULL, 8276),
-('', 104, NULL, NULL, 8280),
 ('Gen2', 104, NULL, NULL, 8281),
 ('Series 300', 104, NULL, NULL, 8284),
 ('Series 400', 104, NULL, NULL, 8285),
-('', 105, NULL, NULL, 8287),
 ('10', 105, NULL, NULL, 8288),
 ('12', 105, 10481, NULL, 8290),
 ('14', 105, 10482, NULL, 8291),
@@ -1390,7 +1330,6 @@ INSERT INTO `models` (`model_name`, `make_id`, `autobilis_model_id`, `autoplius_
 ('Arkana', 105, NULL, NULL, 8306),
 ('Coupe', 105, NULL, NULL, 8310),
 ('Scenic RX4', 105, NULL, NULL, 8333),
-('', 106, NULL, NULL, 8347),
 ('Cullinan', 106, 10506, NULL, 8349),
 ('Dawn', 106, 10507, NULL, 8350),
 ('Silver Cloud', 106, 1148, NULL, 8355),
@@ -1402,7 +1341,6 @@ INSERT INTO `models` (`model_name`, `make_id`, `autobilis_model_id`, `autoplius_
 ('Sweptail', 106, NULL, NULL, 8361),
 ('Touring Limousine', 106, NULL, NULL, 8362),
 ('Wraith', 106, 10509, NULL, 8363),
-('', 107, NULL, NULL, 8365),
 ('111', 107, NULL, NULL, 8367),
 ('114', 107, NULL, NULL, 8368),
 ('115', 107, NULL, NULL, 8369),
@@ -1430,37 +1368,26 @@ INSERT INTO `models` (`model_name`, `make_id`, `autobilis_model_id`, `autoplius_
 ('MG', 107, NULL, NULL, 8395),
 ('SD', 107, NULL, NULL, 8398),
 ('Tourer', 107, NULL, NULL, 8400),
-('', 108, NULL, NULL, 8402),
-('', 109, NULL, NULL, 8413),
 ('QM5', 109, NULL, NULL, 8414),
-('', 110, NULL, NULL, 8415),
 ('PS-300', 110, NULL, NULL, 8417),
 ('PS-350', 110, NULL, NULL, 8418),
-('', 111, NULL, NULL, 8420),
 ('Astra', 111, 1503, NULL, 8421),
-('', 112, NULL, NULL, 8432),
 ('iQ', 112, NULL, 18708, 8433),
 ('tC', 112, NULL, 1471, 8434),
 ('xA', 112, NULL, 1469, 8435),
 ('xB', 112, NULL, 1470, 8436),
 ('xD', 112, NULL, 10385, 8437),
-('', 113, NULL, NULL, 8438),
 ('el-Born', 113, NULL, NULL, 8446),
 ('Mii Electric', 113, NULL, NULL, 8454),
 ('Ronda', 113, NULL, NULL, 8455),
-('', 114, NULL, NULL, 8460),
-('', 115, NULL, NULL, 8462),
 ('100', 115, NULL, NULL, 8463),
 ('Citigo e iV', 115, NULL, NULL, 8469),
 ('RAPID', 115, 8985, 17631, 8480),
 ('Superb iV', 115, NULL, NULL, 8484),
-('', 116, NULL, NULL, 8487),
 ('Roomster', 116, NULL, NULL, 8496),
-('', 117, NULL, NULL, 8498),
 ('MUSSO', 117, 2118, 130, 8507),
 ('REXTON', 117, 2120, 129, 8508),
 ('XLV', 117, NULL, NULL, 8511),
-('', 118, NULL, NULL, 8513),
 ('1800 Coupe', 118, NULL, NULL, 8514),
 ('B9 Tribeca', 118, 1952, NULL, 8515),
 ('G3X Justy', 118, NULL, NULL, 8519),
@@ -1468,10 +1395,8 @@ INSERT INTO `models` (`model_name`, `make_id`, `autobilis_model_id`, `autoplius_
 ('OUTBACK', 118, 1963, 320, 8528),
 ('WRX STi', 118, NULL, NULL, 8534),
 ('XT', 118, 10523, NULL, 8535),
-('', 119, NULL, NULL, 8538),
 ('Celerio', 119, NULL, 24741, 8544),
 ('XL-7', 119, 2151, NULL, 8570),
-('', 120, NULL, NULL, 8573),
 ('101', 120, NULL, NULL, 8574),
 ('102', 120, NULL, NULL, 8575),
 ('103', 120, NULL, NULL, 8576),
@@ -1479,30 +1404,22 @@ INSERT INTO `models` (`model_name`, `make_id`, `autobilis_model_id`, `autoplius_
 ('105', 120, NULL, NULL, 8578),
 ('Bosto', 120, NULL, NULL, 8579),
 ('R-20', 120, NULL, NULL, 8580),
-('', 121, NULL, NULL, 8582),
 ('Rancho', 121, NULL, NULL, 8584),
-('', 122, NULL, NULL, 8587),
 ('233', 122, NULL, NULL, 8588),
 ('235', 122, NULL, NULL, 8589),
 ('237', 122, NULL, NULL, 8590),
 ('Honker', 122, NULL, NULL, 8591),
-('', 123, NULL, NULL, 8593),
 ('Aria', 123, NULL, NULL, 8594),
 ('Bolt', 123, NULL, NULL, 8595),
 ('Estate', 123, NULL, NULL, 8596),
 ('Hexa', 123, NULL, NULL, 8597),
 ('Pick-Up', 123, NULL, NULL, 8601),
-('', 124, NULL, NULL, 8608),
 ('T613', 124, NULL, NULL, 8609),
 ('T613-4', 124, NULL, NULL, 8610),
 ('T700', 124, NULL, NULL, 8611),
-('', 125, NULL, NULL, 8613),
 ('ZAZ 1102', 125, NULL, NULL, 8614),
 ('ZAZ 1103', 125, NULL, NULL, 8615),
 ('ZAZ 1105', 125, NULL, NULL, 8616),
-('', 126, NULL, NULL, 8618),
-('', 127, NULL, NULL, 8620),
-('', 128, NULL, NULL, 8626),
 ('4-Runner', 128, NULL, NULL, 8627),
 ('Camry Solara', 128, 10541, NULL, 8637),
 ('CH-R', 128, NULL, NULL, 8640),
@@ -1517,9 +1434,7 @@ INSERT INTO `models` (`model_name`, `make_id`, `autobilis_model_id`, `autoplius_
 ('Scion', 128, NULL, NULL, 8674),
 ('Scion TC', 128, NULL, NULL, 8675),
 ('Starlet', 128, 942, 215, 8681),
-('', 129, NULL, NULL, 8693),
 ('P 50/60', 129, NULL, NULL, 8695),
-('', 130, NULL, NULL, 8697),
 ('GT6', 130, NULL, NULL, 8699),
 ('Herald', 130, 1942, NULL, 8700),
 ('Stag', 130, 1944, NULL, 8703),
@@ -1530,7 +1445,6 @@ INSERT INTO `models` (`model_name`, `make_id`, `autobilis_model_id`, `autoplius_
 ('TR5', 130, NULL, NULL, 8708),
 ('TR7', 130, 1948, NULL, 8710),
 ('TR8', 130, 1949, NULL, 8711),
-('', 131, NULL, NULL, 8713),
 ('Cerbera', 131, 519, NULL, 8714),
 ('Chimaera', 131, 520, NULL, 8715),
 ('Griffith', 131, 521, NULL, 8716),
@@ -1538,16 +1452,13 @@ INSERT INTO `models` (`model_name`, `make_id`, `autobilis_model_id`, `autoplius_
 ('Tasmin', 131, NULL, NULL, 8718),
 ('Tuscan', 131, 525, NULL, 8719),
 ('Vixen', 131, 526, NULL, 8720),
-('', 132, NULL, NULL, 8722),
 ('3153', 132, NULL, NULL, 8727),
 ('3162', 132, NULL, NULL, 8728),
 ('469 B', 132, NULL, NULL, 8735),
-('', 133, NULL, NULL, 8740),
 ('Corsa E', 133, NULL, NULL, 8742),
 ('Frontera', 133, 548, NULL, 8743),
 ('Mokka X EV', 133, NULL, NULL, 8744),
 ('Omega', 133, 554, NULL, 8745),
-('', 134, NULL, NULL, 8747),
 ('181', 134, NULL, NULL, 8748),
 ('Buggy', 134, NULL, 18700, 8754),
 ('CC', 134, NULL, NULL, 8758),
@@ -1563,7 +1474,6 @@ INSERT INTO `models` (`model_name`, `make_id`, `autobilis_model_id`, `autoplius_
 ('Lavida', 134, 10626, NULL, 8779),
 ('New Beetle', 134, NULL, NULL, 8783),
 ('up!', 134, NULL, NULL, 8802),
-('', 135, NULL, NULL, 8805),
 ('Polestar 1', 135, NULL, NULL, 8832),
 ('Polestar 2', 135, NULL, NULL, 8833),
 ('S60 Cross Country', 135, NULL, 27883, 8836),
@@ -1572,35 +1482,27 @@ INSERT INTO `models` (`model_name`, `make_id`, `autobilis_model_id`, `autoplius_
 ('XC 60', 135, NULL, NULL, 8848),
 ('XC 70', 135, NULL, NULL, 8849),
 ('XC 90', 135, NULL, NULL, 8850),
-('', 136, NULL, NULL, 8853),
 ('203', 136, NULL, NULL, 8854),
 ('204', 136, NULL, NULL, 8855),
 ('223', 136, NULL, NULL, 8856),
 ('224', 136, NULL, NULL, 8857),
 ('M-20', 136, NULL, NULL, 8858),
 ('Pick-up', 136, NULL, NULL, 8859),
-('', 137, NULL, NULL, 8861),
 ('1.3', 137, NULL, NULL, 8862),
 ('312', 137, NULL, NULL, 8864),
 ('313', 137, NULL, NULL, 8865),
-('', 138, NULL, NULL, 8868),
 ('MF 25', 138, NULL, NULL, 8869),
 ('MF 28', 138, NULL, NULL, 8870),
 ('MF 3', 138, NULL, NULL, 8871),
 ('MF 30', 138, NULL, NULL, 8872),
 ('MF 35', 138, NULL, NULL, 8873),
 ('MF 4', 138, NULL, NULL, 8874),
-('', 139, NULL, NULL, 8875),
 ('102', 139, NULL, NULL, 8876),
 ('Florida', 139, NULL, NULL, 8877),
 ('Koral', 139, NULL, NULL, 8878),
-('', 140, NULL, NULL, 8880),
 ('1100', 140, NULL, NULL, 8881),
 ('750', 140, NULL, NULL, 8882),
-('', 141, NULL, NULL, 8884),
 ('968B', 141, NULL, NULL, 8889),
-('', 142, NULL, NULL, 8892),
-('', 143, NULL, NULL, 8894),
 ('Ace', 2, 269, 1416, 10913),
 ('Aceca', 2, 270, 1415, 10914),
 ('Cobra', 2, 271, 1414, 10915),
@@ -1751,8 +1653,6 @@ INSERT INTO `models` (`model_name`, `make_id`, `autobilis_model_id`, `autoplius_
 ('TT RS', 10, NULL, 24658, 11062),
 ('TTS', 10, 992, 16206, 11063),
 ('V8', 10, 993, 1328, 11064),
-('-kita- ', 146, NULL, 15643, 11065),
-('-Kita-', 147, NULL, 27793, 11066),
 ('MK 3000', 147, NULL, 27795, 11067),
 ('VX 550', 14, NULL, 28323, 11068),
 ('Arnage', 15, 1333, 1326, 11069),
@@ -1783,7 +1683,6 @@ INSERT INTO `models` (`model_name`, `make_id`, `autobilis_model_id`, `autoplius_
 ('X serija', 16, NULL, 11131, 11094),
 ('Z serija', 16, NULL, 11133, 11095),
 ('Bluecar', 148, NULL, 29867, 11096),
-('-kita- ', 17, NULL, 19325, 11097),
 ('Andere', 17, NULL, 19324, 11098),
 ('BC3', 17, NULL, 19320, 11099),
 ('BS2', 17, NULL, 19321, 11100),
@@ -1874,8 +1773,7 @@ INSERT INTO `models` (`model_name`, `make_id`, `autobilis_model_id`, `autoplius_
 ('S-10', 24, 693, 1234, 11186),
 ('Silverado', 24, 694, 1258, 11187),
 ('Sonic', 24, 10174, 18704, 11188),
-('Spark', 24, 695, 1262, 11189);
-INSERT INTO `models` (`model_name`, `make_id`, `autobilis_model_id`, `autoplius_model_id`, `id`) VALUES
+('Spark', 24, 695, 1262, 11189),
 ('Special Deluxe', 24, NULL, 24535, 11190),
 ('SS', 24, NULL, 27769, 11191),
 ('SSR', 24, 696, 1259, 11192),
@@ -1993,7 +1891,8 @@ INSERT INTO `models` (`model_name`, `make_id`, `autobilis_model_id`, `autoplius_
 ('Tico', 30, 10210, 1142, 11309),
 ('33', 31, NULL, 25078, 11310),
 ('44', 31, NULL, 25076, 11311),
-('46', 31, NULL, 25079, 11312),
+('46', 31, NULL, 25079, 11312);
+INSERT INTO `models` (`model_name`, `make_id`, `autobilis_model_id`, `autoplius_model_id`, `id`) VALUES
 ('55', 31, NULL, 25074, 11313),
 ('600', 31, NULL, 25077, 11314),
 ('66', 31, NULL, 25075, 11315),
@@ -2273,7 +2172,6 @@ INSERT INTO `models` (`model_name`, `make_id`, `autobilis_model_id`, `autoplius_
 ('Terrain', 47, 1360, 17201, 11596),
 ('Typhoon', 47, 1361, 16266, 11597),
 ('Yukon', 47, 1362, 143, 11598),
-('-Kita-', 48, NULL, 19094, 11599),
 ('GA200', 48, NULL, 19092, 11600),
 ('GX6', 48, NULL, 19093, 11601),
 ('Deer', 158, NULL, 1525, 11602),
@@ -2879,7 +2777,6 @@ INSERT INTO `models` (`model_name`, `make_id`, `autobilis_model_id`, `autoplius_
 ('Space Star', 88, 2003, 608, 12221),
 ('Space Wagon', 88, 2004, 607, 12222),
 ('Starion', 88, 2005, 606, 12223),
-('-kita- ', 89, NULL, 17397, 12224),
 ('4/4', 89, 402, 17398, 12225),
 ('Aero 8', 89, NULL, 17393, 12226),
 ('Plus 4', 89, 404, 17394, 12227),
@@ -3363,7 +3260,6 @@ INSERT INTO `models` (`model_name`, `make_id`, `autobilis_model_id`, `autoplius_
 ('Andere', 121, NULL, 21505, 12716),
 ('Horizon', 121, NULL, 21503, 12717),
 ('Samba', 121, NULL, 21504, 12718),
-('-Kita-', 170, NULL, 24570, 12719),
 ('Prancer', 170, NULL, 24571, 12720),
 ('Indica', 123, NULL, 16389, 12721),
 ('Indigo', 123, NULL, 16390, 12722),
@@ -3386,8 +3282,7 @@ INSERT INTO `models` (`model_name`, `make_id`, `autobilis_model_id`, `autoplius_
 ('Model X', 127, 10658, 19870, 12739),
 ('Roadster', 127, 514, 19871, 12740),
 ('City', 171, NULL, 24721, 12741),
-('4Runner', 128, 906, 268, 12742);
-INSERT INTO `models` (`model_name`, `make_id`, `autobilis_model_id`, `autoplius_model_id`, `id`) VALUES
+('4Runner', 128, 906, 268, 12742),
 ('Allion', 128, 10529, 267, 12743),
 ('Alphard', 128, 907, 24654, 12744),
 ('Auris', 128, 909, 279, 12745),
@@ -3503,7 +3398,8 @@ INSERT INTO `models` (`model_name`, `make_id`, `autobilis_model_id`, `autoplius_
 ('Polo Cross', 134, NULL, 29905, 12860),
 ('Rabbit', 134, 10631, 16144, 12861),
 ('Routan', 134, 10632, 16542, 12862),
-('Santana', 134, 10047, 183, 12863),
+('Santana', 134, 10047, 183, 12863);
+INSERT INTO `models` (`model_name`, `make_id`, `autobilis_model_id`, `autoplius_model_id`, `id`) VALUES
 ('Scirocco', 134, 1049, 182, 12864),
 ('Sharan', 134, 1050, 181, 12865),
 ('T-Cross', 134, NULL, 28987, 12866),
@@ -3572,7 +3468,6 @@ INSERT INTO `models` (`model_name`, `make_id`, `autobilis_model_id`, `autoplius_
 ('695', 175, 10100, NULL, 13597),
 ('Grande Punto Hatchback', 175, 265, NULL, 13598),
 ('Punto Evo', 175, 266, NULL, 13599),
-('-Kita-', 3, 9017, NULL, 13600),
 ('500.5', 4, 276, NULL, 13601),
 ('Ccity', 4, 278, NULL, 13602),
 ('169', 5, 1740, NULL, 13603),
@@ -4050,7 +3945,6 @@ INSERT INTO `models` (`model_name`, `make_id`, `autobilis_model_id`, `autoplius_
 ('Storm4orce', 110, 490, NULL, 14075),
 ('L-series', 111, 1506, NULL, 14076),
 ('S-series', 111, 1508, NULL, 14077),
-('-Kita-', 112, 10045, NULL, 14078),
 ('Fura', 113, 728, NULL, 14079),
 ('105/120/130', 115, 10511, NULL, 14080),
 ('City Cabriolet', 116, 2154, NULL, 14081),
@@ -4180,7 +4074,6 @@ INSERT INTO `models` (`model_name`, `make_id`, `autobilis_model_id`, `autoplius_
 ('350I', 131, 518, NULL, 14205),
 ('S Convertible', 131, 522, NULL, 14206),
 ('T-350', 131, 523, NULL, 14207),
-('Kita/Other', 132, 8773, NULL, 14208),
 ('Agila', 133, 538, NULL, 14209),
 ('Antara', 133, 539, NULL, 14210),
 ('Astra GTC', 133, 541, NULL, 14211),
@@ -4233,22 +4126,45 @@ INSERT INTO `models` (`model_name`, `make_id`, `autobilis_model_id`, `autoplius_
 ('Sport', 204, 534, NULL, 14258),
 ('XTR2', 204, 535, NULL, 14259);
 
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `query_make_model`
+--
+
+CREATE TABLE `query_make_model` (
+  `query_id` int(11) DEFAULT NULL,
+  `make_id` int(11) DEFAULT NULL,
+  `model_id` int(11) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
 --
 -- Indexes for dumped tables
 --
 
 --
--- Indexes for table `car_make`
+-- Indexes for table `body_styles`
 --
-ALTER TABLE `car_make`
-  ADD PRIMARY KEY (`car_id`,`make_id`),
-  ADD KEY `make_id` (`make_id`);
+ALTER TABLE `body_styles`
+  ADD UNIQUE KEY `name` (`name`),
+  ADD UNIQUE KEY `autobilis_id` (`autobilis_id`),
+  ADD UNIQUE KEY `autoplius_id` (`autoplius_id`),
+  ADD KEY `id` (`id`);
 
 --
 -- Indexes for table `car_queries`
 --
 ALTER TABLE `car_queries`
   ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `fuel_types`
+--
+ALTER TABLE `fuel_types`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `fuel_name` (`fuel_name`),
+  ADD UNIQUE KEY `autoplius_fuel_id` (`autoplius_fuel_id`),
+  ADD UNIQUE KEY `autobilis_fuel_id` (`autobilis_fuel_id`);
 
 --
 -- Indexes for table `makes`
@@ -4266,40 +4182,65 @@ ALTER TABLE `models`
   ADD KEY `make_id` (`make_id`);
 
 --
+-- Indexes for table `query_make_model`
+--
+ALTER TABLE `query_make_model`
+  ADD KEY `query_id` (`query_id`),
+  ADD KEY `query_make_model_ibfk_2` (`make_id`),
+  ADD KEY `model_id` (`model_id`);
+
+--
 -- AUTO_INCREMENT for dumped tables
 --
+
+--
+-- AUTO_INCREMENT for table `body_styles`
+--
+ALTER TABLE `body_styles`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
 
 --
 -- AUTO_INCREMENT for table `car_queries`
 --
 ALTER TABLE `car_queries`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+
+--
+-- AUTO_INCREMENT for table `fuel_types`
+--
+ALTER TABLE `fuel_types`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+
 --
 -- AUTO_INCREMENT for table `makes`
 --
 ALTER TABLE `makes`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=205;
+
 --
 -- AUTO_INCREMENT for table `models`
 --
 ALTER TABLE `models`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14261;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14260;
+
 --
 -- Constraints for dumped tables
 --
-
---
--- Constraints for table `car_make`
---
-ALTER TABLE `car_make`
-  ADD CONSTRAINT `car_make_ibfk_1` FOREIGN KEY (`car_id`) REFERENCES `car_queries` (`id`) ON DELETE CASCADE,
-  ADD CONSTRAINT `car_make_ibfk_2` FOREIGN KEY (`make_id`) REFERENCES `makes` (`id`) ON DELETE CASCADE;
 
 --
 -- Constraints for table `models`
 --
 ALTER TABLE `models`
   ADD CONSTRAINT `models_ibfk_1` FOREIGN KEY (`make_id`) REFERENCES `makes` (`id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `query_make_model`
+--
+ALTER TABLE `query_make_model`
+  ADD CONSTRAINT `query_make_model_ibfk_1` FOREIGN KEY (`query_id`) REFERENCES `car_queries` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `query_make_model_ibfk_2` FOREIGN KEY (`make_id`) REFERENCES `makes` (`id`),
+  ADD CONSTRAINT `query_make_model_ibfk_3` FOREIGN KEY (`model_id`) REFERENCES `models` (`id`);
+COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
