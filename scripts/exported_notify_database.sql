@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3306
--- Generation Time: Apr 01, 2020 at 09:25 PM
+-- Generation Time: Apr 02, 2020 at 09:30 PM
 -- Server version: 5.7.29-0ubuntu0.18.04.1
 -- PHP Version: 7.2.24-0ubuntu0.18.04.3
 
@@ -69,20 +69,28 @@ CREATE TABLE `car_queries` (
   `price_to` int(11) DEFAULT NULL,
   `year_from` int(11) DEFAULT NULL,
   `search_term` text,
-  `year_to` int(11) DEFAULT NULL
+  `year_to` int(11) DEFAULT NULL,
+  `power_from` int(11) DEFAULT NULL,
+  `power_to` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Dumping data for table `car_queries`
 --
 
-INSERT INTO `car_queries` (`id`, `price_from`, `price_to`, `year_from`, `search_term`, `year_to`) VALUES
-(1, 1000, 2000, 2000, 'audi', 2010),
-(3, 1222, 1333, 2000, 'kfgukj', 2005),
-(6, NULL, NULL, NULL, NULL, NULL),
-(7, NULL, NULL, NULL, NULL, NULL),
-(8, NULL, NULL, NULL, NULL, NULL),
-(9, NULL, NULL, NULL, 'test', NULL);
+INSERT INTO `car_queries` (`id`, `price_from`, `price_to`, `year_from`, `search_term`, `year_to`, `power_from`, `power_to`) VALUES
+(1, 1000, 2000, 2000, 'audi', 2010, NULL, NULL),
+(3, 1222, 1333, 2000, 'kfgukj', 2005, NULL, NULL),
+(6, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(7, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(8, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(9, NULL, NULL, NULL, 'test', NULL, NULL, NULL),
+(12, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(13, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(14, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(15, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(19, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(21, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -4129,14 +4137,61 @@ INSERT INTO `models` (`model_name`, `make_id`, `autobilis_model_id`, `autoplius_
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `query_body_style`
+--
+
+CREATE TABLE `query_body_style` (
+  `query_id` int(11) NOT NULL,
+  `body_style_id` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Dumping data for table `query_body_style`
+--
+
+INSERT INTO `query_body_style` (`query_id`, `body_style_id`) VALUES
+(19, 3),
+(21, 3);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `query_fuel`
+--
+
+CREATE TABLE `query_fuel` (
+  `query_id` int(11) NOT NULL,
+  `fuel_id` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Dumping data for table `query_fuel`
+--
+
+INSERT INTO `query_fuel` (`query_id`, `fuel_id`) VALUES
+(15, 1),
+(19, 1),
+(21, 1);
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `query_make_model`
 --
 
 CREATE TABLE `query_make_model` (
-  `query_id` int(11) DEFAULT NULL,
-  `make_id` int(11) DEFAULT NULL,
+  `query_id` int(11) NOT NULL,
+  `make_id` int(11) NOT NULL,
+  `id` int(11) NOT NULL,
   `model_id` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Dumping data for table `query_make_model`
+--
+
+INSERT INTO `query_make_model` (`query_id`, `make_id`, `id`, `model_id`) VALUES
+(21, 10, 1, 11023);
 
 --
 -- Indexes for dumped tables
@@ -4182,11 +4237,26 @@ ALTER TABLE `models`
   ADD KEY `make_id` (`make_id`);
 
 --
+-- Indexes for table `query_body_style`
+--
+ALTER TABLE `query_body_style`
+  ADD PRIMARY KEY (`query_id`,`body_style_id`),
+  ADD KEY `body_style_id` (`body_style_id`);
+
+--
+-- Indexes for table `query_fuel`
+--
+ALTER TABLE `query_fuel`
+  ADD PRIMARY KEY (`query_id`,`fuel_id`),
+  ADD KEY `fuel_id` (`fuel_id`);
+
+--
 -- Indexes for table `query_make_model`
 --
 ALTER TABLE `query_make_model`
+  ADD PRIMARY KEY (`id`),
   ADD KEY `query_id` (`query_id`),
-  ADD KEY `query_make_model_ibfk_2` (`make_id`),
+  ADD KEY `make_id` (`make_id`),
   ADD KEY `model_id` (`model_id`);
 
 --
@@ -4203,7 +4273,7 @@ ALTER TABLE `body_styles`
 -- AUTO_INCREMENT for table `car_queries`
 --
 ALTER TABLE `car_queries`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
 
 --
 -- AUTO_INCREMENT for table `fuel_types`
@@ -4224,6 +4294,12 @@ ALTER TABLE `models`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14260;
 
 --
+-- AUTO_INCREMENT for table `query_make_model`
+--
+ALTER TABLE `query_make_model`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+
+--
 -- Constraints for dumped tables
 --
 
@@ -4232,6 +4308,20 @@ ALTER TABLE `models`
 --
 ALTER TABLE `models`
   ADD CONSTRAINT `models_ibfk_1` FOREIGN KEY (`make_id`) REFERENCES `makes` (`id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `query_body_style`
+--
+ALTER TABLE `query_body_style`
+  ADD CONSTRAINT `query_body_style_ibfk_1` FOREIGN KEY (`body_style_id`) REFERENCES `body_styles` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `query_body_style_ibfk_2` FOREIGN KEY (`query_id`) REFERENCES `car_queries` (`id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `query_fuel`
+--
+ALTER TABLE `query_fuel`
+  ADD CONSTRAINT `query_fuel_ibfk_1` FOREIGN KEY (`fuel_id`) REFERENCES `fuel_types` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `query_fuel_ibfk_2` FOREIGN KEY (`query_id`) REFERENCES `car_queries` (`id`) ON DELETE CASCADE;
 
 --
 -- Constraints for table `query_make_model`
