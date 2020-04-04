@@ -43,7 +43,7 @@ def form_autog_query(params):
     if "fuel_type" in params and "fuel_name" in params["fuel_type"]:
         new_params[f'f_2[0]'] = params["fuel_type"]["fuel_name"]
     
-    if "search_term" in params["car_query"]:
+    if "search_term" in params["car_query"] and params["car_query"]["search_term"] is not None:
         new_params['f_376'] = params["car_query"]["search_term"]
     
     return new_params
