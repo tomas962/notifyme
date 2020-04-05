@@ -8,35 +8,41 @@ from database.database import connection
 class AutogidasSpider(scrapy.Spider):
     name = "autogidas"
 
+    def __init__(self, car_query_id=None, **kwargs):
+        self.car_query_id = car_query_id
+        super().__init__(**kwargs)  # python3
+
     def start_requests(self):
         self.i = 0
-        car_query = get_car_query(3)
-        urls = ["https://www.autogidas.lt/skelbimai/automobiliai/?" + urlencode(form_autog_query(car_query))]
 
+        if self.car_query_id is None:
+            return
+        car_query = get_car_query(int(self.car_query_id))
+        urls = ["https://autogidas.lt/skelbimai/automobiliai/?" + urlencode(form_autog_query(car_query))]
+
+        
         for url in urls:
             yield scrapy.Request(url=url, callback=self.parse)
 
     def parse(self, response):
-        page = response.url.split("/")[-2]
-        filename = 'quotes-%s.html' % page
-        with open(filename, 'wb') as f:
-            f.write(response.body)
-        self.log('Saved file %s' % filename)
-
-        print("XPATH: ")
         hrefs = response.css('a.item-link::attr(href)').getall()
 
         for href in hrefs:
             next_page = response.urljoin(href)
-            yield scrapy.Request(next_page, callback=self.parse_add)
+            yield scrapy.Request(next_page, callback=self.parse_ad)
         
-    def parse_add(self, response):
-        filename = 'autogidas-%s.html' % self.i
-        self.i += 1
-        
+    def parse_ad(self, response):
+        params = {}
+        params["autog_id"] = response.url.split(".")[-2].split("-")[-1]
+        addons = ""
+        for addon in response.css('div.addon::text'):
+            addons += addon.get() + ", "
+        addons = addons[:-2]
+        params["features"] = addons
+        print(params)
         for param in response.css('div.param'):
-            yield {
-                "name": param.css('div.left::text').get(),
-                "value": param.css('div.right::text').get()
-            }
-            
+            value = param.css('div.price::text').get() or param.css('div.right::text').get()
+            params[db_translations[param.css('div.left::text').get().strip()]] = value.strip()
+        
+        values = prepare_data(params)
+        insert_autog_ad(values)

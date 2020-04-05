@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3306
--- Generation Time: Apr 02, 2020 at 09:30 PM
+-- Generation Time: Apr 06, 2020 at 12:10 AM
 -- Server version: 5.7.29-0ubuntu0.18.04.1
 -- PHP Version: 7.2.24-0ubuntu0.18.04.3
 
@@ -60,6 +60,43 @@ INSERT INTO `body_styles` (`name`, `autoplius_id`, `autobilis_id`, `id`) VALUES
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `car_ads`
+--
+
+CREATE TABLE `car_ads` (
+  `make` int(50) DEFAULT NULL,
+  `model` int(50) DEFAULT NULL,
+  `year` varchar(50) DEFAULT NULL,
+  `engine` varchar(50) DEFAULT NULL,
+  `fuel_type` int(11) DEFAULT NULL,
+  `body_type` int(11) DEFAULT NULL,
+  `color` varchar(50) DEFAULT NULL,
+  `gearbox` enum('Automatinė','Mechaninė') DEFAULT NULL,
+  `driven_wheels` enum('Priekiniai varantys ratai','Galiniai varantys ratai','Visi varantys ratai') DEFAULT NULL,
+  `damage` enum('Be defektų','Daužtas','Degęs','Pavarų dėžės defektas','Pažeistas krušos','Skendęs','Variklio defektas','Kiti stambūs defektai') DEFAULT NULL,
+  `steering_column` enum('Kairėje','Dešinėje') DEFAULT NULL,
+  `door_count` enum('2/3','4/5','6/7') DEFAULT NULL,
+  `cylinder_count` tinyint(4) DEFAULT NULL,
+  `gear_count` tinyint(4) DEFAULT NULL,
+  `seat_count` tinyint(4) DEFAULT NULL,
+  `ts_to` date DEFAULT NULL,
+  `weight` int(11) DEFAULT NULL,
+  `wheels` varchar(50) DEFAULT NULL,
+  `fuel_urban` float DEFAULT NULL,
+  `fuel_overland` float DEFAULT NULL,
+  `fuel_overall` float DEFAULT NULL,
+  `features` text,
+  `comments` text,
+  `id` int(11) NOT NULL,
+  `autog_id` bigint(20) DEFAULT NULL,
+  `price` int(11) DEFAULT NULL,
+  `export_price` int(11) DEFAULT NULL,
+  `vin_code` varchar(50) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `car_queries`
 --
 
@@ -80,7 +117,7 @@ CREATE TABLE `car_queries` (
 
 INSERT INTO `car_queries` (`id`, `price_from`, `price_to`, `year_from`, `search_term`, `year_to`, `power_from`, `power_to`) VALUES
 (1, 1000, 2000, 2000, 'audi', 2010, NULL, NULL),
-(3, 1222, 1333, 2000, 'kfgukj', 2005, NULL, NULL),
+(3, 1000, 3000, 2000, NULL, 2005, NULL, NULL),
 (6, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
 (7, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
 (8, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
@@ -4150,8 +4187,10 @@ CREATE TABLE `query_body_style` (
 --
 
 INSERT INTO `query_body_style` (`query_id`, `body_style_id`) VALUES
+(3, 1),
 (19, 3),
-(21, 3);
+(21, 3),
+(19, 10);
 
 -- --------------------------------------------------------
 
@@ -4171,7 +4210,8 @@ CREATE TABLE `query_fuel` (
 INSERT INTO `query_fuel` (`query_id`, `fuel_id`) VALUES
 (15, 1),
 (19, 1),
-(21, 1);
+(21, 1),
+(3, 2);
 
 -- --------------------------------------------------------
 
@@ -4191,7 +4231,8 @@ CREATE TABLE `query_make_model` (
 --
 
 INSERT INTO `query_make_model` (`query_id`, `make_id`, `id`, `model_id`) VALUES
-(21, 10, 1, 11023);
+(21, 10, 1, 11023),
+(3, 10, 2, 11023);
 
 --
 -- Indexes for dumped tables
@@ -4205,6 +4246,17 @@ ALTER TABLE `body_styles`
   ADD UNIQUE KEY `autobilis_id` (`autobilis_id`),
   ADD UNIQUE KEY `autoplius_id` (`autoplius_id`),
   ADD KEY `id` (`id`);
+
+--
+-- Indexes for table `car_ads`
+--
+ALTER TABLE `car_ads`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `autog_id` (`autog_id`),
+  ADD KEY `body_type` (`body_type`),
+  ADD KEY `fuel_type` (`fuel_type`),
+  ADD KEY `make` (`make`),
+  ADD KEY `model` (`model`);
 
 --
 -- Indexes for table `car_queries`
@@ -4270,6 +4322,12 @@ ALTER TABLE `body_styles`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
 
 --
+-- AUTO_INCREMENT for table `car_ads`
+--
+ALTER TABLE `car_ads`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=157;
+
+--
 -- AUTO_INCREMENT for table `car_queries`
 --
 ALTER TABLE `car_queries`
@@ -4297,11 +4355,20 @@ ALTER TABLE `models`
 -- AUTO_INCREMENT for table `query_make_model`
 --
 ALTER TABLE `query_make_model`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- Constraints for dumped tables
 --
+
+--
+-- Constraints for table `car_ads`
+--
+ALTER TABLE `car_ads`
+  ADD CONSTRAINT `car_ads_ibfk_1` FOREIGN KEY (`body_type`) REFERENCES `body_styles` (`id`),
+  ADD CONSTRAINT `car_ads_ibfk_2` FOREIGN KEY (`fuel_type`) REFERENCES `fuel_types` (`id`),
+  ADD CONSTRAINT `car_ads_ibfk_3` FOREIGN KEY (`make`) REFERENCES `makes` (`id`),
+  ADD CONSTRAINT `car_ads_ibfk_4` FOREIGN KEY (`model`) REFERENCES `models` (`id`);
 
 --
 -- Constraints for table `models`

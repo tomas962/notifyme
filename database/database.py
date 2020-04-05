@@ -8,6 +8,13 @@ connection = pymysql.connect(host='localhost',
                              charset='utf8mb4',
                              cursorclass=pymysql.cursors.DictCursor)
 
+def db_connect():
+    return pymysql.connect(host='localhost',
+                             user='phpmyadmin',
+                             password='kompas88',
+                             db='notify',
+                             charset='utf8mb4',
+                             cursorclass=pymysql.cursors.DictCursor)
 # try:
 #     with connection.cursor() as cursor:
 #         pass
