@@ -8,6 +8,7 @@ from database.database import connection, db_connect
 from urllib.parse import urlencode
 
 db_translations = {
+    #autogidas
     "Make":"make",
     "Model":"model",
     "Year":"year",
@@ -67,7 +68,21 @@ db_translations = {
     "Euro standartas":"euro_standard",
     "CO2 emisija, g/km":"co2_emmision",
     "#1":"autog_id", # for setting to None,
-    "VIN kodas":"vin_code"
+    "VIN kodas":"vin_code",
+
+    # autoplius
+    "Pagaminimo data":"year",
+    "Rida":"mileage",
+    "Varantieji ratai":"driven_wheels",
+    "Klimato valdymas":"?0",
+    "Ratlankių skersmuo":"wheels",
+    "Tech. apžiūra iki":"ts_to",
+    "Nuosava masė, kg":"weight",
+    "Kuro bako talpa": "?1",
+    "Paslaugos pavadinimas": "?2",
+    "Paslaugos tipas":"?3",
+    "Kėbulo numeris (VIN)":"vin_code",
+    "Nauja / naudota":"?4"
 }
 # f_1[0]: BMW
 # f_model_14[0]: Series 3
@@ -82,22 +97,24 @@ db_translations = {
 # f_2[2]: Benzinas
 # f_376:
 def form_autog_query(params):
-    print(f"PARAMS: {params}")
     new_params = {}
     if "make_model" in params and params["make_model"] is not None and "make" in params["make_model"]:
         new_params[f'f_1[0]'] = params["make_model"]["make"] or ""
     if "make_model" in params and params["make_model"] and "model_name" in params["make_model"]:
         new_params[f'f_model_14[0]'] = params["make_model"]["model_name"] or ""
 
-    if "price_from" in params["car_query"]:
-        new_params['f_215'] = params["car_query"]["price_from"] if params["car_query"]["price_from"] is not None else ""
-    if "price_to" in params["car_query"]:
-        new_params['f_216'] = params["car_query"]["price_to"] if params["car_query"]["price_to"] is not None else ""
+    if "car_query" in params and params["car_query"] is not None:
+        if "price_from" in params["car_query"]:
+            new_params['f_215'] = params["car_query"]["price_from"] if params["car_query"]["price_from"] is not None else ""
+        if "price_to" in params["car_query"]:
+            new_params['f_216'] = params["car_query"]["price_to"] if params["car_query"]["price_to"] is not None else ""
 
-    if "year_from" in params["car_query"]:
-        new_params['f_41'] = params["car_query"]["year_from"] if params["car_query"]["year_from"] is not None else ""
-    if "year_to" in params["car_query"]:
-        new_params['f_42'] = params["car_query"]["year_to"] if params["car_query"]["year_to"] is not None else ""
+        if "year_from" in params["car_query"]:
+            new_params['f_41'] = params["car_query"]["year_from"] if params["car_query"]["year_from"] is not None else ""
+        if "year_to" in params["car_query"]:
+            new_params['f_42'] = params["car_query"]["year_to"] if params["car_query"]["year_to"] is not None else ""
+        if "search_term" in params["car_query"] and params["car_query"]["search_term"] is not None:
+            new_params['f_376'] = params["car_query"]["search_term"] if params["car_query"]["search_term"] is not None else ""
 
     if "body_style" in params and params["body_style"] is not None and "name" in params["body_style"]:
         new_params[f'f_3[0]'] = params["body_style"]["name"] if params["body_style"]["name"] is not None else ""
@@ -105,8 +122,37 @@ def form_autog_query(params):
     if "fuel_type" in params and params["fuel_type"] is not None and "fuel_name" in params["fuel_type"]:
         new_params[f'f_2[0]'] = params["fuel_type"]["fuel_name"] if params["fuel_type"]["fuel_name"] is not None else ""
     
-    if "search_term" in params["car_query"] and params["car_query"]["search_term"] is not None:
-        new_params['f_376'] = params["car_query"]["search_term"] if params["car_query"]["search_term"] is not None else ""
+    
+    
+    return new_params
+
+def form_autop_query(params):
+    new_params = {}
+    if "make_model" in params and params["make_model"] is not None and "autoplius_make_id" in params["make_model"]:
+        new_params["make_id_list"] = params["make_model"]["autoplius_make_id"] or ""
+    if "make_model" in params and params["make_model"] and "autoplius_model_id" in params["make_model"]:
+        new_params[f"make_id[{new_params['make_id_list']}]"] = params["make_model"]["autoplius_model_id"] or ""
+
+    if "car_query" in params and params["car_query"] is not None:
+        if "price_from" in params["car_query"]:
+            new_params["sell_price_from"] = params["car_query"]["price_from"] if params["car_query"]["price_from"] is not None else ""
+        if "price_to" in params["car_query"]:
+            new_params["sell_price_to"] = params["car_query"]["price_to"] if params["car_query"]["price_to"] is not None else ""
+
+        if "year_from" in params["car_query"]:
+            new_params["make_date_from"] = params["car_query"]["year_from"] if params["car_query"]["year_from"] is not None else ""
+        if "year_to" in params["car_query"]:
+            new_params["make_date_to"] = params["car_query"]["year_to"] if params["car_query"]["year_to"] is not None else ""
+        if "search_term" in params["car_query"] and params["car_query"]["search_term"] is not None:
+            new_params["qt"] = params["car_query"]["search_term"] if params["car_query"]["search_term"] is not None else ""
+
+    if "body_style" in params and params["body_style"] is not None and "autoplius_id" in params["body_style"]:
+        new_params["body_type_id"] = params["body_style"]["autoplius_id"] if params["body_style"]["autoplius_id"] is not None else ""
+        
+    if "fuel_type" in params and params["fuel_type"] is not None and "autoplius_fuel_id" in params["fuel_type"]:
+        new_params["fuel_id"] = params["fuel_type"]["autoplius_fuel_id"] if params["fuel_type"]["autoplius_fuel_id"] is not None else ""
+    
+    
     
     return new_params
 
@@ -115,6 +161,9 @@ def get_car_query(id):
         cursor.execute("SELECT * FROM car_queries WHERE id=%s", id)
         car_query = cursor.fetchone()
         
+        if car_query is None:
+            return None
+
         cursor.execute("""SELECT fuel_types.* FROM query_fuel 
             INNER JOIN fuel_types 
             ON query_fuel.fuel_id=fuel_types.id
@@ -142,7 +191,6 @@ def get_car_query(id):
             "body_style":body_style,
             "make_model":make_model
         }
-
 
 def prepare_data(params):
     """
@@ -179,11 +227,20 @@ def autog_foreign_keys(values, cursor):
         values["body_type"] = body_t["id"]
     return values
 
-def insert_autog_ad(values):
+def insert_auto_ad(values):
+    auto_foreign_keys = autog_foreign_keys
+    if "autog_id" in values and values["autog_id"] is not None:
+        values["key_column"] = "autog_id"
+        values["key_value"] = values["autog_id"]
+        auto_foreign_keys = autog_foreign_keys
+    elif "autop_id" in values and values["autop_id"] is not None:
+        values["key_column"] = "autop_id"
+        values["key_value"] = values["autop_id"]
+
     with db_connect().cursor() as cursor:
-        cursor.execute("SELECT * FROM car_ads WHERE autog_id=%s", values["autog_id"])
+        cursor.execute("SELECT * FROM car_ads WHERE %(key_column)s=%(key_value)s", values)
         ad_exists = cursor.fetchone()
-        values = autog_foreign_keys(values, cursor)
+        values = auto_foreign_keys(values, cursor)
         if ad_exists:
             cursor.execute("""UPDATE `car_ads` SET make=%(make)s, model=%(model)s, year=%(year)s, engine=%(engine)s,
                 fuel_type=%(fuel_type)s, body_type=%(body_type)s, 
@@ -193,21 +250,32 @@ def insert_autog_ad(values):
                 seat_count=%(seat_count)s, ts_to=DATE(%(ts_to)s), weight=%(weight)s, 
                 wheels=%(wheels)s, fuel_urban=%(fuel_urban)s, fuel_overland=%(fuel_overland)s, 
                 fuel_overall=%(fuel_overall)s, features=%(features)s, comments=%(comments)s, 
-                autog_id=%(autog_id)s, price=%(price)s, export_price=%(export_price)s, vin_code=%(vin_code)s
-                WHERE autog_id=%(autog_id)s""", values)
+                """+values["key_column"]+"""=%(key_value)s, price=%(price)s, export_price=%(export_price)s, vin_code=%(vin_code)s
+                WHERE %(key_column)s=%(key_value)s""", values)
             
         else:
-            cursor.execute("""INSERT INTO `car_ads`(`make`, `model`, `year`, `engine`, `fuel_type`, 
+            qu = """INSERT INTO `car_ads`(`make`, `model`, `year`, `engine`, `fuel_type`, 
                 `body_type`, `color`, `gearbox`, `driven_wheels`, `damage`, `steering_column`, `door_count`, 
                 `cylinder_count`, `gear_count`, `seat_count`, `ts_to`, `weight`, `wheels`, `fuel_urban`, 
-                `fuel_overland`, `fuel_overall`, `features`, `comments`, `autog_id`, `price`, `export_price`, `vin_code`) 
+                `fuel_overland`, `fuel_overall`, `features`, `comments`, """+values["key_column"]+""", `price`, `export_price`, `vin_code`) 
                 VALUES (%(make)s, %(model)s, %(year)s, %(engine)s, %(fuel_type)s, %(body_type)s, 
                 %(color)s, %(gearbox)s, %(driven_wheels)s, %(damage)s, %(steering_column)s,
                 %(door_count)s, %(cylinder_count)s, %(gear_count)s, %(seat_count)s, DATE(%(ts_to)s), %(weight)s, 
                 %(wheels)s, %(fuel_urban)s, %(fuel_overland)s, %(fuel_overall)s, %(features)s, %(comments)s, 
-                %(autog_id)s, %(price)s, %(export_price)s, %(vin_code)s)""", values)
+                %(key_value)s, %(price)s, %(export_price)s, %(vin_code)s)"""% values
+            
+            cursor.execute("""INSERT INTO `car_ads`(`make`, `model`, `year`, `engine`, `fuel_type`, 
+                `body_type`, `color`, `gearbox`, `driven_wheels`, `damage`, `steering_column`, `door_count`, 
+                `cylinder_count`, `gear_count`, `seat_count`, `ts_to`, `weight`, `wheels`, `fuel_urban`, 
+                `fuel_overland`, `fuel_overall`, `features`, `comments`, """+values["key_column"]+""", `price`, `export_price`, `vin_code`) 
+                VALUES (%(make)s, %(model)s, %(year)s, %(engine)s, %(fuel_type)s, %(body_type)s, 
+                %(color)s, %(gearbox)s, %(driven_wheels)s, %(damage)s, %(steering_column)s,
+                %(door_count)s, %(cylinder_count)s, %(gear_count)s, %(seat_count)s, DATE(%(ts_to)s), %(weight)s, 
+                %(wheels)s, %(fuel_urban)s, %(fuel_overland)s, %(fuel_overall)s, %(features)s, %(comments)s, 
+                %(key_value)s, %(price)s, %(export_price)s, %(vin_code)s)""", values)
         cursor.connection.commit()
         cursor.connection.close()
+
 
 if __name__ == "__main__":
     params = {

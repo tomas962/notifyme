@@ -18,6 +18,7 @@ class AutogidasSpider(scrapy.Spider):
         if self.car_query_id is None:
             return
         car_query = get_car_query(int(self.car_query_id))
+        
         urls = ["https://autogidas.lt/skelbimai/automobiliai/?" + urlencode(form_autog_query(car_query))]
 
         
@@ -36,9 +37,11 @@ class AutogidasSpider(scrapy.Spider):
         params["autog_id"] = response.url.split(".")[-2].split("-")[-1]
         addons = ""
         for addon in response.css('div.addon::text'):
-            addons += addon.get() + ", "
+            addons += addon.get().strip() + ", "
         addons = addons[:-2]
         params["features"] = addons
+        comment = response.css('div.comments::text').get()
+        params["comments"] = comment.strip() if comment is not None else None
         print(params)
         for param in response.css('div.param'):
             value = param.css('div.price::text').get() or param.css('div.right::text').get()
