@@ -82,7 +82,11 @@ db_translations = {
     "Paslaugos pavadinimas": "?2",
     "Paslaugos tipas":"?3",
     "Kėbulo numeris (VIN)":"vin_code",
-    "Nauja / naudota":"?4"
+    "Nauja / naudota":"?4",
+    
+    # empty for db columns
+    "?0":"autog_id",
+    "?1":"autop_id",
 }
 # f_1[0]: BMW
 # f_model_14[0]: Series 3
@@ -191,90 +195,6 @@ def get_car_query(id):
             "body_style":body_style,
             "make_model":make_model
         }
-
-def prepare_data(params):
-    """
-        Prepare data for insertion into database.  
-        Add None where neccesary and convert to integers.
-    """
-    for k, v in db_translations.items():
-        params[v] = params.get(v) # add None entries if doesn't exist
-
-    params["price"] = int(params["price"].split("€")[0].replace(" ", "")) if params["price"] is not None else None
-    params["export_price"] = int(params["export_price"].split("€")[0].replace(" ", "")) if params["export_price"] is not None else None
-    params["year"] = params["year"].split(" ")[0] if params["year"] is not None else None
-    params["weight"] = int(params["weight"].split(" ")[0]) if params["weight"] is not None else None
-    params["ts_to"] = params["ts_to"] + "-01" if params["ts_to"] is not None else None
-    return params        
-
-def autog_foreign_keys(values, cursor):
-    # convert values to ID's
-    if values["make"] is not None:
-        cursor.execute("SELECT * from makes WHERE make=%s", values["make"])
-        make = cursor.fetchone()
-        values["make"] = make["id"]
-    if values["model"] is not None:
-        cursor.execute("SELECT * from models WHERE make_id=%s AND model_name=%s", (values["make"], values["model"]))
-        model = cursor.fetchone()
-        values["model"] = model["id"]
-    if values["fuel_type"] is not None:
-        cursor.execute("SELECT * from fuel_types WHERE fuel_name=%s", values["fuel_type"])
-        fuel = cursor.fetchone()
-        values["fuel_type"] = fuel["id"]
-    if values["body_type"] is not None:
-        cursor.execute("SELECT * from body_styles WHERE name=%s", values["body_type"])
-        body_t = cursor.fetchone()
-        values["body_type"] = body_t["id"]
-    return values
-
-def insert_auto_ad(values):
-    auto_foreign_keys = autog_foreign_keys
-    if "autog_id" in values and values["autog_id"] is not None:
-        values["key_column"] = "autog_id"
-        values["key_value"] = values["autog_id"]
-        auto_foreign_keys = autog_foreign_keys
-    elif "autop_id" in values and values["autop_id"] is not None:
-        values["key_column"] = "autop_id"
-        values["key_value"] = values["autop_id"]
-
-    with db_connect().cursor() as cursor:
-        cursor.execute("SELECT * FROM car_ads WHERE %(key_column)s=%(key_value)s", values)
-        ad_exists = cursor.fetchone()
-        values = auto_foreign_keys(values, cursor)
-        if ad_exists:
-            cursor.execute("""UPDATE `car_ads` SET make=%(make)s, model=%(model)s, year=%(year)s, engine=%(engine)s,
-                fuel_type=%(fuel_type)s, body_type=%(body_type)s, 
-                color=%(color)s, gearbox=%(gearbox)s, driven_wheels=%(driven_wheels)s, damage=%(damage)s,
-                steering_column=%(steering_column)s,
-                door_count=%(door_count)s, cylinder_count=%(cylinder_count)s, gear_count=%(gear_count)s, 
-                seat_count=%(seat_count)s, ts_to=DATE(%(ts_to)s), weight=%(weight)s, 
-                wheels=%(wheels)s, fuel_urban=%(fuel_urban)s, fuel_overland=%(fuel_overland)s, 
-                fuel_overall=%(fuel_overall)s, features=%(features)s, comments=%(comments)s, 
-                """+values["key_column"]+"""=%(key_value)s, price=%(price)s, export_price=%(export_price)s, vin_code=%(vin_code)s
-                WHERE %(key_column)s=%(key_value)s""", values)
-            
-        else:
-            qu = """INSERT INTO `car_ads`(`make`, `model`, `year`, `engine`, `fuel_type`, 
-                `body_type`, `color`, `gearbox`, `driven_wheels`, `damage`, `steering_column`, `door_count`, 
-                `cylinder_count`, `gear_count`, `seat_count`, `ts_to`, `weight`, `wheels`, `fuel_urban`, 
-                `fuel_overland`, `fuel_overall`, `features`, `comments`, """+values["key_column"]+""", `price`, `export_price`, `vin_code`) 
-                VALUES (%(make)s, %(model)s, %(year)s, %(engine)s, %(fuel_type)s, %(body_type)s, 
-                %(color)s, %(gearbox)s, %(driven_wheels)s, %(damage)s, %(steering_column)s,
-                %(door_count)s, %(cylinder_count)s, %(gear_count)s, %(seat_count)s, DATE(%(ts_to)s), %(weight)s, 
-                %(wheels)s, %(fuel_urban)s, %(fuel_overland)s, %(fuel_overall)s, %(features)s, %(comments)s, 
-                %(key_value)s, %(price)s, %(export_price)s, %(vin_code)s)"""% values
-            
-            cursor.execute("""INSERT INTO `car_ads`(`make`, `model`, `year`, `engine`, `fuel_type`, 
-                `body_type`, `color`, `gearbox`, `driven_wheels`, `damage`, `steering_column`, `door_count`, 
-                `cylinder_count`, `gear_count`, `seat_count`, `ts_to`, `weight`, `wheels`, `fuel_urban`, 
-                `fuel_overland`, `fuel_overall`, `features`, `comments`, """+values["key_column"]+""", `price`, `export_price`, `vin_code`) 
-                VALUES (%(make)s, %(model)s, %(year)s, %(engine)s, %(fuel_type)s, %(body_type)s, 
-                %(color)s, %(gearbox)s, %(driven_wheels)s, %(damage)s, %(steering_column)s,
-                %(door_count)s, %(cylinder_count)s, %(gear_count)s, %(seat_count)s, DATE(%(ts_to)s), %(weight)s, 
-                %(wheels)s, %(fuel_urban)s, %(fuel_overland)s, %(fuel_overall)s, %(features)s, %(comments)s, 
-                %(key_value)s, %(price)s, %(export_price)s, %(vin_code)s)""", values)
-        cursor.connection.commit()
-        cursor.connection.close()
 
 
 if __name__ == "__main__":

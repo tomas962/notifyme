@@ -3,7 +3,8 @@ import sys
 from urllib.parse import urlencode
 from scrape_utils import *
 sys.path.insert(0,"..")
-from database.database import connection
+from database.database import connection, db_connect
+from .ads import CarAd, AutogidasAd
 
 class AutogidasSpider(scrapy.Spider):
     name = "autogidas"
@@ -33,19 +34,9 @@ class AutogidasSpider(scrapy.Spider):
             yield scrapy.Request(next_page, callback=self.parse_ad)
         
     def parse_ad(self, response):
-        params = {}
-        params["autog_id"] = response.url.split(".")[-2].split("-")[-1]
-        addons = ""
-        for addon in response.css('div.addon::text'):
-            addons += addon.get().strip() + ", "
-        addons = addons[:-2]
-        params["features"] = addons
-        comment = response.css('div.comments::text').get()
-        params["comments"] = comment.strip() if comment is not None else None
-        print(params)
-        for param in response.css('div.param'):
-            value = param.css('div.price::text').get() or param.css('div.right::text').get()
-            params[db_translations[param.css('div.left::text').get().strip()]] = value.strip()
-        
-        values = prepare_data(params)
-        insert_autog_ad(values)
+
+        car_ad = AutogidasAd(response)
+
+        car_ad.parse()
+        car_ad.prepare_data()
+        car_ad.insert_auto_ad()
