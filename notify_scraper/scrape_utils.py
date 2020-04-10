@@ -74,7 +74,7 @@ db_translations = {
     "Pagaminimo data":"year",
     "Rida":"mileage",
     "Varantieji ratai":"driven_wheels",
-    "Klimato valdymas":"?0",
+    "Klimato valdymas":"climate_control",
     "Ratlankių skersmuo":"wheels",
     "Tech. apžiūra iki":"ts_to",
     "Nuosava masė, kg":"weight",
@@ -83,82 +83,29 @@ db_translations = {
     "Paslaugos tipas":"?3",
     "Kėbulo numeris (VIN)":"vin_code",
     "Nauja / naudota":"?4",
+
+    #autobilis
+    "Mėnuo":"?5",
+    "Darbinis tūris, l.":"engine_volume",
+    "Šalis":"country",
+    "Miestas":"city",
+    "Galia, kW":"power",
+    "Transmisija":"driven_wheels",
+    "Būklė":"damage",
+    "TA galiojimo laikas":"ts_to",
+    "Skelbimo data":"date_added",
+    "Kuro sąnaudos":"fuel_overall",
+    "Pirma registracijos šalis":"first_reg_country",
+    "VIN numeris":"vin_code",
+    "Klimato kontrolė":"climate_control",
+
     
     # empty for db columns
     "?0":"autog_id",
     "?1":"autop_id",
+    "?2":"autob_id",
 }
-# f_1[0]: BMW
-# f_model_14[0]: Series 3
-# f_215: 
-# f_216: 4000
-# f_41: 2002
-# f_42: 2014
-# f_3[1]: Sedanas
-# f_3[2]: Hečbekas
-# f_3[3]: Universalas
-# f_2[1]: Dyzelinas
-# f_2[2]: Benzinas
-# f_376:
-def form_autog_query(params):
-    new_params = {}
-    if "make_model" in params and params["make_model"] is not None and "make" in params["make_model"]:
-        new_params[f'f_1[0]'] = params["make_model"]["make"] or ""
-    if "make_model" in params and params["make_model"] and "model_name" in params["make_model"]:
-        new_params[f'f_model_14[0]'] = params["make_model"]["model_name"] or ""
 
-    if "car_query" in params and params["car_query"] is not None:
-        if "price_from" in params["car_query"]:
-            new_params['f_215'] = params["car_query"]["price_from"] if params["car_query"]["price_from"] is not None else ""
-        if "price_to" in params["car_query"]:
-            new_params['f_216'] = params["car_query"]["price_to"] if params["car_query"]["price_to"] is not None else ""
-
-        if "year_from" in params["car_query"]:
-            new_params['f_41'] = params["car_query"]["year_from"] if params["car_query"]["year_from"] is not None else ""
-        if "year_to" in params["car_query"]:
-            new_params['f_42'] = params["car_query"]["year_to"] if params["car_query"]["year_to"] is not None else ""
-        if "search_term" in params["car_query"] and params["car_query"]["search_term"] is not None:
-            new_params['f_376'] = params["car_query"]["search_term"] if params["car_query"]["search_term"] is not None else ""
-
-    if "body_style" in params and params["body_style"] is not None and "name" in params["body_style"]:
-        new_params[f'f_3[0]'] = params["body_style"]["name"] if params["body_style"]["name"] is not None else ""
-        
-    if "fuel_type" in params and params["fuel_type"] is not None and "fuel_name" in params["fuel_type"]:
-        new_params[f'f_2[0]'] = params["fuel_type"]["fuel_name"] if params["fuel_type"]["fuel_name"] is not None else ""
-    
-    
-    
-    return new_params
-
-def form_autop_query(params):
-    new_params = {}
-    if "make_model" in params and params["make_model"] is not None and "autoplius_make_id" in params["make_model"]:
-        new_params["make_id_list"] = params["make_model"]["autoplius_make_id"] or ""
-    if "make_model" in params and params["make_model"] and "autoplius_model_id" in params["make_model"]:
-        new_params[f"make_id[{new_params['make_id_list']}]"] = params["make_model"]["autoplius_model_id"] or ""
-
-    if "car_query" in params and params["car_query"] is not None:
-        if "price_from" in params["car_query"]:
-            new_params["sell_price_from"] = params["car_query"]["price_from"] if params["car_query"]["price_from"] is not None else ""
-        if "price_to" in params["car_query"]:
-            new_params["sell_price_to"] = params["car_query"]["price_to"] if params["car_query"]["price_to"] is not None else ""
-
-        if "year_from" in params["car_query"]:
-            new_params["make_date_from"] = params["car_query"]["year_from"] if params["car_query"]["year_from"] is not None else ""
-        if "year_to" in params["car_query"]:
-            new_params["make_date_to"] = params["car_query"]["year_to"] if params["car_query"]["year_to"] is not None else ""
-        if "search_term" in params["car_query"] and params["car_query"]["search_term"] is not None:
-            new_params["qt"] = params["car_query"]["search_term"] if params["car_query"]["search_term"] is not None else ""
-
-    if "body_style" in params and params["body_style"] is not None and "autoplius_id" in params["body_style"]:
-        new_params["body_type_id"] = params["body_style"]["autoplius_id"] if params["body_style"]["autoplius_id"] is not None else ""
-        
-    if "fuel_type" in params and params["fuel_type"] is not None and "autoplius_fuel_id" in params["fuel_type"]:
-        new_params["fuel_id"] = params["fuel_type"]["autoplius_fuel_id"] if params["fuel_type"]["autoplius_fuel_id"] is not None else ""
-    
-    
-    
-    return new_params
 
 def get_car_query(id):
     with db_connect().cursor() as cursor:

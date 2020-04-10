@@ -1,11 +1,50 @@
 import scrapy
 import sys
+sys.path.insert(0,"..")
 from urllib.parse import urlencode
 from scrape_utils import *
-sys.path.insert(0,"..")
 from database.database import connection, db_connect
 from .ads import CarAd, AutogidasAd
 
+# f_1[0]: BMW
+# f_model_14[0]: Series 3
+# f_215: 
+# f_216: 4000
+# f_41: 2002
+# f_42: 2014
+# f_3[1]: Sedanas
+# f_3[2]: Hečbekas
+# f_3[3]: Universalas
+# f_2[1]: Dyzelinas
+# f_2[2]: Benzinas
+# f_376:
+def form_autog_query(params):
+    new_params = {}
+    if "make_model" in params and params["make_model"] is not None and "make" in params["make_model"]:
+        new_params[f'f_1[0]'] = params["make_model"]["make"] or ""
+    if "make_model" in params and params["make_model"] and "model_name" in params["make_model"]:
+        new_params[f'f_model_14[0]'] = params["make_model"]["model_name"] or ""
+
+    if "car_query" in params and params["car_query"] is not None:
+        if "price_from" in params["car_query"]:
+            new_params['f_215'] = params["car_query"]["price_from"] if params["car_query"]["price_from"] is not None else ""
+        if "price_to" in params["car_query"]:
+            new_params['f_216'] = params["car_query"]["price_to"] if params["car_query"]["price_to"] is not None else ""
+
+        if "year_from" in params["car_query"]:
+            new_params['f_41'] = params["car_query"]["year_from"] if params["car_query"]["year_from"] is not None else ""
+        if "year_to" in params["car_query"]:
+            new_params['f_42'] = params["car_query"]["year_to"] if params["car_query"]["year_to"] is not None else ""
+        if "search_term" in params["car_query"] and params["car_query"]["search_term"] is not None:
+            new_params['f_376'] = params["car_query"]["search_term"] if params["car_query"]["search_term"] is not None else ""
+
+    if "body_style" in params and params["body_style"] is not None and "name" in params["body_style"]:
+        new_params[f'f_3[0]'] = params["body_style"]["name"] if params["body_style"]["name"] is not None else ""
+        
+    if "fuel_type" in params and params["fuel_type"] is not None and "fuel_name" in params["fuel_type"]:
+        new_params[f'f_2[0]'] = params["fuel_type"]["fuel_name"] if params["fuel_type"]["fuel_name"] is not None else ""
+    
+    return new_params
 class AutogidasSpider(scrapy.Spider):
     name = "autogidas"
 

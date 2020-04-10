@@ -52,7 +52,9 @@ class CarAd():
         elif "autop_id" in self.prepared_params and self.prepared_params["autop_id"] is not None:
             self.prepared_params["key_column"] = "autop_id"
             self.prepared_params["key_value"] = self.prepared_params["autop_id"]
-
+        elif "autop_id" in self.prepared_params and self.prepared_params["autob_id"] is not None:
+            self.prepared_params["key_column"] = "autob_id"
+            self.prepared_params["key_value"] = self.prepared_params["autob_id"]
 
         with db_connect().cursor() as cursor:
             cursor.execute("SELECT * FROM car_ads WHERE %(key_column)s=%(key_value)s", self.prepared_params)
@@ -87,8 +89,6 @@ class CarAd():
         NotImplementedError("Child class must implement 'parse' method")
 
 class AutogidasAd(CarAd):
-    def __init__(self, response):
-        super(AutogidasAd, self).__init__(response)
 
     def parse(self):
         self.scraped_params["autog_id"] = self.response.url.split(".")[-2].split("-")[-1]
@@ -105,8 +105,6 @@ class AutogidasAd(CarAd):
             self.scraped_params[db_translations[param.css('div.left::text').get().strip()]] = value.strip()
         
 class AutopliusAd(CarAd):
-    def __init__(self, response):
-        super(AutopliusAd, self).__init__(response)
 
     def parse(self):
         self.scraped_params["autop_id"] = self.response.url.split(".")[-2].split("-")[-1]
@@ -139,3 +137,58 @@ class AutopliusAd(CarAd):
 
         self.scraped_params["make"] = self.response.css('body > div.body-wrapper > div.page-wrapper > div.content-container > div:nth-child(2) > div > ol > li:nth-child(3) > a::text').get().strip()
         self.scraped_params["model"] = self.response.css('body > div.body-wrapper > div.page-wrapper > div.content-container > div:nth-child(2) > div > ol > li:nth-child(4) > a::text').get().strip()
+
+
+class AutobilisAd(CarAd):
+
+    def db_driven_wheels(self):
+        if self.scraped_params.get("driven_wheels"):
+            if "Priekiniai" in self.scraped_params["driven_wheels"]:
+                self.scraped_params["driven_wheels"] = "Priekiniai varantys ratai"
+            elif "Galiniai" in self.scraped_params["driven_wheels"]:
+                self.scraped_params["driven_wheels"] = "Galiniai varantys ratai"
+            elif "Visi" in self.scraped_params["driven_wheels"]:
+                self.scraped_params["driven_wheels"] = "Visi varantys ratai"
+
+    def parse(self):
+        self.scraped_params["autob_id"] = self.response.url.split("/")[4]
+
+        for row in self.response.css("div.row.car-info-r"):
+            key = db_translations[row.css('div.col-sm-6.car-info-h > p::text').get().strip()]
+            value = row.css('div.col-sm-6.car-info-c > p::text').get()
+            self.scraped_params[key] = value.strip()
+
+        self.scraped_params["engine"] = f'{self.scraped_params["engine_volume"]} L, {self.scraped_params["power"]}'
+        
+        self.scraped_params["features"] = ""
+        feature_block = self.response.css('div.advert-price-MainInfo-features')
+        for feature in feature_block.css('span::text'):
+            self.scraped_params["features"] += feature.get().strip() + ", "
+        self.scraped_params["features"] = self.scraped_params["features"][:-2]
+
+        
+        comment_block = self.response.css("div.advert-price-MainInfo-comments")
+        if comment_block is not None:
+            self.scraped_params["comments"] = comment_block.css('div.advert-price-MainInfo-text > span::text').get().strip()
+
+        
+        comment = self.response.css("div.announcement-description::text").get()
+        self.scraped_params["comments"] = comment.strip() if comment is not None else None
+        for param in self.response.css('div.parameter-row'):
+            value = param.css('div.parameter-value::text').get()
+            if value is None:
+                continue
+            key = db_translations[param.css('div.parameter-label::text').get().strip()]
+            if key is None:
+                continue
+            self.scraped_params[key] = value.strip()
+        
+        location = self.response.css('div.owner-location::text').get()
+        self.scraped_params["location"] = self.scraped_params["country"] + ", " + self.scraped_params["city"]
+
+        self.scraped_params["price"] = self.response.css('span.price-value::attr(data-price)').get().strip()
+
+        self.scraped_params["fuel_overall"] = self.scraped_params.get("fuel_overall").split("l")[0] if self.scraped_params["fuel_overall"] else None
+        self.db_driven_wheels()
+
+        print(self.scraped_params)
