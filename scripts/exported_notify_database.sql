@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3306
--- Generation Time: Apr 06, 2020 at 12:10 AM
+-- Generation Time: Apr 13, 2020 at 07:54 PM
 -- Server version: 5.7.29-0ubuntu0.18.04.1
 -- PHP Version: 7.2.24-0ubuntu0.18.04.3
 
@@ -91,8 +91,20 @@ CREATE TABLE `car_ads` (
   `autog_id` bigint(20) DEFAULT NULL,
   `price` int(11) DEFAULT NULL,
   `export_price` int(11) DEFAULT NULL,
-  `vin_code` varchar(50) DEFAULT NULL
+  `vin_code` varchar(50) DEFAULT NULL,
+  `autop_id` bigint(20) DEFAULT NULL,
+  `autob_id` bigint(20) DEFAULT NULL,
+  `query_id` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Dumping data for table `car_ads`
+--
+
+INSERT INTO `car_ads` (`make`, `model`, `year`, `engine`, `fuel_type`, `body_type`, `color`, `gearbox`, `driven_wheels`, `damage`, `steering_column`, `door_count`, `cylinder_count`, `gear_count`, `seat_count`, `ts_to`, `weight`, `wheels`, `fuel_urban`, `fuel_overland`, `fuel_overall`, `features`, `comments`, `id`, `autog_id`, `price`, `export_price`, `vin_code`, `autop_id`, `autob_id`, `query_id`) VALUES
+(10, 11023, '2002', '1.8 L, 125 kW (170 AG)', 2, 1, 'Kita', 'Automatinė', 'Visi varantys ratai', 'Be defektų', 'Kairėje', '4/5', NULL, NULL, NULL, '2021-05-16', NULL, NULL, NULL, NULL, 10, 'Elektra valdomi langai, Elektra valdomi veidrodėliai, Elektra valdomos sėdynės, Elektra šildomos sėdynės, Vairo stiprintuvas, Autopilotas, Multifunkcinis vairas, Liukas, Odinis salonas, Lieti ratlankiai, ABS, Šviesos davikliai, Priešrūkiniai žibintai, ESP, Dieniniai žibintai, Centrinis užraktas, Signalizacija, SRS oro pagalvės, CD grotuvas', 'Vienas savininkas Lietuvoje nuo 2009m. (pirkta prie 65000myl. - yra audi centro išrašas). Važinėta labai nedaug vidutiniškai 500km/mėn. Todėl maža rida.', 38, NULL, 2800, NULL, 'WAULC68E32A308247', NULL, 425862, 3),
+(10, 11023, '2001', '2.0 L, 96 kW (131 AG)', 2, 1, 'Pilka', 'Automatinė', 'Priekiniai varantys ratai', 'Be defektų', 'Kairėje', '4/5', NULL, NULL, NULL, '2021-07-12', NULL, NULL, NULL, NULL, 9, 'Elektra valdomi langai, Elektra valdomi veidrodėliai, Vairo stiprintuvas, Vilkimo kablys, ABS, Priešrūkiniai žibintai, ESP, Centrinis užraktas, Signalizacija, SRS oro pagalvės, USB jungtis, CD grotuvas', 'Puikaus stovio auto. Parvaryta iš vokietijos su vos 113k rida. Variklis ir dėžė veikia be priekaištų, elektronika funkcionuoja puikiai. Parvarius iš vokiečių pakeistas pagrindinio diržo komplektas, termostatas, pakeisti variklio tepalai bei įdėtas naujas akumuliatorius, pakeistos galinės stabdžių kaladėlės. Investuota apie 600e. Automobilis nenuvaikytas, salonas gražus bei nepratrintas, kėbulas neturi nei vienos rudelės. Dėl automobilio skambinti numeriu 862841846.', 39, NULL, 1650, NULL, NULL, NULL, 355678, 3),
+(10, 11023, '2004', '2.0 L, 96 kW (131 AG)', 2, 1, 'Pilka', 'Automatinė', 'Priekiniai varantys ratai', NULL, 'Kairėje', '4/5', NULL, NULL, NULL, '2020-06-05', NULL, NULL, NULL, NULL, 9, 'Elektra valdomi langai, Vairo stiprintuvas, Autopilotas, Bluetooth, Lieti ratlankiai, ABS, Priešrūkiniai žibintai, Centrinis užraktas, Signalizacija, CD grotuvas', 'Automobilis yra įmonės, nuotraukose matomi kėbulo pažeidimai yra po nedidelio auto įvykio.', 40, NULL, 1400, NULL, 'WAUZZZ8E14A177204', NULL, 431015, 3);
 
 -- --------------------------------------------------------
 
@@ -4253,10 +4265,13 @@ ALTER TABLE `body_styles`
 ALTER TABLE `car_ads`
   ADD PRIMARY KEY (`id`),
   ADD UNIQUE KEY `autog_id` (`autog_id`),
+  ADD UNIQUE KEY `autop_id` (`autop_id`),
+  ADD UNIQUE KEY `autob_id` (`autob_id`),
   ADD KEY `body_type` (`body_type`),
   ADD KEY `fuel_type` (`fuel_type`),
   ADD KEY `make` (`make`),
-  ADD KEY `model` (`model`);
+  ADD KEY `model` (`model`),
+  ADD KEY `query_id` (`query_id`);
 
 --
 -- Indexes for table `car_queries`
@@ -4325,7 +4340,7 @@ ALTER TABLE `body_styles`
 -- AUTO_INCREMENT for table `car_ads`
 --
 ALTER TABLE `car_ads`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=157;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=41;
 
 --
 -- AUTO_INCREMENT for table `car_queries`
@@ -4368,7 +4383,8 @@ ALTER TABLE `car_ads`
   ADD CONSTRAINT `car_ads_ibfk_1` FOREIGN KEY (`body_type`) REFERENCES `body_styles` (`id`),
   ADD CONSTRAINT `car_ads_ibfk_2` FOREIGN KEY (`fuel_type`) REFERENCES `fuel_types` (`id`),
   ADD CONSTRAINT `car_ads_ibfk_3` FOREIGN KEY (`make`) REFERENCES `makes` (`id`),
-  ADD CONSTRAINT `car_ads_ibfk_4` FOREIGN KEY (`model`) REFERENCES `models` (`id`);
+  ADD CONSTRAINT `car_ads_ibfk_4` FOREIGN KEY (`model`) REFERENCES `models` (`id`),
+  ADD CONSTRAINT `car_ads_ibfk_5` FOREIGN KEY (`query_id`) REFERENCES `car_queries` (`id`);
 
 --
 -- Constraints for table `models`

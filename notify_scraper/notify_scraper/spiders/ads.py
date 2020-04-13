@@ -7,10 +7,11 @@ from database.database import connection, db_connect
 from urllib.parse import urlencode
 
 class CarAd():
-    def __init__(self, response):
+    def __init__(self, response, query_id):
         self.response = response
         self.scraped_params = {}
         self.prepared_params = {}
+        self.scraped_params["query_id"] = query_id
 
     def prepare_data(self):
         """
@@ -25,6 +26,7 @@ class CarAd():
         self.prepared_params["year"] = self.prepared_params["year"].split(" ")[0] if self.prepared_params["year"] is not None else None
         self.prepared_params["weight"] = int(self.prepared_params["weight"].split(" ")[0]) if self.prepared_params["weight"] is not None else None
         self.prepared_params["ts_to"] = self.prepared_params["ts_to"] + "-01" if self.prepared_params["ts_to"] is not None else None
+
 
     def auto_foreign_keys(self, cursor):
         # convert values to ID's
@@ -52,16 +54,16 @@ class CarAd():
         elif "autop_id" in self.prepared_params and self.prepared_params["autop_id"] is not None:
             self.prepared_params["key_column"] = "autop_id"
             self.prepared_params["key_value"] = self.prepared_params["autop_id"]
-        elif "autop_id" in self.prepared_params and self.prepared_params["autob_id"] is not None:
+        elif "autob_id" in self.prepared_params and self.prepared_params["autob_id"] is not None:
             self.prepared_params["key_column"] = "autob_id"
             self.prepared_params["key_value"] = self.prepared_params["autob_id"]
 
         with db_connect().cursor() as cursor:
-            cursor.execute("SELECT * FROM car_ads WHERE %(key_column)s=%(key_value)s", self.prepared_params)
+            cursor.execute("SELECT * FROM car_ads WHERE "+self.prepared_params["key_column"]+"=%(key_value)s", self.prepared_params)
             ad_exists = cursor.fetchone()
             self.auto_foreign_keys(cursor)
             if ad_exists:
-                cursor.execute("""UPDATE `car_ads` SET make=%(make)s, model=%(model)s, year=%(year)s, engine=%(engine)s,
+                cursor.execute(f"""UPDATE `car_ads` SET make=%(make)s, model=%(model)s, year=%(year)s, engine=%(engine)s,
                     fuel_type=%(fuel_type)s, body_type=%(body_type)s, 
                     color=%(color)s, gearbox=%(gearbox)s, driven_wheels=%(driven_wheels)s, damage=%(damage)s,
                     steering_column=%(steering_column)s,
@@ -69,19 +71,21 @@ class CarAd():
                     seat_count=%(seat_count)s, ts_to=DATE(%(ts_to)s), weight=%(weight)s, 
                     wheels=%(wheels)s, fuel_urban=%(fuel_urban)s, fuel_overland=%(fuel_overland)s, 
                     fuel_overall=%(fuel_overall)s, features=%(features)s, comments=%(comments)s, 
-                    """+self.prepared_params["key_column"]+"""=%(key_value)s, price=%(price)s, export_price=%(export_price)s, vin_code=%(vin_code)s
-                    WHERE %(key_column)s=%(key_value)s""", self.prepared_params)
+                    """+self.prepared_params["key_column"]+f"""=%(key_value)s, price=%(price)s, export_price=%(export_price)s, vin_code=%(vin_code)s,
+                    query_id=%(query_id)s 
+                    WHERE {self.prepared_params["key_column"]}=%(key_value)s""", self.prepared_params)
                 
             else:
                 cursor.execute("""INSERT INTO `car_ads`(`make`, `model`, `year`, `engine`, `fuel_type`, 
                     `body_type`, `color`, `gearbox`, `driven_wheels`, `damage`, `steering_column`, `door_count`, 
                     `cylinder_count`, `gear_count`, `seat_count`, `ts_to`, `weight`, `wheels`, `fuel_urban`, 
-                    `fuel_overland`, `fuel_overall`, `features`, `comments`, """+self.prepared_params["key_column"]+""", `price`, `export_price`, `vin_code`) 
+                    `fuel_overland`, `fuel_overall`, `features`, `comments`, """+self.prepared_params["key_column"]+""", `price`,
+                    `export_price`, `vin_code`, query_id) 
                     VALUES (%(make)s, %(model)s, %(year)s, %(engine)s, %(fuel_type)s, %(body_type)s, 
                     %(color)s, %(gearbox)s, %(driven_wheels)s, %(damage)s, %(steering_column)s,
                     %(door_count)s, %(cylinder_count)s, %(gear_count)s, %(seat_count)s, DATE(%(ts_to)s), %(weight)s, 
                     %(wheels)s, %(fuel_urban)s, %(fuel_overland)s, %(fuel_overall)s, %(features)s, %(comments)s, 
-                    %(key_value)s, %(price)s, %(export_price)s, %(vin_code)s)""", self.prepared_params)
+                    %(key_value)s, %(price)s, %(export_price)s, %(vin_code)s, %(query_id)s)""", self.prepared_params)
             cursor.connection.commit()
             cursor.connection.close()
 
@@ -142,12 +146,15 @@ class AutopliusAd(CarAd):
 class AutobilisAd(CarAd):
 
     def db_driven_wheels(self):
+        """
+        Converts "driven_wheels" values to match ENUM database column 
+        """
         if self.scraped_params.get("driven_wheels"):
             if "Priekiniai" in self.scraped_params["driven_wheels"]:
                 self.scraped_params["driven_wheels"] = "Priekiniai varantys ratai"
             elif "Galiniai" in self.scraped_params["driven_wheels"]:
                 self.scraped_params["driven_wheels"] = "Galiniai varantys ratai"
-            elif "Visi" in self.scraped_params["driven_wheels"]:
+            elif "Visi" in self.scraped_params["driven_wheels"] or "visi" in self.scraped_params["driven_wheels"]:
                 self.scraped_params["driven_wheels"] = "Visi varantys ratai"
 
     def parse(self):
@@ -171,18 +178,6 @@ class AutobilisAd(CarAd):
         if comment_block is not None:
             self.scraped_params["comments"] = comment_block.css('div.advert-price-MainInfo-text > span::text').get().strip()
 
-        
-        comment = self.response.css("div.announcement-description::text").get()
-        self.scraped_params["comments"] = comment.strip() if comment is not None else None
-        for param in self.response.css('div.parameter-row'):
-            value = param.css('div.parameter-value::text').get()
-            if value is None:
-                continue
-            key = db_translations[param.css('div.parameter-label::text').get().strip()]
-            if key is None:
-                continue
-            self.scraped_params[key] = value.strip()
-        
         location = self.response.css('div.owner-location::text').get()
         self.scraped_params["location"] = self.scraped_params["country"] + ", " + self.scraped_params["city"]
 
@@ -190,5 +185,3 @@ class AutobilisAd(CarAd):
 
         self.scraped_params["fuel_overall"] = self.scraped_params.get("fuel_overall").split("l")[0] if self.scraped_params["fuel_overall"] else None
         self.db_driven_wheels()
-
-        print(self.scraped_params)

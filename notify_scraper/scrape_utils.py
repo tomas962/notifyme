@@ -104,6 +104,7 @@ db_translations = {
     "?0":"autog_id",
     "?1":"autop_id",
     "?2":"autob_id",
+    "?3":"query_id"
 }
 
 
