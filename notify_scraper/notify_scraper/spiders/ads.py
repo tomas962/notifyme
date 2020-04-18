@@ -72,7 +72,7 @@ class CarAd():
                     wheels=%(wheels)s, fuel_urban=%(fuel_urban)s, fuel_overland=%(fuel_overland)s, 
                     fuel_overall=%(fuel_overall)s, features=%(features)s, comments=%(comments)s, 
                     """+self.prepared_params["key_column"]+f"""=%(key_value)s, price=%(price)s, export_price=%(export_price)s, vin_code=%(vin_code)s,
-                    query_id=%(query_id)s 
+                    query_id=%(query_id)s, href=%(href)s, picture_href=%(picture_href)s 
                     WHERE {self.prepared_params["key_column"]}=%(key_value)s""", self.prepared_params)
                 
             else:
@@ -80,12 +80,12 @@ class CarAd():
                     `body_type`, `color`, `gearbox`, `driven_wheels`, `damage`, `steering_column`, `door_count`, 
                     `cylinder_count`, `gear_count`, `seat_count`, `ts_to`, `weight`, `wheels`, `fuel_urban`, 
                     `fuel_overland`, `fuel_overall`, `features`, `comments`, """+self.prepared_params["key_column"]+""", `price`,
-                    `export_price`, `vin_code`, query_id) 
+                    `export_price`, `vin_code`, query_id, href, picture_href) 
                     VALUES (%(make)s, %(model)s, %(year)s, %(engine)s, %(fuel_type)s, %(body_type)s, 
                     %(color)s, %(gearbox)s, %(driven_wheels)s, %(damage)s, %(steering_column)s,
                     %(door_count)s, %(cylinder_count)s, %(gear_count)s, %(seat_count)s, DATE(%(ts_to)s), %(weight)s, 
                     %(wheels)s, %(fuel_urban)s, %(fuel_overland)s, %(fuel_overall)s, %(features)s, %(comments)s, 
-                    %(key_value)s, %(price)s, %(export_price)s, %(vin_code)s, %(query_id)s)""", self.prepared_params)
+                    %(key_value)s, %(price)s, %(export_price)s, %(vin_code)s, %(query_id)s, %(href)s, %(picture_href)s)""", self.prepared_params)
             cursor.connection.commit()
             cursor.connection.close()
 
@@ -107,7 +107,11 @@ class AutogidasAd(CarAd):
         for param in self.response.css('div.param'):
             value = param.css('div.price::text').get() or param.css('div.right::text').get()
             self.scraped_params[db_translations[param.css('div.left::text').get().strip()]] = value.strip()
-        
+
+        img = self.response.css("img.show::attr(src)").get()
+        self.scraped_params["picture_href"] = img.strip() if img is not None else None
+        self.scraped_params["href"] = self.response.url
+
 class AutopliusAd(CarAd):
 
     def parse(self):
@@ -141,6 +145,8 @@ class AutopliusAd(CarAd):
 
         self.scraped_params["make"] = self.response.css('body > div.body-wrapper > div.page-wrapper > div.content-container > div:nth-child(2) > div > ol > li:nth-child(3) > a::text').get().strip()
         self.scraped_params["model"] = self.response.css('body > div.body-wrapper > div.page-wrapper > div.content-container > div:nth-child(2) > div > ol > li:nth-child(4) > a::text').get().strip()
+
+        self.scraped_params["href"] = self.response.url
 
 
 class AutobilisAd(CarAd):
@@ -185,3 +191,5 @@ class AutobilisAd(CarAd):
 
         self.scraped_params["fuel_overall"] = self.scraped_params.get("fuel_overall").split("l")[0] if self.scraped_params["fuel_overall"] else None
         self.db_driven_wheels()
+
+        self.scraped_params["href"] = self.response.url

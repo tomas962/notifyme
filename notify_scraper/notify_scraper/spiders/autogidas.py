@@ -73,8 +73,8 @@ class AutogidasSpider(scrapy.Spider):
             yield scrapy.Request(next_page, callback=self.parse_ad)
         
     def parse_ad(self, response):
-
-        car_ad = AutogidasAd(response)
+       
+        car_ad = AutogidasAd(response, self.car_query_id)
 
         car_ad.parse()
         car_ad.prepare_data()

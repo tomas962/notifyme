@@ -66,7 +66,7 @@ class AutopliusSpider(scrapy.Spider):
                     "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.163 Safari/537.36"})
         
     def parse_ad(self, response):
-        car_ad = AutopliusAd(response)
+        car_ad = AutopliusAd(response, self.car_query_id)
         car_ad.parse()
         car_ad.prepare_data()
         car_ad.insert_auto_ad()

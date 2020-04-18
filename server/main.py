@@ -3,8 +3,18 @@ import sys
 sys.path.insert(0,'..')
 from database.database import connection
 app = Flask(__name__)
+from .cars import cars_api
+app.register_blueprint(cars_api)
+
+from flask_cors import CORS
+from flask_jwt_extended import (
+    JWTManager, jwt_required, create_access_token,
+    get_jwt_identity, create_refresh_token, jwt_refresh_token_required
+)
 
 
+app.debug = True
+CORS(app, support_credentials=True)
 
 @app.route("/")
 def hello():
