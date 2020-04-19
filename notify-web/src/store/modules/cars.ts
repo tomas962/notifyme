@@ -34,15 +34,20 @@ class Car {
     weight?: number
     wheels?: string
     year?: string
+    make_name?: string
+    model_name?: string
+    body_type_name?: string
+    fuel_name?: string
+    mileage?: number
+    location?: string
 }
 
 @Module({ namespaced: true })
 class CarList extends VuexModule {
-    public cars?: Car[];
+    public cars?: Car[] = [];
     public gg?: string = "test";
     @Mutation
     public setCars(cars: Car[]): void {
-        console.log(cars);
         this.cars = cars
     }
     
@@ -59,8 +64,13 @@ class CarList extends VuexModule {
                 })
             }
         })
+    }
 
-        
+    @Action
+    public sortCars(sortFn: (a: Car, b: Car) => number): void {
+        const tmpCars = this.cars?.slice()
+        tmpCars?.sort(sortFn)
+        this.context.commit('setCars', tmpCars)
     }
 }
 

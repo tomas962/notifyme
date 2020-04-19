@@ -13,6 +13,19 @@ class CarAd():
         self.prepared_params = {}
         self.scraped_params["query_id"] = query_id
 
+    def db_driven_wheels(self):
+        """
+        Converts "driven_wheels" values to match ENUM database column 
+        """
+        if self.scraped_params.get("driven_wheels"):
+            if "Priekiniai" in self.scraped_params["driven_wheels"]:
+                self.scraped_params["driven_wheels"] = "Priekiniai varantys ratai"
+            elif "Galiniai" in self.scraped_params["driven_wheels"]:
+                self.scraped_params["driven_wheels"] = "Galiniai varantys ratai"
+            elif "Visi" in self.scraped_params["driven_wheels"] or "visi" in self.scraped_params["driven_wheels"]:
+                self.scraped_params["driven_wheels"] = "Visi varantys ratai"
+
+
     def prepare_data(self):
         """
             Prepare data for insertion into database.  
@@ -25,7 +38,8 @@ class CarAd():
         self.prepared_params["export_price"] = int(self.prepared_params["export_price"].split("€")[0].replace(" ", "")) if self.prepared_params["export_price"] is not None else None
         self.prepared_params["year"] = self.prepared_params["year"].split(" ")[0] if self.prepared_params["year"] is not None else None
         self.prepared_params["weight"] = int(self.prepared_params["weight"].split(" ")[0]) if self.prepared_params["weight"] is not None else None
-        self.prepared_params["ts_to"] = self.prepared_params["ts_to"] + "-01" if self.prepared_params["ts_to"] is not None else None
+        self.prepared_params["ts_to"] = self.prepared_params["ts_to"] + "-01-01" if self.prepared_params["ts_to"] is not None else None
+        self.prepared_params["mileage"] = self.prepared_params["mileage"].split(" ")[0] if self.prepared_params["mileage"] is not None else None
 
 
     def auto_foreign_keys(self, cursor):
@@ -72,7 +86,7 @@ class CarAd():
                     wheels=%(wheels)s, fuel_urban=%(fuel_urban)s, fuel_overland=%(fuel_overland)s, 
                     fuel_overall=%(fuel_overall)s, features=%(features)s, comments=%(comments)s, 
                     """+self.prepared_params["key_column"]+f"""=%(key_value)s, price=%(price)s, export_price=%(export_price)s, vin_code=%(vin_code)s,
-                    query_id=%(query_id)s, href=%(href)s, picture_href=%(picture_href)s 
+                    query_id=%(query_id)s, href=%(href)s, picture_href=%(picture_href)s, mileage=%(mileage)s, location=%(location)s 
                     WHERE {self.prepared_params["key_column"]}=%(key_value)s""", self.prepared_params)
                 
             else:
@@ -80,12 +94,13 @@ class CarAd():
                     `body_type`, `color`, `gearbox`, `driven_wheels`, `damage`, `steering_column`, `door_count`, 
                     `cylinder_count`, `gear_count`, `seat_count`, `ts_to`, `weight`, `wheels`, `fuel_urban`, 
                     `fuel_overland`, `fuel_overall`, `features`, `comments`, """+self.prepared_params["key_column"]+""", `price`,
-                    `export_price`, `vin_code`, query_id, href, picture_href) 
+                    `export_price`, `vin_code`, query_id, href, picture_href, mileage, location) 
                     VALUES (%(make)s, %(model)s, %(year)s, %(engine)s, %(fuel_type)s, %(body_type)s, 
                     %(color)s, %(gearbox)s, %(driven_wheels)s, %(damage)s, %(steering_column)s,
                     %(door_count)s, %(cylinder_count)s, %(gear_count)s, %(seat_count)s, DATE(%(ts_to)s), %(weight)s, 
                     %(wheels)s, %(fuel_urban)s, %(fuel_overland)s, %(fuel_overall)s, %(features)s, %(comments)s, 
-                    %(key_value)s, %(price)s, %(export_price)s, %(vin_code)s, %(query_id)s, %(href)s, %(picture_href)s)""", self.prepared_params)
+                    %(key_value)s, %(price)s, %(export_price)s, %(vin_code)s, %(query_id)s, %(href)s, %(picture_href)s, 
+                    %(mileage)s, %(location)s)""", self.prepared_params)
             cursor.connection.commit()
             cursor.connection.close()
 
@@ -103,7 +118,6 @@ class AutogidasAd(CarAd):
         self.scraped_params["features"] = addons
         comment = self.response.css('div.comments::text').get()
         self.scraped_params["comments"] = comment.strip() if comment is not None else None
-        print(self.scraped_params)
         for param in self.response.css('div.param'):
             value = param.css('div.price::text').get() or param.css('div.right::text').get()
             self.scraped_params[db_translations[param.css('div.left::text').get().strip()]] = value.strip()
@@ -112,7 +126,22 @@ class AutogidasAd(CarAd):
         self.scraped_params["picture_href"] = img.strip() if img is not None else None
         self.scraped_params["href"] = self.response.url
 
+        location = self.response.css("div.seller-ico.seller-btn.seller-location::text").get()
+        if location:
+            words = location.split(",")
+            country = words[1].strip()
+            city = words[0].strip()
+            self.scraped_params["location"] = country + ", " + city
+        
+
 class AutopliusAd(CarAd):
+
+    def prepare_data(self):
+        super().prepare_data()
+
+        self.prepared_params["fuel_urban"] = self.prepared_params["fuel_urban"].replace(',','.') if self.prepared_params["fuel_urban"] is not None else None
+        self.prepared_params["fuel_overland"] = self.prepared_params["fuel_overland"].replace(',','.') if self.prepared_params["fuel_overland"] is not None else None
+        self.prepared_params["fuel_overall"] = self.prepared_params["fuel_overall"].replace(',','.') if self.prepared_params["fuel_overall"] is not None else None
 
     def parse(self):
         self.scraped_params["autop_id"] = self.response.url.split(".")[-2].split("-")[-1]
@@ -148,20 +177,11 @@ class AutopliusAd(CarAd):
 
         self.scraped_params["href"] = self.response.url
 
+        self.db_driven_wheels()
+
+        self.scraped_params["body_type"] = self.response.css(".page-title > h1::text").get().split(", ")[-1].capitalize()
 
 class AutobilisAd(CarAd):
-
-    def db_driven_wheels(self):
-        """
-        Converts "driven_wheels" values to match ENUM database column 
-        """
-        if self.scraped_params.get("driven_wheels"):
-            if "Priekiniai" in self.scraped_params["driven_wheels"]:
-                self.scraped_params["driven_wheels"] = "Priekiniai varantys ratai"
-            elif "Galiniai" in self.scraped_params["driven_wheels"]:
-                self.scraped_params["driven_wheels"] = "Galiniai varantys ratai"
-            elif "Visi" in self.scraped_params["driven_wheels"] or "visi" in self.scraped_params["driven_wheels"]:
-                self.scraped_params["driven_wheels"] = "Visi varantys ratai"
 
     def parse(self):
         self.scraped_params["autob_id"] = self.response.url.split("/")[4]

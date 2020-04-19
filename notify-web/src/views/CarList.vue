@@ -1,6 +1,6 @@
 <template>
   <div>
-    
+    <a href="#" v-on:click="sortCars((a, b) => a.price - b.price)">SORT </a>
     <CarComp v-for="car in cars" :key="car.id" :car="car" />
 
   </div>
@@ -16,7 +16,7 @@ import {
   Mutation,
   namespace
 } from 'vuex-class'
-import {Car} from '@/store/modules/cars'
+import {Car} from '../store/modules/cars'
 
 const carsns = namespace('CarList')
 
@@ -33,10 +33,14 @@ export default class CarList extends Vue {
   @carsns.Action
   public fetchCars!: () => void
 
+  @carsns.Action
+  public sortCars: (sortFn: (a: Car, b: Car) => number) => void
+
   created() {
     console.log("CREATED");
     this.fetchCars()
   }
+
 }
 </script>
 

@@ -83,6 +83,8 @@ db_translations = {
     "Paslaugos tipas":"?3",
     "Kėbulo numeris (VIN)":"vin_code",
     "Nauja / naudota":"?4",
+    "Vidutinės":"fuel_overall",
+    "Eksportui":"export_price",
 
     #autobilis
     "Mėnuo":"?5",
@@ -106,7 +108,8 @@ db_translations = {
     "?2":"autob_id",
     "?3":"query_id",
     "?4":"href",
-    "?5":"picture_href"
+    "?5":"picture_href",
+    "?6":"location"
 }
 
 
