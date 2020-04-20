@@ -5,6 +5,12 @@ import router from './router'
 import store from './store'
 import { BootstrapVue, IconsPlugin } from 'bootstrap-vue'
 
+declare global {
+  interface Window { SERVER_URL: string }
+}
+
+window.SERVER_URL = "http://localhost:5000"
+
 // Install BootstrapVue
 Vue.use(BootstrapVue)
 // Optionally install the BootstrapVue icon components plugin
@@ -19,3 +25,4 @@ new Vue({
   store,
   render: h => h(App)
 }).$mount('#app')
+

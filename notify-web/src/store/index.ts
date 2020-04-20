@@ -6,7 +6,6 @@ Vue.use(Vuex)
 
 export default new Vuex.Store({
   state: {
-    SERVER_URL: "http://localhost:5000"
   },
   mutations: {
   },

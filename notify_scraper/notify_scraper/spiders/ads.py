@@ -39,7 +39,6 @@ class CarAd():
         self.prepared_params["year"] = self.prepared_params["year"].split(" ")[0] if self.prepared_params["year"] is not None else None
         self.prepared_params["weight"] = int(self.prepared_params["weight"].split(" ")[0]) if self.prepared_params["weight"] is not None else None
         self.prepared_params["ts_to"] = self.prepared_params["ts_to"] + "-01-01" if self.prepared_params["ts_to"] is not None else None
-        self.prepared_params["mileage"] = self.prepared_params["mileage"].split(" ")[0] if self.prepared_params["mileage"] is not None else None
 
 
     def auto_foreign_keys(self, cursor):
@@ -109,6 +108,11 @@ class CarAd():
 
 class AutogidasAd(CarAd):
 
+    def prepare_data(self):
+        super().prepare_data()
+        self.prepared_params["mileage"] = self.prepared_params["mileage"].split(" ")[0] if self.prepared_params["mileage"] is not None else None
+
+
     def parse(self):
         self.scraped_params["autog_id"] = self.response.url.split(".")[-2].split("-")[-1]
         addons = ""
@@ -142,6 +146,9 @@ class AutopliusAd(CarAd):
         self.prepared_params["fuel_urban"] = self.prepared_params["fuel_urban"].replace(',','.') if self.prepared_params["fuel_urban"] is not None else None
         self.prepared_params["fuel_overland"] = self.prepared_params["fuel_overland"].replace(',','.') if self.prepared_params["fuel_overland"] is not None else None
         self.prepared_params["fuel_overall"] = self.prepared_params["fuel_overall"].replace(',','.') if self.prepared_params["fuel_overall"] is not None else None
+        if self.prepared_params["mileage"] is not None:
+            tmp = self.prepared_params["mileage"].split(" ")
+            self.prepared_params["mileage"] = tmp[0] + tmp[1]
 
     def parse(self):
         self.scraped_params["autop_id"] = self.response.url.split(".")[-2].split("-")[-1]
@@ -181,6 +188,9 @@ class AutopliusAd(CarAd):
 
         self.scraped_params["body_type"] = self.response.css(".page-title > h1::text").get().split(", ")[-1].capitalize()
 
+        self.scraped_params["picture_href"] = self.response.css("div.announcement-media-gallery > div.thumbnail > img::attr(src)").get().strip()
+
+
 class AutobilisAd(CarAd):
 
     def parse(self):
@@ -202,7 +212,8 @@ class AutobilisAd(CarAd):
         
         comment_block = self.response.css("div.advert-price-MainInfo-comments")
         if comment_block is not None:
-            self.scraped_params["comments"] = comment_block.css('div.advert-price-MainInfo-text > span::text').get().strip()
+            comment = comment_block.css('div.advert-price-MainInfo-text > span::text').get()
+            self.scraped_params["comments"] = comment.strip() if comment is not None else None
 
         location = self.response.css('div.owner-location::text').get()
         self.scraped_params["location"] = self.scraped_params["country"] + ", " + self.scraped_params["city"]

@@ -34,7 +34,7 @@ export default class CarList extends Vue {
   public fetchCars!: () => void
 
   @carsns.Action
-  public sortCars: (sortFn: (a: Car, b: Car) => number) => void
+  public sortCars!: (sortFn: (a: Car, b: Car) => number) => void
 
   created() {
     console.log("CREATED");

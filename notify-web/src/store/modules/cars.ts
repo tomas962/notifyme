@@ -54,7 +54,7 @@ class CarList extends VuexModule {
     
     @Action({ rawError: true })
     public fetchCars(): void {
-        fetch(this.context.rootState.SERVER_URL + '/cars')
+        fetch(window.SERVER_URL + '/cars')
         .then((response) => {
             if (response.status === 200){
                 response.json()

@@ -39,7 +39,6 @@ import {Car} from '../store/modules/cars'
 export default class CarComp extends Vue {
     @Prop() car!: Car
 
-    
     get headerColorClass(): string {
         if (this.car.autob_id)
             return "autob"

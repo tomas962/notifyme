@@ -27,8 +27,15 @@ export default class App extends Vue {
   text-align: center;
   background-color: #212935;
   color: aliceblue;
+  min-height: 100vh;
 }
 
+
+
+body {
+  min-height: 100vh;
+  padding: 0;
+}
 
 #nav {
   padding: 30px;

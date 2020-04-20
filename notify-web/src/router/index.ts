@@ -2,6 +2,7 @@ import Vue from 'vue'
 import VueRouter, { RouteConfig } from 'vue-router'
 import Home from '../views/Home.vue'
 import CarList from '../views/CarList.vue'
+import Login from '../views/Login.vue'
 
 Vue.use(VueRouter)
 
@@ -18,6 +19,11 @@ Vue.use(VueRouter)
     path: '/cars',
     name: 'Cars',
     component: CarList
+  },
+  {
+    path: '/login',
+    name: 'Login',
+    component: Login
   }
 ]
 

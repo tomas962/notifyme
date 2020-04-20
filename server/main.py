@@ -3,8 +3,11 @@ import sys
 sys.path.insert(0,'..')
 from database.database import connection
 app = Flask(__name__)
+
 from .cars import cars_api
+from .auth import auth
 app.register_blueprint(cars_api)
+app.register_blueprint(auth)
 
 from flask_cors import CORS
 from flask_jwt_extended import (
