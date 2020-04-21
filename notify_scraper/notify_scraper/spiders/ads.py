@@ -5,8 +5,10 @@ from scrape_utils import *
 # from notify_scraper.notify_scraper.spiders.autogidas import AutogidasSpider
 from database.database import connection, db_connect
 from urllib.parse import urlencode
+from typing import Dict, Union
 
 class CarAd():
+    scraped_params: Dict[str, Union[str, int, float]]
     def __init__(self, response, query_id):
         self.response = response
         self.scraped_params = {}

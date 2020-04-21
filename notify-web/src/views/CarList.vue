@@ -1,6 +1,6 @@
 <template>
   <div>
-    <a href="#" v-on:click="sortCars((a, b) => a.price - b.price)">SORT </a>
+    <a href="#" v-on:click="sortCars((a, b) => a.price - b.price);">SORT </a>
     <CarComp v-for="car in cars" :key="car.id" :car="car" />
 
   </div>
@@ -9,13 +9,7 @@
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator'
 import CarComp from '@/components/Car.vue'
-import {
-  State,
-  Getter,
-  Action,
-  Mutation,
-  namespace
-} from 'vuex-class'
+import {namespace} from 'vuex-class'
 import {Car} from '../store/modules/cars'
 
 const carsns = namespace('CarList')

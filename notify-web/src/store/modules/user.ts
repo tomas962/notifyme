@@ -1,40 +1,36 @@
-// import { VuexModule, Module, Mutation, Action, } from 'vuex-module-decorators'
+import { VuexModule, Module, Mutation, Action, } from 'vuex-module-decorators'
 
-// @Module({ namespaced: true })
-// class User extends VuexModule {
-//     email?: string
-//     group?: string
-//     public gg?: string = "test";
-//     @Mutation
-//     public setCars(cars: Car[]): void {
-//         this.cars = cars
-//     }
-    
-    
-//     @Action({ rawError: true })
-//     public fetchCars(): void {
-//         fetch(window.SERVER_URL + '/cars')
-//         .then((response) => {
-//             if (response.status === 200){
-//                 response.json()
-//                 .then((data) => {
-//                     console.log(data);
-//                     this.context.commit('setCars', data as Car[])
-//                 })
-//             }
-//         })
-//     }
+class Identity {
+    email = "";
+    group = "";
+    user_id = 0;
 
-//     @Action
-//     public sortCars(sortFn: (a: Car, b: Car) => number): void {
-//         const tmpCars = this.cars?.slice()
-//         tmpCars?.sort(sortFn)
-//         this.context.commit('setCars', tmpCars)
-//     }
-// }
+}
+
+@Module({ namespaced: true })
+class User extends VuexModule {
+    identity: Identity = new Identity();
+    access_token = "";
+    refresh_token = "";
+    @Mutation
+    public updateUser(state: {identity: Identity; access_token?: string; refresh_token?: string}) {
+        this.identity = state.identity;
+        this.access_token = state.access_token ? state.access_token : "";
+        this.refresh_token = state.refresh_token ? state.refresh_token : "";
+        console.log("MUTATIOn");
+        
+    }
+
+    @Action
+    setUser(state: {identity: Identity; access_token?: string; refresh_token?: string}) {
+        console.log("ACTION");
+        this.context.commit('updateUser', state)
+    }
+
+}
 
 
 
 
 
-// export { User}
+export { User, Identity}

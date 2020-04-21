@@ -42,7 +42,7 @@ def login():
             cursor.connection.close()
             return jsonify(access_token=access_token, refresh_token=refresh_token), 200
 
-    return jsonify({"error": "Bad username or password"}), 401
+    return jsonify({"error": "Bad email or password"}), 401
     
 @app.route('/refresh', methods=['POST'])
 @jwt_refresh_token_required

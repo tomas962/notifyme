@@ -3,8 +3,11 @@
   <b-navbar type="dark" variant="dark">
     <b-container>
         <b-navbar-nav>
-          <b-nav-item><router-link to="/">Home</router-link></b-nav-item>
+          <b-nav-item><router-link to="/login">Login</router-link></b-nav-item>
           <b-nav-item><router-link to="/cars">Cars</router-link></b-nav-item>
+        </b-navbar-nav>
+        <b-navbar-nav>
+          <b-nav-item>Welcome, {{identity.email}}</b-nav-item>
           <b-nav-item><router-link to="/logout">Logout</router-link></b-nav-item>
         </b-navbar-nav>
     </b-container>
@@ -14,10 +17,14 @@
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator'
-import  'bootstrap-vue'
+import {namespace} from 'vuex-class'
+import {Identity} from '../store/modules/user'
+const userns = namespace('User')
 
 @Component
 export default class MyNavBar extends Vue {
+  @userns.State
+  public identity!: Identity;
 }
 </script>
 
