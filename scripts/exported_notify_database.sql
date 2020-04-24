@@ -3,9 +3,9 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3306
--- Generation Time: Apr 13, 2020 at 07:54 PM
+-- Generation Time: Apr 24, 2020 at 10:01 PM
 -- Server version: 5.7.29-0ubuntu0.18.04.1
--- PHP Version: 7.2.24-0ubuntu0.18.04.3
+-- PHP Version: 7.2.24-0ubuntu0.18.04.4
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -94,17 +94,50 @@ CREATE TABLE `car_ads` (
   `vin_code` varchar(50) DEFAULT NULL,
   `autop_id` bigint(20) DEFAULT NULL,
   `autob_id` bigint(20) DEFAULT NULL,
-  `query_id` int(11) DEFAULT NULL
+  `query_id` int(11) DEFAULT NULL,
+  `href` varchar(200) DEFAULT NULL,
+  `picture_href` varchar(200) DEFAULT NULL,
+  `mileage` int(11) DEFAULT NULL,
+  `location` varchar(100) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Dumping data for table `car_ads`
 --
 
-INSERT INTO `car_ads` (`make`, `model`, `year`, `engine`, `fuel_type`, `body_type`, `color`, `gearbox`, `driven_wheels`, `damage`, `steering_column`, `door_count`, `cylinder_count`, `gear_count`, `seat_count`, `ts_to`, `weight`, `wheels`, `fuel_urban`, `fuel_overland`, `fuel_overall`, `features`, `comments`, `id`, `autog_id`, `price`, `export_price`, `vin_code`, `autop_id`, `autob_id`, `query_id`) VALUES
-(10, 11023, '2002', '1.8 L, 125 kW (170 AG)', 2, 1, 'Kita', 'Automatinė', 'Visi varantys ratai', 'Be defektų', 'Kairėje', '4/5', NULL, NULL, NULL, '2021-05-16', NULL, NULL, NULL, NULL, 10, 'Elektra valdomi langai, Elektra valdomi veidrodėliai, Elektra valdomos sėdynės, Elektra šildomos sėdynės, Vairo stiprintuvas, Autopilotas, Multifunkcinis vairas, Liukas, Odinis salonas, Lieti ratlankiai, ABS, Šviesos davikliai, Priešrūkiniai žibintai, ESP, Dieniniai žibintai, Centrinis užraktas, Signalizacija, SRS oro pagalvės, CD grotuvas', 'Vienas savininkas Lietuvoje nuo 2009m. (pirkta prie 65000myl. - yra audi centro išrašas). Važinėta labai nedaug vidutiniškai 500km/mėn. Todėl maža rida.', 38, NULL, 2800, NULL, 'WAULC68E32A308247', NULL, 425862, 3),
-(10, 11023, '2001', '2.0 L, 96 kW (131 AG)', 2, 1, 'Pilka', 'Automatinė', 'Priekiniai varantys ratai', 'Be defektų', 'Kairėje', '4/5', NULL, NULL, NULL, '2021-07-12', NULL, NULL, NULL, NULL, 9, 'Elektra valdomi langai, Elektra valdomi veidrodėliai, Vairo stiprintuvas, Vilkimo kablys, ABS, Priešrūkiniai žibintai, ESP, Centrinis užraktas, Signalizacija, SRS oro pagalvės, USB jungtis, CD grotuvas', 'Puikaus stovio auto. Parvaryta iš vokietijos su vos 113k rida. Variklis ir dėžė veikia be priekaištų, elektronika funkcionuoja puikiai. Parvarius iš vokiečių pakeistas pagrindinio diržo komplektas, termostatas, pakeisti variklio tepalai bei įdėtas naujas akumuliatorius, pakeistos galinės stabdžių kaladėlės. Investuota apie 600e. Automobilis nenuvaikytas, salonas gražus bei nepratrintas, kėbulas neturi nei vienos rudelės. Dėl automobilio skambinti numeriu 862841846.', 39, NULL, 1650, NULL, NULL, NULL, 355678, 3),
-(10, 11023, '2004', '2.0 L, 96 kW (131 AG)', 2, 1, 'Pilka', 'Automatinė', 'Priekiniai varantys ratai', NULL, 'Kairėje', '4/5', NULL, NULL, NULL, '2020-06-05', NULL, NULL, NULL, NULL, 9, 'Elektra valdomi langai, Vairo stiprintuvas, Autopilotas, Bluetooth, Lieti ratlankiai, ABS, Priešrūkiniai žibintai, Centrinis užraktas, Signalizacija, CD grotuvas', 'Automobilis yra įmonės, nuotraukose matomi kėbulo pažeidimai yra po nedidelio auto įvykio.', 40, NULL, 1400, NULL, 'WAUZZZ8E14A177204', NULL, 431015, 3);
+INSERT INTO `car_ads` (`make`, `model`, `year`, `engine`, `fuel_type`, `body_type`, `color`, `gearbox`, `driven_wheels`, `damage`, `steering_column`, `door_count`, `cylinder_count`, `gear_count`, `seat_count`, `ts_to`, `weight`, `wheels`, `fuel_urban`, `fuel_overland`, `fuel_overall`, `features`, `comments`, `id`, `autog_id`, `price`, `export_price`, `vin_code`, `autop_id`, `autob_id`, `query_id`, `href`, `picture_href`, `mileage`, `location`) VALUES
+(10, 11023, '2002', '1.8 L, 125 kW (170 AG)', 2, 1, 'Kita', 'Automatinė', 'Visi varantys ratai', 'Be defektų', 'Kairėje', '4/5', NULL, NULL, NULL, '2021-05-16', NULL, NULL, NULL, NULL, 10, 'Elektra valdomi langai, Elektra valdomi veidrodėliai, Elektra valdomos sėdynės, Elektra šildomos sėdynės, Vairo stiprintuvas, Autopilotas, Multifunkcinis vairas, Liukas, Odinis salonas, Lieti ratlankiai, ABS, Šviesos davikliai, Priešrūkiniai žibintai, ESP, Dieniniai žibintai, Centrinis užraktas, Signalizacija, SRS oro pagalvės, CD grotuvas', 'Vienas savininkas Lietuvoje nuo 2009m. (pirkta prie 65000myl. - yra audi centro išrašas). Važinėta labai nedaug vidutiniškai 500km/mėn. Todėl maža rida.', 38, NULL, 2800, NULL, 'WAULC68E32A308247', NULL, 425862, 3, 'https://www.autobilis.lt/advert/425862/audi-a4-sedanas-2002-benzinas', NULL, 175000, 'Lietuva, Klaipėda'),
+(10, 11023, '2001', '2.0 L, 96 kW (131 AG)', 2, 1, 'Pilka', 'Automatinė', 'Priekiniai varantys ratai', 'Be defektų', 'Kairėje', '4/5', NULL, NULL, NULL, '2021-07-12', NULL, NULL, NULL, NULL, 9, 'Elektra valdomi langai, Elektra valdomi veidrodėliai, Vairo stiprintuvas, Vilkimo kablys, ABS, Priešrūkiniai žibintai, ESP, Centrinis užraktas, Signalizacija, SRS oro pagalvės, USB jungtis, CD grotuvas', 'Parvaryta iš vokietijos. Parvarius iš vokiečių vokiečių pakeistas pagrindinio diržo komplektas, termostatas, pakeisti variklio tepalai bei įdėtas naujas akumuliatorius, pakeistos galinės stabdžių kaladėlės. Investuota apie 600e. Automobilis nenuvaikytas, salonas gražus bei nepratrintas, kėbulas neturi nei vienos rudelės. Dėl automobilio skambinti numeriu 862841846.', 39, NULL, 1400, NULL, NULL, NULL, 355678, 3, 'https://www.autobilis.lt/advert/355678/audi-a4-sedanas-2001-benzinas', NULL, 113000, 'Lietuva, Klaipėda'),
+(10, 11023, '2004', '2.0 L, 96 kW (131 AG)', 2, 1, 'Pilka', 'Automatinė', 'Priekiniai varantys ratai', NULL, 'Kairėje', '4/5', NULL, NULL, NULL, '2020-06-05', NULL, NULL, NULL, NULL, 8, 'Elektra valdomi langai, Vairo stiprintuvas, Autopilotas, Bluetooth, Lieti ratlankiai, ABS, Priešrūkiniai žibintai, Centrinis užraktas, Signalizacija, CD grotuvas', NULL, 40, NULL, 1300, NULL, 'WAUZZZ8E14A177204', NULL, 431015, 3, 'https://www.autobilis.lt/advert/431015/audi-a4-sedanas-2004-benzinas', NULL, 254062, 'Lietuva, Klaipėda'),
+(10, 11023, '2001/01', '2.0 l. 96 kW (131 Ag)', 2, 1, 'Pilka', 'Automatinė', 'Priekiniai varantys ratai', 'Be defektų', 'Kairėje', '4/5', NULL, NULL, 5, NULL, NULL, NULL, NULL, NULL, NULL, 'Lengvo lydinio ratlankiai, Audio grotuvas, Signalizacija / Imobilaizeris, Stabilumo kontrolės sistema, Parduodama lizingu, Lietuvoje neeksploatuotas', 'AUTOMOBILIS PARVEZTAS IS VOKIETIJOS!', 41, 133048415, 1850, NULL, NULL, NULL, NULL, 3, 'https://autogidas.lt/skelbimas/audi-a4-benzinas--2001-m-sedanas-0133048415.html', 'https://img.autogidas.lt/4_15_172460473/audi-a4-sedanas-2001.jpg', 200000, 'Lietuva, Marijampolė'),
+(10, 11023, '2002/10', '2.0 l. 102 kW (139 Ag)', 2, 1, 'Pilka', 'Automatinė', 'Priekiniai varantys ratai', 'Be defektų', 'Kairėje', '4/5', 4, NULL, 5, '2021-12-01', NULL, 'R16', NULL, NULL, NULL, 'El. langai, El. sėdynės, Oro kondicionierius, Oro pagalvės, Signalizacija / Imobilaizeris', 'Ganėtinai tvarkingas auto, pakeista galinei Guolei,  pries 800km keistas smakraktis, sankabos diskas ,  isminamas guolis domint keitimas i  motociklą', 42, 132929732, 1800, NULL, NULL, NULL, NULL, 3, 'https://autogidas.lt/skelbimas/audi-a4-benzinas--2002-m-sedanas-0132929732.html', 'https://autogidas.lt/static/images/b_nofoto.gif', NULL, 'Lietuva, Druskininkai'),
+(10, 11023, '2002/05', '2.0 l. 96 kW (131 Ag)', 2, 1, 'Pilka', 'Mechaninė', 'Priekiniai varantys ratai', 'Be defektų', 'Kairėje', '4/5', 4, 5, NULL, NULL, NULL, 'R16', NULL, NULL, NULL, 'El. langai, Klimato kontrolė, Oro kondicionierius, Šildomos sėdynės, Lengvo lydinio ratlankiai, Žibintai „Xenon“, Audio grotuvas, Kritulių jutiklis, Kruizo kontrolė, Oro pagalvės, Signalizacija / Imobilaizeris, Stabilumo kontrolės sistema, Serviso knygelė, Lietuvoje neeksploatuotas', 'Automobilis grįžo savo eiga iš Vokietijos,  geros būklės,  Lietuvoje neeksploatuotas.', 43, 133032443, 2000, NULL, NULL, NULL, NULL, 3, 'https://autogidas.lt/skelbimas/audi-a4-benzinas--2002-m-b6-0133032443.html', 'https://img.autogidas.lt/4_15_171966343/audi-a4-b6-sedanas-2002.jpg', 250000, 'Lietuva, Marijampolė'),
+(10, 11023, '2000/04', '1.8 l. 92 kW (125 Ag)', 2, 1, 'Mėlyna', 'Automatinė', 'Priekiniai varantys ratai', 'Be defektų', 'Kairėje', '4/5', NULL, NULL, NULL, NULL, NULL, 'R15', 11, 8, 10, 'Veliūro salonas, Klimato kontrolė, Oro kondicionierius, Kablys, Audio grotuvas, Navigacija / GPS, Oro pagalvės, Signalizacija / Imobilaizeris', 'Parduodu tvarkinga audi a4 facelift modelis, AUTOMATAS, metai lietuvoj, parvaryta is vokietijos, pakeisti tepalai, filtrai, praeita TA, 2021, juokiu defektu, stovis tikrai geras, salonas kaip naujas, daug privalumu, oro kondicionerius, el.langai, changeris, vazioja puikia, cinkotas kebulas, jokiu rudziu, keli pabraizimai, sedi ir vazioji, juokiu papildomu investiciju, galit tikrinti servise.parduodu nes su vaiku per maza.', 44, 133044089, 1850, NULL, NULL, NULL, NULL, 3, 'https://autogidas.lt/skelbimas/audi-a4-benzin--2000-m-sedan-0133044089.html', 'https://img.autogidas.lt/4_15_172320748/audi-a4-sedanas-2000.jpg', 208000, 'Lietuva, Klaipėda'),
+(10, 11023, '2002/09', '2.0 l. 96 kW (131 Ag)', 2, 1, 'Sidabrinė', 'Automatinė', 'Priekiniai varantys ratai', 'Be defektų', 'Kairėje', '4/5', 4, 5, 5, '2020-05-01', 1895, 'R15', 10.9, 6.2, 7.9, 'El. langai, Klimato kontrolė, Lengvo lydinio ratlankiai, Stoglangis, Audio grotuvas, Atstumo jutiklių sistema, Traukos kontrolės sistema', 'Variklio tepalai pakeisti prieš ~2 mėn. Variklis ir greičių dėžė veikia gerai. Pridedu vasarinius ratus su lengvojo lydinio ratlankiais.', 45, 132921251, 1500, 1500, NULL, NULL, NULL, 3, 'https://autogidas.lt/skelbimas/audi-a4-benzinas--2002-m-b6-multitronic-0132921251.html', 'https://img.autogidas.lt/4_15_169772815/audi-a4-b6-multitronic-sedanas-2002.jpg', NULL, 'Lietuva, Vilnius'),
+(10, 11023, '2003/11', '1.8 l. 125 kW (170 Ag)', 2, 1, 'Juoda', 'Mechaninė', 'Visi varantys ratai', 'Be defektų', 'Kairėje', '4/5', 4, 5, NULL, '2022-02-01', NULL, 'R17', NULL, NULL, 9.5, 'El. langai, Klimato kontrolė, Odinis salonas, Oro kondicionierius, Šildomos sėdynės, Kablys, Lengvo lydinio ratlankiai, Žibintai „Xenon“, Stoglangis, Atstumo jutiklių sistema, Kruizo kontrolė, Oro pagalvės', '1.8T Quattro,  S4 moldingai,  slenksčiai.', 46, 133062773, 2650, NULL, NULL, NULL, NULL, 3, 'https://autogidas.lt/skelbimas/audi-a4-benzinas--2003-m-b6-0133062773.html', 'https://img.autogidas.lt/4_15_172985740/audi-a4-b6-sedanas-2003.jpg', 234200, 'Lietuva, Vilnius'),
+(10, 11023, '2001-08', '2000 cm³', 2, 1, NULL, 'Automatinė', NULL, NULL, 'Kairėje', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '', 'Tech iki 2022 02 11', 47, NULL, 1600, NULL, NULL, 10493467, NULL, 3, 'https://autoplius.lt/skelbimai/audi-a4-2-0-l-sedanas-2001-benzinas-10493467.html', 'https://autoplius-img.dgn.lt/ann_3_103690563/audi-a4-2-0-l-sedanas-2001-benzinas.jpg', NULL, 'Jonava, Lietuva'),
+(10, 11023, '2000-05', '1600 cm³, 100 AG (74kW)', 2, 1, NULL, 'Mechaninė', NULL, NULL, 'Kairėje', NULL, NULL, NULL, NULL, '2021-05-01', NULL, NULL, NULL, NULL, NULL, 'Salonas: Tamsinti stiklai, El. valdomos sėdynės\nElektronika: El. valdomi veidrodėliai, Kritulių jutiklis\nApsauga: Imobilaizeris, Signalizacija\nAudio/video įranga: MP3 grotuvas\nEksterjeras: Lengvojo lydinio ratlankiai, Rūko žibintai\nSaugumas: Traukos kontrolės sistema, ESP\n', 'IDEALI Audi A4,-S4. Retas modelis. Originali galiniai parktronikai. Pries 8000km pakeistas pagrindinis dirzas, restauroti priekiniai suportai, naujas akumas, viskas daryta sau, sedi ir vazioji. Netilps vaiko vezimelis, reikia universalo=( Del kainos tik prie masinos kalbesim, daug nenuliaisiu. Говорю и по русски', 48, NULL, 1550, NULL, NULL, 10766713, NULL, 3, 'https://autoplius.lt/skelbimai/audi-a4-1-6-l-sedanas-2000-benzinas-10766713.html', 'https://autoplius-img.dgn.lt/ann_3_106918535/audi-a4-1-6-l-sedanas-2000-benzinas.jpg', 257000, 'Vilnius, Lietuva'),
+(10, 11023, '2001-07', '2000 cm³, 129 AG (95kW)', 2, 1, NULL, 'Automatinė', NULL, NULL, 'Kairėje', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'Elektronika: Autopilotas\nEksterjeras: Lengvojo lydinio ratlankiai\nKiti ypatumai: Neeksploatuota Lietuvoje\n', NULL, 49, NULL, 1490, NULL, NULL, 10635435, NULL, 3, 'https://autoplius.lt/skelbimai/audi-a4-2-0-l-sedanas-2001-benzinas-10635435.html', 'https://autoplius-img.dgn.lt/ann_3_105358967/audi-a4-2-0-l-sedanas-2001-benzinas.jpg', 215000, 'Utena, Lietuva'),
+(10, 11023, '2000-12', '2000 cm³, 130 AG (96kW)', 2, 1, NULL, 'Automatinė', NULL, 'Pavarų dėžės defektas', 'Kairėje', NULL, NULL, NULL, NULL, '2021-10-01', NULL, NULL, NULL, NULL, NULL, 'Kiti ypatumai: Domina keitimas\n', 'Greiciu dezes elektronines dalies gedimas', 50, NULL, 1000, NULL, NULL, 10557487, NULL, 3, 'https://autoplius.lt/skelbimai/audi-a4-2-0-l-sedanas-2000-benzinas-10557487.html', 'https://autoplius-img.dgn.lt/ann_3_104466375/audi-a4-2-0-l-sedanas-2000-benzinas.jpg', 274533, 'Birštonas, Lietuva'),
+(10, 11023, '2003-11', '1781 cm³, 169 AG (125kW)', 2, 1, NULL, 'Mechaninė', 'Visi varantys ratai', NULL, 'Kairėje', NULL, NULL, NULL, 5, '2022-02-01', 1503, 'R17', NULL, NULL, NULL, 'Salonas: Šildomos sėdynės, Odinis salonas, Stoglangis\nElektronika: Borto kompiuteris, Atstumo jutiklių sistema, Autopilotas\nAudio/video įranga: CD grotuvas, Žemų dažnių garsiakalbis\nTiuningas (patobulinimai): Patobulinta pakaba\nEksterjeras: Žibintai „Xenon“, Rūko žibintai, Kablys, Priekinių žibintų plovimo įtaisas\nSaugumas: ESP, ISOFIX tvirtinimo taškai\n', '1.8T Quattro, S4 moldingai, slenksčiai.', 51, NULL, 2650, NULL, NULL, 10819209, NULL, 3, 'https://autoplius.lt/skelbimai/audi-a4-1-8-l-sedanas-2003-benzinas-10819209.html', 'https://autoplius-img.dgn.lt/ann_3_109243017/audi-a4-1-8-l-sedan-2003-benzin.jpg', 234200, 'Vilnius, Lietuva'),
+(10, 11023, '2002-12', '2000 cm³, 130 AG (96kW)', 2, 1, NULL, 'Mechaninė', 'Priekiniai varantys ratai', NULL, 'Kairėje', NULL, NULL, NULL, NULL, '2022-04-01', NULL, 'R16', NULL, NULL, NULL, 'Elektronika: El. valdomi veidrodėliai, Borto kompiuteris, Kritulių jutiklis, Šildomi veidrodėliai, Autopilotas\nApsauga: Imobilaizeris, Signalizacija\nAudio/video įranga: CD grotuvas\nEksterjeras: Rūko žibintai, Kablys\nKiti ypatumai: Neeksploatuota Lietuvoje, Parduodama lizingu\nSaugumas: Traukos kontrolės sistema, ESP\n', 'REGISTRA REGISTRUOJA!', 52, NULL, 1750, NULL, NULL, 10823217, NULL, 3, 'https://autoplius.lt/skelbimai/audi-a4-2-0-l-sedanas-2002-benzinas-10823217.html', 'https://autoplius-img.dgn.lt/ann_3_107664257/audi-a4-2-0-l-sedanas-2002-benzinas.jpg', 230000, 'Vilnius, Lietuva'),
+(10, 11023, '2001', '2000 cm³, 130 AG (96kW)', 2, 1, NULL, 'Mechaninė', 'Priekiniai varantys ratai', NULL, 'Kairėje', NULL, NULL, NULL, NULL, '2021-09-01', NULL, NULL, NULL, NULL, NULL, '', 'Tvarkinga audi pakeisti visi stabdžių diskai su kaladėm, suportas galinis, tepalai filtrai, kaires puses naujas sparnas,nesenei pakeistas pagr diržo komplektas,įdeta galine kamera su vaizdo registratorium (VORDON)', 53, NULL, 1350, NULL, NULL, 11020093, NULL, 3, 'https://autoplius.lt/skelbimai/audi-a4-2-0-l-sedanas-2001-benzinas-11020093.html', 'https://autoplius-img.dgn.lt/ann_3_110668055/audi-a4-2-0-l-sedanas-2001-benzinas.jpg', 330000, 'Kaunas, Lietuva'),
+(10, 11023, '2002-01', '2000 cm³, 130 AG (96kW)', 2, 1, NULL, 'Mechaninė', 'Priekiniai varantys ratai', NULL, 'Kairėje', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'Salonas: Tamsinti stiklai, Daugiafunkcinis vairas, Šildomos sėdynės\nElektronika: El. valdomi veidrodėliai, Šildomi veidrodėliai\nAudio/video įranga: CD grotuvas\nEksterjeras: Lengvojo lydinio ratlankiai, Kablys\nKiti ypatumai: Neeksploatuota Lietuvoje, Katalizatorius\nSaugumas: ESP\n', NULL, 54, NULL, 1450, 1450, NULL, 10807795, NULL, 3, 'https://autoplius.lt/skelbimai/audi-a4-2-0-l-sedanas-2002-benzinas-10807795.html', NULL, NULL, 'Telšiai, Lietuva'),
+(10, 11023, '2000-05', '1800 cm³, 125 AG (92kW)', 2, 1, NULL, 'Automatinė', 'Priekiniai varantys ratai', NULL, 'Kairėje', NULL, NULL, NULL, 5, NULL, NULL, 'R15', NULL, NULL, NULL, 'Salonas: Stoglangis\nElektronika: El. valdomi veidrodėliai, Borto kompiuteris, Šildomi veidrodėliai, Atstumo jutiklių sistema\nApsauga: Signalizacija\nAudio/video įranga: CD grotuvas, MP3 grotuvas\nEksterjeras: Žibintai „Xenon“, Rūko žibintai, Priekinių žibintų plovimo įtaisas\nKiti ypatumai: Neeksploatuota Lietuvoje, Katalizatorius\nSaugumas: Traukos kontrolės sistema, ESP\n', 'Automobilis iš Vokietijos, tvarkingas', 55, NULL, 1350, 1350, NULL, 10628187, NULL, 3, 'https://autoplius.lt/skelbimai/audi-a4-1-8-l-sedanas-2000-benzinas-10628187.html', 'https://autoplius-img.dgn.lt/ann_3_105319625/audi-a4-1-8-l-sedanas-2000-benzinas.jpg', 218706, 'Marijampolė, Lietuva'),
+(10, 11023, '2001-12', '1984 cm³, 130 AG (96kW)', 2, 1, NULL, 'Automatinė', 'Priekiniai varantys ratai', NULL, 'Kairėje', NULL, NULL, NULL, 5, NULL, 1345, 'R16', 9.9, 5.2, 6.9, 'Elektronika: El. valdomi veidrodėliai, Borto kompiuteris, Kritulių jutiklis, Šildomi veidrodėliai, Atstumo jutiklių sistema\nApsauga: Imobilaizeris, Signalizacija\nAudio/video įranga: CD grotuvas, MP3 grotuvas, AUX jungtis\nEksterjeras: Lengvojo lydinio ratlankiai\nKiti ypatumai: Neeksploatuota Lietuvoje, Parduodama lizingu, Serviso knygelė, Katalizatorius, Keli raktų komplektai\nSaugumas: ESP, ISOFIX tvirtinimo taškai\n', 'AUTOMOBILIS PARVEZTAS IS VOKIETIJOS!', 56, NULL, 1750, 1750, NULL, 11004955, NULL, 3, 'https://autoplius.lt/skelbimai/audi-a4-2-0-l-sedanas-2001-benzinas-11004955.html', 'https://autoplius-img.dgn.lt/ann_3_110371093/audi-a4-2-0-l-sedanas-2001-benzinas.jpg', 200000, 'Marijampolė, Lietuva'),
+(10, 11023, '2001', '1595 cm³, 118 AG (87kW)', 2, 1, NULL, 'Mechaninė', 'Priekiniai varantys ratai', NULL, 'Kairėje', NULL, NULL, NULL, 5, NULL, 1245, NULL, 10.8, 6.1, 7.7, 'Eksterjeras: Lengvojo lydinio ratlankiai\n', NULL, 57, NULL, 1800, 1800, '', 10584773, NULL, 3, 'https://autoplius.lt/skelbimai/audi-a4-1-6-l-sedanas-2001-benzinas-10584773.html', 'https://autoplius-img.dgn.lt/ann_3_104840867/audi-a4-1-6-l-sedanas-2001-benzinas.jpg', 248000, 'Kaunas, Lietuva'),
+(10, 11023, '2003-01', '1984 cm³, 130 AG (96kW)', 2, 1, NULL, 'Mechaninė', 'Priekiniai varantys ratai', NULL, 'Kairėje', NULL, NULL, NULL, 5, '2022-04-01', 1340, 'R16', 11.5, 6, 8, 'Salonas: Tamsinti stiklai, Daugiafunkcinis vairas\nElektronika: El. valdomi veidrodėliai, Borto kompiuteris, Kritulių jutiklis, Šildomi veidrodėliai, Atstumo jutiklių sistema, Autopilotas\nApsauga: Imobilaizeris, Signalizacija\nAudio/video įranga: CD grotuvas, MP3 grotuvas, Laisvų rankų įranga\nEksterjeras: Lengvojo lydinio ratlankiai, Rūko žibintai, Žieminių padangų komplektas\nKiti ypatumai: Neeksploatuota Lietuvoje, Parduodama lizingu, Serviso knygelė, Garantija, Katalizatorius, Keli raktų komplektai\nSaugumas: Traukos kontrolės sistema, ESP, ISOFIX tvirtinimo taškai\n', 'Is vokietijos', 58, NULL, 1999, 1999, NULL, 10119147, NULL, 3, 'https://autoplius.lt/skelbimai/audi-a4-2-0-l-sedanas-2003-benzinas-10119147.html', NULL, 290, 'Jurbarkas, Lietuva'),
+(10, 11023, '2002', '1984 cm³, 149 AG (110kW)', 2, 1, NULL, 'Automatinė', 'Priekiniai varantys ratai', NULL, 'Kairėje', NULL, NULL, NULL, 5, NULL, 1350, NULL, 9.9, 5.4, 7.1, 'Salonas: Odinis salonas\nElektronika: El. valdomi veidrodėliai, Borto kompiuteris, Kritulių jutiklis, Atstumo jutiklių sistema, Autopilotas\nApsauga: Imobilaizeris, Signalizacija\nAudio/video įranga: CD grotuvas\nEksterjeras: Lengvojo lydinio ratlankiai, Rūko žibintai\nKiti ypatumai: Neeksploatuota Lietuvoje, Serviso knygelė\nSaugumas: Traukos kontrolės sistema, ESP\n', NULL, 59, NULL, 1650, 1650, NULL, 9456087, NULL, 3, 'https://autoplius.lt/skelbimai/audi-a4-2-0-l-sedanas-2002-benzinas-9456087.html', 'https://autoplius-img.dgn.lt/ann_3_91705301/audi-a4-2-0-l-sedanas-2002-benzinas.jpg', 230000, 'Tauragė, Lietuva'),
+(10, 11023, '2002-08', '1984 cm³, 130 AG (96kW)', 2, 1, NULL, 'Automatinė', 'Priekiniai varantys ratai', NULL, 'Kairėje', NULL, NULL, NULL, 5, NULL, 1345, NULL, 10.9, 6.2, 7.9, 'Elektronika: El. valdomi veidrodėliai, Šildomi veidrodėliai, Atstumo jutiklių sistema, Autopilotas\nApsauga: Imobilaizeris, Signalizacija\nAudio/video įranga: CD grotuvas\nEksterjeras: Lengvojo lydinio ratlankiai, Kablys\n', NULL, 60, NULL, 1650, NULL, NULL, 10692837, NULL, 3, 'https://autoplius.lt/skelbimai/audi-a4-2-0-l-sedanas-2002-benzinas-10692837.html', 'https://autoplius-img.dgn.lt/ann_3_106034107/audi-a4-2-0-l-sedanas-2002-benzinas.jpg', NULL, 'Marijampolė, Lietuva'),
+(10, 11023, '2003', '1984 cm³, 130 AG (96kW)', 2, 1, NULL, 'Automatinė', 'Priekiniai varantys ratai', NULL, 'Kairėje', NULL, NULL, NULL, 5, '2022-03-01', 1345, 'R16', 10.9, 6.2, 7.9, 'Salonas: Odinis salonas\n', 'Sveiki,', 61, NULL, 1600, NULL, NULL, 10650755, NULL, 3, 'https://autoplius.lt/skelbimai/audi-a4-2-0-l-sedanas-2003-benzinas-10650755.html', 'https://autoplius-img.dgn.lt/ann_3_105560093/audi-a4-2-0-l-sedanas-2003-benzinas.jpg', 380000, 'Vilnius, Lietuva'),
+(10, 11023, '2002-09', '1984 cm³, 130 AG (96kW)', 2, 1, NULL, 'Automatinė', 'Priekiniai varantys ratai', 'Kiti stambūs defektai', 'Kairėje', NULL, NULL, NULL, 5, '2020-05-01', 1345, 'R15', 10.9, 6.2, 7.9, 'Eksterjeras: Lengvojo lydinio ratlankiai\n', 'Variklio tepalai pakeisti prieš ~2 mėn. Variklis ir greičių dėžė veikia gerai. Pridedu vasarinius ratus su lengvojo lydinio ratlankiais.', 62, NULL, 1500, 1500, NULL, 10580499, NULL, 3, 'https://autoplius.lt/skelbimai/audi-a4-2-0-l-sedanas-2002-benzinas-10580499.html', 'https://autoplius-img.dgn.lt/ann_3_104764743/audi-a4-2-0-l-sedanas-2002-benzinas.jpg', NULL, 'Vilnius, Lietuva'),
+(10, 11023, '2002-01', '2400 cm³, 169 AG (125kW)', 2, 1, NULL, 'Automatinė', 'Priekiniai varantys ratai', NULL, 'Kairėje', NULL, NULL, NULL, 5, NULL, 1550, NULL, 10, 8, 9, 'Salonas: Tamsinti stiklai, Daugiafunkcinis vairas, Odinis salonas\nElektronika: El. valdomi veidrodėliai\nApsauga: Imobilaizeris\nAudio/video įranga: CD grotuvas\nEksterjeras: Lengvojo lydinio ratlankiai\nSaugumas: ESP\n', '', 63, NULL, 1199, NULL, '', 10785299, NULL, 3, 'https://autoplius.lt/skelbimai/audi-a4-2-4-l-sedanas-2002-benzinas-10785299.html', 'https://autoplius-img.dgn.lt/ann_3_107128959/audi-a4-2-4-l-sedanas-2002-benzinas.jpg', 261000, 'Tallinn, Estija'),
+(10, 11023, '2002-01', '1984 cm³, 130 AG (96kW)', 2, 1, NULL, 'Automatinė', 'Priekiniai varantys ratai', NULL, 'Kairėje', NULL, NULL, NULL, 5, NULL, 1345, NULL, NULL, 6.2, 7.9, 'Elektronika: Autopilotas\nEksterjeras: Lengvojo lydinio ratlankiai, Kablys\nKiti ypatumai: Neeksploatuota Lietuvoje\n', NULL, 64, NULL, 1600, NULL, NULL, 10742107, NULL, 3, 'https://autoplius.lt/skelbimai/audi-a4-2-0-l-sedanas-2002-benzinas-10742107.html', 'https://autoplius-img.dgn.lt/ann_3_106674367/audi-a4-2-0-l-sedanas-2002-benzinas.jpg', NULL, 'Kaunas, Lietuva'),
+(10, 11023, '2000', '1595 cm³, 100 AG (74kW)', 2, 1, NULL, 'Mechaninė', 'Priekiniai varantys ratai', NULL, 'Kairėje', NULL, NULL, NULL, 5, NULL, 1185, 'R15', NULL, NULL, 8, '', 'Naujos stabdžiu kaladės, žvakės, filtrai, tepalai. Tvarkingas automobilis. Paruoštas naudojimui. Daugiau info telefonu  860062493', 65, NULL, 1450, NULL, NULL, 10699091, NULL, 3, 'https://autoplius.lt/skelbimai/audi-a4-1-6-l-sedanas-2000-benzinas-10699091.html', 'https://autoplius-img.dgn.lt/ann_3_106117589/audi-a4-1-6-l-sedan-2000-benzin.jpg', 231000, 'Vilnius, Lietuva'),
+(10, 11023, '2001-10', '2000 cm³', 2, 1, NULL, 'Automatinė', NULL, NULL, 'Kairėje', NULL, NULL, NULL, NULL, '2022-01-01', NULL, NULL, NULL, NULL, NULL, 'Salonas: Tamsinti stiklai\nEksterjeras: Lengvojo lydinio ratlankiai, Kablys\n', 'Nesenai Lietuvoje, būklė gera.', 66, NULL, 1600, NULL, NULL, 10615947, NULL, 3, 'https://autoplius.lt/skelbimai/audi-a4-2-0-l-sedanas-2001-benzinas-10615947.html', 'https://autoplius-img.dgn.lt/ann_3_105697679/audi-a4-2-0-l-sedanas-2001-benzinas.jpg', 200000, 'Kaunas, Lietuva'),
+(10, 11023, '2000-04', '1800 cm³, 125 AG (92kW)', 2, 1, NULL, 'Automatinė', 'Priekiniai varantys ratai', NULL, 'Kairėje', NULL, NULL, NULL, NULL, '2021-05-01', NULL, 'R15', NULL, NULL, NULL, 'Elektronika: El. valdomi veidrodėliai, Šildomi veidrodėliai, Navigacija/GPS\nApsauga: Imobilaizeris\nAudio/video įranga: CD grotuvas, CD keitiklis, Laisvų rankų įranga\nEksterjeras: Rūko žibintai, Kablys, Žieminių padangų komplektas\nKiti ypatumai: Serviso knygelė, Katalizatorius\n', 'Parduodu tvarkinga audi a4 facelift modelis, AUTOMATAS, metai lietuvoj, parvaryta is vokietijos, pakeisti tepalai, filtrai, praeita TA, 2021, juokiu defektu, stovis tikrai geras, salonas kaip naujas, daug privalumu, oro kondicionerius, el.langai, changeris, vazioja puikia, cinkotas kebulas, jokiu rudziu, keli pabraizimai, sedi ir vazioji, juokiu papildomu investiciju, galit tikrinti servise.parduodu nes su vaiku per maza.', 67, NULL, 1850, NULL, NULL, 10882751, NULL, 3, 'https://autoplius.lt/skelbimai/audi-a4-1-8-l-sedanas-2000-benzinas-10882751.html', 'https://autoplius-img.dgn.lt/ann_3_108569371/audi-a4-1-8-l-sedanas-2000-benzinas.jpg', 208000, 'Klaipėda, Lietuva'),
+(10, 11023, '2002-01', '2000 cm³, 130 AG (96kW)', 2, 1, NULL, 'Mechaninė', 'Priekiniai varantys ratai', NULL, 'Kairėje', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'Salonas: Tamsinti stiklai, Daugiafunkcinis vairas, Šildomos sėdynės\nElektronika: El. valdomi veidrodėliai, Šildomi veidrodėliai, Autopilotas\nAudio/video įranga: CD grotuvas\nEksterjeras: Lengvojo lydinio ratlankiai, Rūko žibintai, Kablys\nKiti ypatumai: Neeksploatuota Lietuvoje, Katalizatorius\nSaugumas: ESP\n', NULL, 68, NULL, 1450, 1450, NULL, 11027521, NULL, 3, 'https://autoplius.lt/skelbimai/audi-a4-2-0-l-sedanas-2002-benzinas-11027521.html', 'https://autoplius-img.dgn.lt/ann_3_110815121/audi-a4-2-0-l-sedanas-2002-benzinas.jpg', NULL, 'Telšiai, Lietuva'),
+(10, 11023, '2001/12', '2.0 l. 96 kW (131 Ag)', 2, 1, 'Sidabrinė', 'Automatinė', 'Priekiniai varantys ratai', 'Be defektų', 'Kairėje', '4/5', NULL, NULL, 5, NULL, NULL, 'R16', NULL, NULL, NULL, 'El. langai, Klimato kontrolė, Audio grotuvas, Oro pagalvės', 'Tvarkingas automobilis,  kėbulas turi smulkių kosmetinių defektų.', 69, 133082690, 1350, NULL, NULL, NULL, NULL, 3, 'https://autogidas.lt/skelbimas/audi-a4-benzinas--2001-m-b6-0133082690.html', 'https://img.autogidas.lt/4_15_173696851/audi-a4-b6-sedanas-2001.jpg', 272000, 'Lietuva, Marijampolė');
 
 -- --------------------------------------------------------
 
@@ -120,26 +153,112 @@ CREATE TABLE `car_queries` (
   `search_term` text,
   `year_to` int(11) DEFAULT NULL,
   `power_from` int(11) DEFAULT NULL,
-  `power_to` int(11) DEFAULT NULL
+  `power_to` int(11) DEFAULT NULL,
+  `user_id` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Dumping data for table `car_queries`
 --
 
-INSERT INTO `car_queries` (`id`, `price_from`, `price_to`, `year_from`, `search_term`, `year_to`, `power_from`, `power_to`) VALUES
-(1, 1000, 2000, 2000, 'audi', 2010, NULL, NULL),
-(3, 1000, 3000, 2000, NULL, 2005, NULL, NULL),
-(6, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
-(7, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
-(8, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
-(9, NULL, NULL, NULL, 'test', NULL, NULL, NULL),
-(12, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
-(13, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
-(14, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
-(15, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
-(19, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
-(21, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO `car_queries` (`id`, `price_from`, `price_to`, `year_from`, `search_term`, `year_to`, `power_from`, `power_to`, `user_id`) VALUES
+(1, 1000, 2000, 2000, 'audi', 2010, NULL, NULL, 1),
+(3, 1000, 3000, 2000, NULL, 2005, NULL, NULL, 1),
+(6, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 1),
+(7, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 1),
+(8, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 1),
+(9, NULL, NULL, NULL, 'test', NULL, NULL, NULL, 1),
+(12, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 1),
+(13, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 1),
+(14, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 1),
+(15, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 1),
+(19, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 1),
+(21, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 1);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `cities`
+--
+
+CREATE TABLE `cities` (
+  `id` int(11) NOT NULL,
+  `city` varchar(100) NOT NULL,
+  `autop_id` int(11) DEFAULT NULL,
+  `autob_id` int(11) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Dumping data for table `cities`
+--
+
+INSERT INTO `cities` (`id`, `city`, `autop_id`, `autob_id`) VALUES
+(201, 'Vilnius', 1, 1),
+(202, 'Kaunas', 2, 2),
+(203, 'Klaipėda', 3, 3),
+(204, 'Šiauliai', 4, 4),
+(205, 'Panevėžys', 5, 5),
+(206, 'Akmenė', 11, 11),
+(207, 'Alytus', 6, 6),
+(208, 'Anykščiai', 14, 14),
+(209, 'Ariogala', 231, 231),
+(210, 'Birštonas', 16, 16),
+(211, 'Biržai', 17, 17),
+(212, 'Druskininkai', 19, 19),
+(213, 'Elektrėnai', 20, 20),
+(214, 'Gargždai', 108, 108),
+(215, 'Ignalina', 22, 22),
+(216, 'Jonava', 24, 24),
+(217, 'Joniškis', 27, 27),
+(218, 'Juodkrantė', 207, 207),
+(219, 'Jurbarkas', 28, 28),
+(220, 'Kaišiadorys', 31, 31),
+(221, 'Kalvarija', 105, 105),
+(222, 'Karklė', 204, 204),
+(223, 'Kazlų Rūda', 33, 33),
+(224, 'Kėdainiai', 37, 37),
+(225, 'Kelmė', 34, 34),
+(226, 'Kretinga', 40, 40),
+(227, 'Kupiškis', 43, 43),
+(228, 'Kuršėnai', 109, 109),
+(229, 'Lazdijai', 44, 44),
+(230, 'Marijampolė', 7, 7),
+(231, 'Mažeikiai', 47, 47),
+(232, 'Melnragė', 206, 206),
+(233, 'Molėtai', 49, 49),
+(234, 'Naujoji Akmenė', 243, 243),
+(235, 'Nemenčinė', 245, 245),
+(236, 'Neringa', 51, 51),
+(237, 'Nida', 210, 210),
+(238, 'Pagėgiai', 106, 106),
+(239, 'Pakruojis', 53, 53),
+(240, 'Palanga', 55, 55),
+(241, 'Pasvalys', 58, 58),
+(242, 'Plungė', 59, 59),
+(243, 'Prienai', 61, 61),
+(244, 'Radviliškis', 104, 104),
+(245, 'Raseiniai', 64, 64),
+(246, 'Rietavas', 107, 107),
+(247, 'Rokiškis', 67, 67),
+(248, 'Šakiai', 70, 70),
+(249, 'Šalčininkai', 73, 73),
+(250, 'Šilalė', 76, 76),
+(251, 'Šilutė', 78, 78),
+(252, 'Širvintos', 80, 80),
+(253, 'Skaudvilė', 230, 230),
+(254, 'Skuodas', 68, 68),
+(255, 'Švenčionys', 83, 83),
+(256, 'Šventoji', 203, 203),
+(257, 'Tauragė', 84, 84),
+(258, 'Telšiai', 87, 87),
+(259, 'Trakai', 89, 89),
+(260, 'Ukmergė', 91, 91),
+(261, 'Utena', 8, 8),
+(262, 'Varėna', 95, 95),
+(263, 'Vievis', 190, 190),
+(264, 'Vilkaviškis', 98, 98),
+(265, 'Visaginas', 100, 100),
+(266, 'Zarasai', 9, 9);
 
 -- --------------------------------------------------------
 
@@ -4246,6 +4365,26 @@ INSERT INTO `query_make_model` (`query_id`, `make_id`, `id`, `model_id`) VALUES
 (21, 10, 1, 11023),
 (3, 10, 2, 11023);
 
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `users`
+--
+
+CREATE TABLE `users` (
+  `id` int(11) NOT NULL,
+  `email` varchar(100) NOT NULL,
+  `password` varchar(100) NOT NULL,
+  `user_group` enum('regular','admin') NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Dumping data for table `users`
+--
+
+INSERT INTO `users` (`id`, `email`, `password`, `user_group`) VALUES
+(1, 'admin@gmail.com', 'admin', 'admin');
+
 --
 -- Indexes for dumped tables
 --
@@ -4277,7 +4416,17 @@ ALTER TABLE `car_ads`
 -- Indexes for table `car_queries`
 --
 ALTER TABLE `car_queries`
-  ADD PRIMARY KEY (`id`);
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `user_id` (`user_id`);
+
+--
+-- Indexes for table `cities`
+--
+ALTER TABLE `cities`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `city` (`city`),
+  ADD UNIQUE KEY `autop_id` (`autop_id`),
+  ADD UNIQUE KEY `autob_id` (`autob_id`);
 
 --
 -- Indexes for table `fuel_types`
@@ -4327,6 +4476,13 @@ ALTER TABLE `query_make_model`
   ADD KEY `model_id` (`model_id`);
 
 --
+-- Indexes for table `users`
+--
+ALTER TABLE `users`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `email` (`email`);
+
+--
 -- AUTO_INCREMENT for dumped tables
 --
 
@@ -4340,13 +4496,19 @@ ALTER TABLE `body_styles`
 -- AUTO_INCREMENT for table `car_ads`
 --
 ALTER TABLE `car_ads`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=41;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=70;
 
 --
 -- AUTO_INCREMENT for table `car_queries`
 --
 ALTER TABLE `car_queries`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
+
+--
+-- AUTO_INCREMENT for table `cities`
+--
+ALTER TABLE `cities`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=267;
 
 --
 -- AUTO_INCREMENT for table `fuel_types`
@@ -4373,6 +4535,12 @@ ALTER TABLE `query_make_model`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
+-- AUTO_INCREMENT for table `users`
+--
+ALTER TABLE `users`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+
+--
 -- Constraints for dumped tables
 --
 
@@ -4385,6 +4553,12 @@ ALTER TABLE `car_ads`
   ADD CONSTRAINT `car_ads_ibfk_3` FOREIGN KEY (`make`) REFERENCES `makes` (`id`),
   ADD CONSTRAINT `car_ads_ibfk_4` FOREIGN KEY (`model`) REFERENCES `models` (`id`),
   ADD CONSTRAINT `car_ads_ibfk_5` FOREIGN KEY (`query_id`) REFERENCES `car_queries` (`id`);
+
+--
+-- Constraints for table `car_queries`
+--
+ALTER TABLE `car_queries`
+  ADD CONSTRAINT `car_queries_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`);
 
 --
 -- Constraints for table `models`
