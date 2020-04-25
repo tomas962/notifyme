@@ -40,9 +40,9 @@
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
-import * as JWT from 'jwt-decode';
+import JWT from 'jwt-decode';
 import {namespace} from 'vuex-class'
-import {Identity} from '../store/modules/user'
+import {UserState} from '../store/modules/user'
 const userns = namespace('User')
 
 @Component
@@ -51,7 +51,7 @@ export default class Login extends Vue {
     password = ""
 
     @userns.Action
-    setUser!: (state: {identity: Identity; access_token: string; refresh_token: string}) => void;
+    setUser!: (state: UserState) => void;
 
     onSubmit(evt: Event) {
         evt.preventDefault()
@@ -64,11 +64,16 @@ export default class Login extends Vue {
         })
         .then((response) => response.json())
         .then((result: { access_token: string; refresh_token: string }) => {
-            this.setUser({
-                identity: JWT(result.access_token).identity,
+            localStorage.setItem("access_token", result.access_token);
+            localStorage.setItem("refresh_token", result.refresh_token);
+            const state: UserState = {
+                // eslint-disable-next-line
+                identity: (JWT(result.access_token) as any).identity, 
                 access_token: result.access_token,
                 refresh_token: result.refresh_token
-                })
+            } 
+            this.setUser(state)
+            this.$router.push('/queries')
         }).catch((error) => {
             console.log(error);
         });

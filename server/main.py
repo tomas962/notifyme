@@ -6,8 +6,10 @@ app = Flask(__name__)
 
 from .cars import cars_api
 from .auth import auth
+from .car_queries import query_api
 app.register_blueprint(cars_api)
 app.register_blueprint(auth)
+app.register_blueprint(query_api)
 
 from flask_cors import CORS
 from flask_jwt_extended import (

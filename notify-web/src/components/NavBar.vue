@@ -3,12 +3,13 @@
   <b-navbar type="dark" variant="dark">
     <b-container>
         <b-navbar-nav>
-          <b-nav-item><router-link to="/login">Login</router-link></b-nav-item>
+          <b-nav-item v-if="identity.email == ''"><router-link to="/login">Login</router-link></b-nav-item>
+          <b-nav-item><router-link to="/queries">Queries</router-link></b-nav-item>
           <b-nav-item><router-link to="/cars">Cars</router-link></b-nav-item>
         </b-navbar-nav>
         <b-navbar-nav>
-          <b-nav-item>Welcome, {{identity.email}}</b-nav-item>
-          <b-nav-item><router-link to="/logout">Logout</router-link></b-nav-item>
+          <b-nav-item>Sveiki, {{identity.email || 'svečias'}}</b-nav-item>
+          <b-nav-item v-on:click="logout();" >Logout</b-nav-item>
         </b-navbar-nav>
     </b-container>
   </b-navbar>
@@ -18,13 +19,27 @@
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator'
 import {namespace} from 'vuex-class'
-import {Identity} from '../store/modules/user'
+import {Identity, UserState} from '../store/modules/user'
 const userns = namespace('User')
 
 @Component
 export default class MyNavBar extends Vue {
   @userns.State
   public identity!: Identity;
+
+  @userns.Action
+  public setUser!: (state: UserState) => void;
+
+  logout() {
+    console.log("logging out user");
+    const state: UserState = {
+      identity: new Identity(),
+      access_token: "",
+      refresh_token: ""
+    };
+    this.setUser(state)
+    localStorage.removeItem("access_token")
+  }
 }
 </script>
 

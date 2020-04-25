@@ -3,6 +3,7 @@ import VueRouter, { RouteConfig } from 'vue-router'
 import Home from '../views/Home.vue'
 import CarList from '../views/CarList.vue'
 import Login from '../views/Login.vue'
+import CarQueries from '../views/CarQueries.vue'
 
 Vue.use(VueRouter)
 
@@ -24,6 +25,11 @@ Vue.use(VueRouter)
     path: '/login',
     name: 'Login',
     component: Login
+  },
+  {
+    path: '/queries',
+    name: 'Queries',
+    component: CarQueries
   }
 ]
 

@@ -113,41 +113,6 @@ db_translations = {
 }
 
 
-def get_car_query(id):
-    with db_connect().cursor() as cursor:
-        cursor.execute("SELECT * FROM car_queries WHERE id=%s", id)
-        car_query = cursor.fetchone()
-        
-        if car_query is None:
-            return None
-
-        cursor.execute("""SELECT fuel_types.* FROM query_fuel 
-            INNER JOIN fuel_types 
-            ON query_fuel.fuel_id=fuel_types.id
-            WHERE query_fuel.query_id=%s""", id)
-        fuel_type = cursor.fetchone()
-        
-        cursor.execute("""SELECT body_styles.* FROM `car_queries` 
-            INNER JOIN query_body_style ON car_queries.id=query_body_style.query_id
-            INNER JOIN body_styles ON query_body_style.body_style_id=body_styles.id
-            WHERE car_queries.id=%s""", id)
-        body_style = cursor.fetchone()
-
-        cursor.execute("""SELECT makes.*, models.* FROM query_make_model 
-            INNER JOIN makes 
-            ON query_make_model.make_id=makes.id
-            INNER JOIN models
-            ON query_make_model.model_id=models.id
-            WHERE query_make_model.query_id=%s""", id)
-        make_model = cursor.fetchone()
-
-        cursor.connection.close()
-        return {
-            "car_query":car_query,
-            "fuel_type":fuel_type,
-            "body_style":body_style,
-            "make_model":make_model
-        }
 
 
 if __name__ == "__main__":

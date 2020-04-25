@@ -19,3 +19,19 @@ def car_list(): #TODO filter by user id and car query id
         car_ads = cursor.fetchall()
     conn.close()
     return jsonify(car_ads)
+
+@cars_api.route("/makes")
+def get_makes():
+    with db_connect().cursor() as cursor:
+        cursor.execute("SELECT * FROM makes")
+        makes = cursor.fetchall()
+        cursor.connection.close()
+        return jsonify(makes)
+
+@cars_api.route("/makes/<int:make_id>/models")
+def get_models(make_id):
+    with db_connect().cursor() as cursor:
+        cursor.execute("SELECT * FROM models WHERE make_id=%s", make_id)
+        models = cursor.fetchall()
+        cursor.connection.close()
+        return jsonify(models)
