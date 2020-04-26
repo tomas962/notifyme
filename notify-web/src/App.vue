@@ -61,7 +61,9 @@ export default class App extends Vue {
   min-height: 100vh;
 }
 
-
+html { 
+  background-color: #212935;
+}
 
 body {
   min-height: 100vh;

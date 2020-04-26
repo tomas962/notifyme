@@ -35,3 +35,27 @@ def get_models(make_id):
         models = cursor.fetchall()
         cursor.connection.close()
         return jsonify(models)
+
+@cars_api.route("/body_styles")
+def get_body_styles():
+    with db_connect().cursor() as cursor:
+        cursor.execute("SELECT * FROM body_styles")
+        body_styles = cursor.fetchall()
+        cursor.connection.close()
+        return jsonify(body_styles)
+
+@cars_api.route("/fuel_types")
+def get_fuel_types():
+    with db_connect().cursor() as cursor:
+        cursor.execute("SELECT * FROM fuel_types")
+        fuel_types = cursor.fetchall()
+        cursor.connection.close()
+        return jsonify(fuel_types)
+
+@cars_api.route("/cities")
+def get_cities():
+    with db_connect().cursor() as cursor:
+        cursor.execute("SELECT * FROM cities")
+        cities = cursor.fetchall()
+        cursor.connection.close()
+        return jsonify(cities)

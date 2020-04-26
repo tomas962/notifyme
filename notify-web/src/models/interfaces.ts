@@ -45,21 +45,21 @@ interface CarQueryResponse {
 }
 
 interface NewCarQuery {
-    make_id: number;
-    model_id: number;
-    city_id: number;
-    power_from: number;
-    power_to: number;
-    search_term: string;
-    year_to: number;
-    year_from: number;
+    make_id: number|null;
+    model_id: number|null;
+    city_id: number|null;
+    power_from: number|null;
+    power_to: number|null;
+    search_term: string|null;
+    year_to: number|null;
+    year_from: number|null;
     
     /**body_styles.id in database */
-    body_style_id: number;
-    fuel_id: number;
-    price_from: number;
-    price_to: number;
-
+    body_style_id: number|null;
+    fuel_id: number|null;
+    price_from: number|null;
+    price_to: number|null;
+    sites: string[];
 }
 
 interface Make {

@@ -4,13 +4,16 @@ import './registerServiceWorker'
 import router from './router'
 import store from './store'
 import { BootstrapVue, IconsPlugin } from 'bootstrap-vue'
+import ElementUI from "element-ui"
+import 'element-ui/lib/theme-chalk/index.css';
 
 declare global {
   interface Window { SERVER_URL: string }
 }
 
-window.SERVER_URL = "http://localhost:5000"
+window.SERVER_URL = "http://192.168.100.7:5000"
 
+Vue.use(ElementUI)
 // Install BootstrapVue
 Vue.use(BootstrapVue)
 // Optionally install the BootstrapVue icon components plugin
