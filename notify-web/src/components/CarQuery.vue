@@ -1,18 +1,28 @@
 <template>
-    <b-row class=" rounded border mt-3">
-        <b-col>
-            Markė: <strong>{{query.make_model ? query.make_model.make : ""}}</strong>
+        <b-col class="rounded  pl-0 pt-2" xl="3"  sm="6">
+                <b-card bg-variant="dark" :header="card_title" style="height: 100%;">
+                    <b-card-text >
+                        <ul class="pl-3" style="height: 100%">
+                            <li v-if="query.car_query.city">
+                                {{query.car_query.city}}
+                            </li>
+                            <li v-if="query.car_query.price_from !== null || query.car_query.price_to !== null">
+                                {{priceText}}
+                            </li>
+                            <li v-if="query.car_query.year_from !== null || query.car_query.year_to !== null">
+                                {{yearText}}
+                            </li>
+                        </ul>
+                        <div class="mb-2" style="display: flex">
+                            <div v-if="query.car_query.sites && query.car_query.sites.includes('autoplius')" style="height:20px; width:20px;" class="pl-1 site-cube autop rounded">P</div>
+                            <div v-if="query.car_query.sites && query.car_query.sites.includes('autogidas')" style="height:20px; width:20px;" class="pl-1 site-cube autog rounded ml-1">G</div>
+                            <div v-if="query.car_query.sites && query.car_query.sites.includes('autobilis')" style="height:20px; width:20px;" class="pl-1 site-cube autob rounded ml-1">B</div>
+                        </div>
+                        
+                        <b-btn class="" v-on:click="edit();">Redaguoti</b-btn>
+                    </b-card-text>
+                </b-card>
         </b-col>
-        <b-col>
-            Modelis: <strong>{{query.make_model ? query.make_model.model_name : ""}}</strong>
-        </b-col>
-        <b-col>
-            Kaina: nuo {{query.car_query.price_from}} € iki {{query.car_query.price_to}} €
-        </b-col>
-        <b-col>
-            Metai: nuo {{query.car_query.year_from}} iki {{query.car_query.year_to}}
-        </b-col>
-    </b-row>
 </template>
 
 <script lang="ts">
@@ -22,9 +32,53 @@ import {CarQueryResponse} from "@/models/interfaces"
 @Component
 export default class CarQueryComp extends Vue {
     @Prop() query!: CarQueryResponse
+
+    card_title = ""
+    get priceText() {
+        if (this.query.car_query.price_from !== null && this.query.car_query.price_to !== null)
+            return `Nuo ${this.query.car_query.price_from}€ iki ${this.query.car_query.price_to}€`
+        if (this.query.car_query.price_from !== null)
+            return `Nuo ${this.query.car_query.price_from}€`
+        if (this.query.car_query.price_to !== null)
+            return `Iki ${this.query.car_query.price_to}€`
+
+        return ""
+    }
+
+    get yearText() {
+        if (this.query.car_query.year_from !== null && this.query.car_query.year_to !== null)
+            return `Nuo ${this.query.car_query.year_from} m. iki ${this.query.car_query.year_to} m.`
+        if (this.query.car_query.year_from !== null)
+            return `Nuo ${this.query.car_query.year_from} m.`
+        if (this.query.car_query.year_to !== null)
+            return `Iki ${this.query.car_query.year_to} m.`
+        return ""
+    }
+
+    created() {
+        let title = ""
+        if (this.query.make_model && this.query.make_model.make) 
+            if (this.query.make_model.model_name)
+                title += this.query.make_model.make + " " + this.query.make_model.model_name
+            else 
+                title += this.query.make_model.make
+        else 
+            title = "Visos markės"
+        
+        this.card_title = title
+    }
+
+    edit(){
+        this.$root.$emit("query-edit", this.query)
+        this.$bvModal.show("queryEditModal")
+    }
 }
 </script>
 
 <style lang="scss" scoped>
+    .neg-pd {
+        padding-left: -30px !important;
+        width: 10px;
+    }
 
 </style>

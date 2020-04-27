@@ -38,7 +38,7 @@ def get_car_query(id):
 
 def get_car_queries_by_user_id(user_id):
     with db_connect().cursor() as cursor:
-        cursor.execute("SELECT * FROM car_queries WHERE user_id=%s", user_id)
+        cursor.execute("SELECT car_queries.*, cities.city FROM `car_queries` LEFT JOIN cities on city_id=cities.id WHERE user_id=%s", user_id)
         car_queries = cursor.fetchall()
         
         if len(car_queries) == 0:
@@ -61,14 +61,13 @@ def get_car_queries_by_user_id(user_id):
                 WHERE car_queries.id=%s""", (c_query["id"]))
             body_style = cursor.fetchone()
 
-            cursor.execute("""SELECT makes.*, models.*, makes.id as make_id, models.id as model_id FROM query_make_model 
+            cursor.execute("""SELECT makes.make as make, models.model_name as model_name, makes.id as make_id, models.id as model_id FROM query_make_model 
                 INNER JOIN makes 
                 ON query_make_model.make_id=makes.id
-                INNER JOIN models
+                LEFT JOIN models
                 ON query_make_model.model_id=models.id
                 WHERE query_make_model.query_id=%s""", (c_query["id"]))
             make_model = cursor.fetchone()
-
             result.append({
                 "car_query":c_query,
                 "fuel_type":fuel_type,

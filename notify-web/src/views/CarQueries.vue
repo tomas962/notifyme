@@ -5,8 +5,8 @@
         <b-row class="mt-3">
             <b-col cols="8"><h1>Jūsų Paieškos</h1></b-col>
             <b-col>
-                <b-button v-on:click="getFormData();" class="btn-info" v-b-modal.modal-1>Nauja paieška</b-button>
-                <b-modal v-on:ok="okClicked()" ok-title="Išsaugoti" cancel-title="Atšaukti" id="modal-1" title="Nauja paieška" size="lg">
+                <b-button v-on:click="getFormData();" class="btn-info" v-b-modal.queryEditModal>Nauja paieška</b-button>
+                <b-modal v-on:cancel="onCancelClick()" v-on:ok="okClicked()" ok-title="Išsaugoti" cancel-title="Atšaukti" id="queryEditModal" :title='editForm ? "Redaguojama paieška" : "Nauja paieška"' size="lg">
                     <b-form>
                         <b-row>
                             <b-col>
@@ -99,14 +99,28 @@
                 </b-modal>
             </b-col>
         </b-row>
-        <CarQueryComp v-for="query in queries" :key="query.car_query.id" :query="query"></CarQueryComp>
+        <b-row>
+            <b-col cols="12">
+                <div class="font-italic">Tinklalapiai, kuriuose bus ieškomi skelbimai:</div>
+                <div style="display: flex;">
+                    <div style="height:20px; width:20px;" class="pl-1 mr-1 site-cube autop rounded">P</div> - Autoplius
+                </div>
+                <div style="display: flex;" class="mt-1">
+                    <div style="height:20px; width:20px;" class="pl-1 mr-1 site-cube autog rounded">G</div> - Autogidas
+                </div>
+                <div style="display: flex;" class="mt-1">
+                    <div style="height:20px; width:20px;" class="pl-1 mr-1 site-cube autob rounded">B</div> - Autobilis
+                </div>
+            </b-col>
+        </b-row>
+        <CarQueryRow v-for="query in queriesBy4" :key="query.reduce((acc, el) => acc * el.car_query.id, 1)" :queries4="query"></CarQueryRow>
     </div>
 </template>
 
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
 import {CarQueryResponse, NewCarQuery, Make} from "@/models/interfaces"
-import CarQueryComp from "@/components/CarQuery.vue"
+import CarQueryRow from "@/components/CarQueriesRow.vue"
 import {Select} from "element-ui"
 
 interface SelectOption {
@@ -125,12 +139,30 @@ interface QueryFormData {
 
 @Component({
     components: {
-        CarQueryComp,
+        CarQueryRow,
         Select
     }
 })
 export default class CarQueries extends Vue {
     formExpanded = false;
+    editForm = false;
+
+    get queriesBy4(): CarQueryResponse[][] {
+        const tmp: CarQueryResponse[][] = []
+        for (let i = 0; i < this.queries.length; i+=4) {
+            const row: CarQueryResponse[] = []
+            row.push(this.queries[i])
+            if (this.queries.length > i+1)
+                row.push(this.queries[i+1])
+            if (this.queries.length > i+2)
+                row.push(this.queries[i+2])
+            if (this.queries.length > i+3)
+                row.push(this.queries[i+3])
+            tmp.push(row)
+        }
+
+        return tmp
+    }
     queries: CarQueryResponse[] = []
     newQuery: NewCarQuery = {
         make_id: 1,
@@ -138,32 +170,65 @@ export default class CarQueries extends Vue {
         city_id: null,
         power_from: null,
         power_to: null,
-        search_term: "",
+        search_term: null,
         year_to: null,
         year_from: null,
         body_style_id: null,
         fuel_id: null,
         price_from: null,
         price_to: null,
-        sites: ["autogidas","autobilis","autoplius"]
+        sites: ["autogidas","autobilis","autoplius"],
+        queryId: null
     }
 
     queryFormData: QueryFormData = {
         makesOptions: [],
-        modelsOptions: [{text:"Visi modeliai", value: null}],
+        modelsOptions: [],
         makes: [],
-        bodyStyles: [{text:"Kėbulo tipas", value: null}],
-        fuelTypes: [{text:"Kuro tipas", value: null}],
-        cities: [{text: "Visi miestai", value: null}]
+        bodyStyles: [],
+        fuelTypes: [],
+        cities: []
+    }
+
+    async getQueries() {
+        const response = await fetch(window.SERVER_URL + "/users/" + this.$store.state.User.identity.user_id + "/queries");
+        const data: CarQueryResponse[] = await response.json();
+        this.queries = data
+    }
+
+    async getModels() {
+        const response = await fetch(window.SERVER_URL + "/makes/" + this.newQuery.make_id + "/models");
+        const data = await response.json();
+        this.queryFormData.modelsOptions = [{text:"Visi modeliai", value: null}]
+        this.queryFormData.modelsOptions = this.queryFormData.modelsOptions.concat(data.map((model: any) => {
+            return {
+                text: model.model_name,
+                value: model.id
+            }
+        }));
+        console.log(this.queryFormData.modelsOptions);
+        
     }
 
     created() {
-        console.log("CREATED");
-        fetch(window.SERVER_URL + "/users/" + this.$store.state.User.identity.user_id + "/queries")
-        .then((response) => response.json())
-        .then((data: CarQueryResponse[]) => {
-            console.log(data);
-            this.queries = data
+        this.getQueries();
+        this.$root.$on("query-edit", async (query: CarQueryResponse) => {
+            this.editForm = true;
+            this.newQuery.make_id = (query.make_model !== null && query.make_model.make_id !== null) ? query.make_model.make_id : 1
+            this.newQuery.model_id = query.make_model ? query.make_model.model_id : null
+            this.newQuery.price_from = query.car_query.price_from
+            this.newQuery.price_to = query.car_query.price_to
+            this.newQuery.sites = query.car_query.sites ? query.car_query.sites.split(',') : []
+            this.newQuery.city_id = query.car_query.city_id
+            this.newQuery.power_from = query.car_query.power_from
+            this.newQuery.power_to = query.car_query.power_to  
+            this.newQuery.search_term = query.car_query.search_term
+            this.newQuery.year_to = query.car_query.year_to
+            this.newQuery.year_from = query.car_query.year_from
+            this.newQuery.body_style_id = query.body_style ? query.body_style.id : null
+            this.newQuery.queryId = query.car_query.id
+            this.getFormData();
+            this.getModels();
         })
     }
 
@@ -182,19 +247,6 @@ export default class CarQueries extends Vue {
         }
     }
 
-    async getModels() {
-        const response = await fetch(window.SERVER_URL + "/makes/" + this.newQuery.make_id + "/models");
-        const data = await response.json();
-        this.queryFormData.modelsOptions = [{text:"Visi modeliai", value: null}]
-        this.queryFormData.modelsOptions = this.queryFormData.modelsOptions.concat(data.map((model: any) => {
-            return {
-                text: model.model_name,
-                value: model.id
-            }
-        }));
-        console.log(this.queryFormData.modelsOptions);
-        
-    }
 
     async getBodyStyles() {
         const response = await fetch(window.SERVER_URL + "/body_styles");
@@ -247,10 +299,14 @@ export default class CarQueries extends Vue {
     }
 
     async getFormData() {
-        this.getMakes();
-        this.getBodyStyles();
-        this.getFuelTypes();
-        this.getCities();
+        if (this.queryFormData.makesOptions.length === 0)
+            this.getMakes();
+        if (this.queryFormData.bodyStyles.length === 0)
+            this.getBodyStyles();
+        if (this.queryFormData.fuelTypes.length === 0)
+            this.getFuelTypes();
+        if (this.queryFormData.cities.length === 0)
+            this.getCities();
     }
 
     async okClicked() {
@@ -271,11 +327,31 @@ export default class CarQueries extends Vue {
 
         
     }
+
+    onCancelClick() {
+        this.editForm = false;
+        this.newQuery = { //reset values
+            make_id: 1,
+            model_id: null,
+            city_id: null,
+            power_from: null,
+            power_to: null,
+            search_term: null,
+            year_to: null,
+            year_from: null,
+            body_style_id: null,
+            fuel_id: null,
+            price_from: null,
+            price_to: null,
+            sites: ["autogidas","autobilis","autoplius"],
+            queryId: null
+        }
+    }
 }
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
-<style scoped lang="scss">
+<style lang="scss">
 .autog-text {
     color: #FEA638 !important; 
 }

@@ -52,7 +52,7 @@ export default class CarComp extends Vue {
 }
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss">
 .img-col {
     margin-left: -100px;
 }

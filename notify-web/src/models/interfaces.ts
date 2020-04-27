@@ -1,6 +1,7 @@
 
 interface CarQuery {
     city_id: number;
+    city?: string;
     id: number;
     power_from: number;
     power_to: number;
@@ -10,6 +11,7 @@ interface CarQuery {
     user_id: number;
     year_from: number;
     year_to: number;
+    sites?: string;
 }
 
 interface BodyStyle {
@@ -60,6 +62,7 @@ interface NewCarQuery {
     price_from: number|null;
     price_to: number|null;
     sites: string[];
+    queryId?: number|null;
 }
 
 interface Make {
