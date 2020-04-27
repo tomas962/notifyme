@@ -1,0 +1,32 @@
+import sys
+sys.path.insert(0,'..')
+from database.database import connection
+import json
+
+data = json.load(open("autoplius_models.json", "r"))
+total = 0
+inserted = 0
+rows_affected = 0
+
+for models in data:
+    with connection.cursor() as cursor:
+        for model in models:
+            if model['title'] == "-kita-":
+                continue
+            
+            total += 1
+            cursor.execute('SELECT * FROM `makes` WHERE `autoplius_make_id`=%s', (model['make_id']))
+            make = cursor.fetchone()
+
+            before = inserted
+            inserted += cursor.execute('UPDATE `models` SET `autoplius_model_id`=%s WHERE `make_id`=%s AND `model_name`=%s', (model['id'], make['id'], model['title']))
+            
+            # if before == inserted:
+            #     inserted += cursor.execute('INSERT INTO `models`(`model_name`, `make_id`, `autoplius_model_id`) VALUES (%s,%s,%s)', (model['title'], make['id'], model['id']))
+            # for model in models['data']:
+            #     rows_affected += cursor.execute('INSERT INTO `models`(`model_name`, `make_id`) VALUES (%s, %s)', (model['value'], make_id['id']))
+
+
+print(f"total: {total}")
+print(f"inserted: {inserted}")
+# connection.commit()
