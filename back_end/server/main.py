@@ -1,8 +1,10 @@
 from flask import Flask, request, Response, jsonify
 import sys
-sys.path.insert(0,'..')
-from database.database import connection
+from ..database.database import connection
 app = Flask(__name__)
+from ..scraper_scheduler.scraper import Scraper
+
+car_scraper = Scraper()
 
 from .cars import cars_api
 from .auth import auth

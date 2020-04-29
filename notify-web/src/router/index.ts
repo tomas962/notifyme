@@ -17,7 +17,7 @@ Vue.use(VueRouter)
     component: () => import(/* webpackChunkName: "about" */ '../views/About.vue')
   },
   {
-    path: '/cars',
+    path: '/queries/:query_id/cars',
     name: 'Cars',
     component: CarList
   },

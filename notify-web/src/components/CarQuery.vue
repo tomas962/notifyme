@@ -18,9 +18,19 @@
                             <div v-if="query.car_query.sites && query.car_query.sites.includes('autogidas')" style="height:20px; width:20px;" class="pl-1 site-cube autog rounded ml-1">G</div>
                             <div v-if="query.car_query.sites && query.car_query.sites.includes('autobilis')" style="height:20px; width:20px;" class="pl-1 site-cube autob rounded ml-1">B</div>
                         </div>
-                        
-                        <b-btn class="" v-on:click="edit();">Redaguoti</b-btn>
                     </b-card-text>
+                    <template v-slot:footer>
+                        <b-row>
+                            <b-col cols="6">
+                                <b-btn v-on:click="edit();">Redaguoti</b-btn>
+                            </b-col>
+                            <b-col cols="6">
+                                <router-link :to="'/queries/' + query.car_query.id + '/cars'">
+                                    <b-btn class="btn-success">Rezultatai</b-btn>
+                                </router-link>
+                            </b-col>
+                        </b-row>
+                    </template>
                 </b-card>
         </b-col>
 </template>
@@ -33,7 +43,15 @@ import {CarQueryResponse} from "@/models/interfaces"
 export default class CarQueryComp extends Vue {
     @Prop() query!: CarQueryResponse
 
-    card_title = ""
+    get card_title() {
+        if (this.query.make_model && this.query.make_model.make) 
+            if (this.query.make_model.model_name)
+                return this.query.make_model.make + " " + this.query.make_model.model_name
+            else 
+                return  this.query.make_model.make
+        else 
+            return "Visos markės"
+    }
     get priceText() {
         if (this.query.car_query.price_from !== null && this.query.car_query.price_to !== null)
             return `Nuo ${this.query.car_query.price_from}€ iki ${this.query.car_query.price_to}€`
@@ -55,18 +73,6 @@ export default class CarQueryComp extends Vue {
         return ""
     }
 
-    created() {
-        let title = ""
-        if (this.query.make_model && this.query.make_model.make) 
-            if (this.query.make_model.model_name)
-                title += this.query.make_model.make + " " + this.query.make_model.model_name
-            else 
-                title += this.query.make_model.make
-        else 
-            title = "Visos markės"
-        
-        this.card_title = title
-    }
 
     edit(){
         this.$root.$emit("query-edit", this.query)

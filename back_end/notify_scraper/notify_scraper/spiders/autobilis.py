@@ -1,10 +1,8 @@
 import scrapy
 import sys
 from urllib.parse import urlencode
-from scrape_utils import *
-sys.path.insert(0,"..")
-from database.database import db_connect
-from database.car_query import get_car_query
+from ....database.database import db_connect
+from ....database.car_query import get_car_query
 from .ads import *
 
 def form_autob_query(params: dict):
@@ -53,6 +51,7 @@ class AutobilisSpider(scrapy.Spider):
         self.i = 0
         
         if self.car_query_id is None:
+            raise ValueError("No car_query_id passed to spider")
             return
         car_query = get_car_query(int(self.car_query_id))
         assert car_query is not None, "Car query not found!"

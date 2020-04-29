@@ -21,10 +21,10 @@
                                 <b-form-group label="Kaina (€)">
                                     <b-row>
                                         <b-col cols="6">
-                                            <b-form-input number="" v-model="newQuery.price_from" type="number" placeholder="Nuo"></b-form-input>
+                                            <b-form-input number v-model="newQuery.price_from" type="number" placeholder="Nuo"></b-form-input>
                                         </b-col>
                                         <b-col cols="6">
-                                            <b-form-input  number="" v-model="newQuery.price_to" type="number" placeholder="Iki"></b-form-input>
+                                            <b-form-input  number v-model="newQuery.price_to" type="number" placeholder="Iki"></b-form-input>
                                         </b-col>
                                     </b-row>
                                 </b-form-group>
@@ -33,10 +33,10 @@
                                 <b-form-group label="Metai">
                                     <b-row>
                                         <b-col cols="6">
-                                            <b-form-input number="" v-model="newQuery.year_from" type="number" placeholder="Nuo"></b-form-input>
+                                            <b-form-input number v-model="newQuery.year_from" type="number" placeholder="Nuo"></b-form-input>
                                         </b-col>
                                         <b-col cols="6">
-                                            <b-form-input number="" v-model="newQuery.year_to" type="number" placeholder="Iki"></b-form-input>
+                                            <b-form-input number v-model="newQuery.year_to" type="number" placeholder="Iki"></b-form-input>
                                         </b-col>
                                     </b-row>
                                 </b-form-group>
@@ -100,7 +100,7 @@
             </b-col>
         </b-row>
         <b-row>
-            <b-col cols="12">
+            <b-col class="ml-3" cols="12">
                 <div class="font-italic">Tinklalapiai, kuriuose bus ieškomi skelbimai:</div>
                 <div style="display: flex;">
                     <div style="height:20px; width:20px;" class="pl-1 mr-1 site-cube autop rounded">P</div> - Autoplius
@@ -118,7 +118,7 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue } from "vue-property-decorator";
+import { Component, Vue, Watch } from "vue-property-decorator";
 import {CarQueryResponse, NewCarQuery, Make} from "@/models/interfaces"
 import CarQueryRow from "@/components/CarQueriesRow.vue"
 import {Select} from "element-ui"
@@ -147,22 +147,7 @@ export default class CarQueries extends Vue {
     formExpanded = false;
     editForm = false;
 
-    get queriesBy4(): CarQueryResponse[][] {
-        const tmp: CarQueryResponse[][] = []
-        for (let i = 0; i < this.queries.length; i+=4) {
-            const row: CarQueryResponse[] = []
-            row.push(this.queries[i])
-            if (this.queries.length > i+1)
-                row.push(this.queries[i+1])
-            if (this.queries.length > i+2)
-                row.push(this.queries[i+2])
-            if (this.queries.length > i+3)
-                row.push(this.queries[i+3])
-            tmp.push(row)
-        }
-
-        return tmp
-    }
+    queriesBy4: CarQueryResponse[][] = []
     queries: CarQueryResponse[] = []
     newQuery: NewCarQuery = {
         make_id: 1,
@@ -178,7 +163,7 @@ export default class CarQueries extends Vue {
         price_from: null,
         price_to: null,
         sites: ["autogidas","autobilis","autoplius"],
-        queryId: null
+        query_id: null
     }
 
     queryFormData: QueryFormData = {
@@ -190,10 +175,31 @@ export default class CarQueries extends Vue {
         cities: []
     }
 
+    @Watch('queries')
+    onQueriesChanged(newQueries: CarQueryResponse[]) {  
+        const tmp: CarQueryResponse[][] = []
+        for (let i = 0; i < newQueries.length; i+=4) {
+            const row: CarQueryResponse[] = []
+            row.push(newQueries[i])
+            if (newQueries.length > i+1)
+                row.push(newQueries[i+1])
+            if (newQueries.length > i+2)
+                row.push(newQueries[i+2])
+            if (newQueries.length > i+3)
+                row.push(newQueries[i+3])
+            tmp.push(row)
+        }
+        console.log("QUERIES CHANGED");
+        
+        this.queriesBy4 = tmp;
+    }
+
+
     async getQueries() {
         const response = await fetch(window.SERVER_URL + "/users/" + this.$store.state.User.identity.user_id + "/queries");
         const data: CarQueryResponse[] = await response.json();
         this.queries = data
+        
     }
 
     async getModels() {
@@ -226,7 +232,7 @@ export default class CarQueries extends Vue {
             this.newQuery.year_to = query.car_query.year_to
             this.newQuery.year_from = query.car_query.year_from
             this.newQuery.body_style_id = query.body_style ? query.body_style.id : null
-            this.newQuery.queryId = query.car_query.id
+            this.newQuery.query_id = query.car_query.id
             this.getFormData();
             this.getModels();
         })
@@ -310,22 +316,34 @@ export default class CarQueries extends Vue {
     }
 
     async okClicked() {
-        console.log(JSON.stringify(this.newQuery));
-        try {
-            const response = await fetch(window.SERVER_URL + "/users/" + this.$store.state.User.identity.user_id + "/queries", {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(this.newQuery)
-        })
+        console.log("BEFORE:");
+        console.log(this.newQuery);
         
-        } catch (error) {
-            console.log(error);
-            
+        for (const key in this.newQuery) {
+            this.newQuery[key] = typeof this.newQuery[key] === "string"  && this.newQuery[key].length == 0 ? null :  this.newQuery[key];
         }
+        console.log("AFTER:");
+        console.log(this.newQuery);
+        if (this.newQuery.query_id === null){ //add new
+            const response = await fetch(window.SERVER_URL + "/users/" + this.$store.state.User.identity.user_id + "/queries", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(this.newQuery)
+            })
+        }
+        else { //update existing
+            const response = await fetch(window.SERVER_URL + "/users/" + this.$store.state.User.identity.user_id + "/queries/" + this.newQuery.query_id, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(this.newQuery)
+            })
 
-        
+        }
+        this.getQueries();
     }
 
     onCancelClick() {
@@ -344,7 +362,7 @@ export default class CarQueries extends Vue {
             price_from: null,
             price_to: null,
             sites: ["autogidas","autobilis","autoplius"],
-            queryId: null
+            query_id: null
         }
     }
 }
@@ -364,18 +382,18 @@ export default class CarQueries extends Vue {
     color: #df1d38 !important; 
 }
 
-.modal-dialog {
-  width: 100%;
-  height: 100%;
-  margin: 0;
-  padding: 0;
-}
+// .modal-dialog {
+//   width: 100%;
+//   height: 100%;
+//   margin: 0;
+//   padding: 0;
+// }
 
-.modal-content {
-  height: auto;
-  min-height: 100%;
-  border-radius: 0;
-}
+// .modal-content {
+//   height: auto;
+//   min-height: 100%;
+//   border-radius: 0;
+// }
 
 #more-params:hover{
     color: blue;

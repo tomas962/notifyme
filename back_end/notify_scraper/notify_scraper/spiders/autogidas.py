@@ -1,11 +1,8 @@
 import scrapy
-import sys
-sys.path.insert(0,"..")
 from urllib.parse import urlencode
-from scrape_utils import *
-from database.database import connection, db_connect
+from ....database.database import connection, db_connect
 from .ads import CarAd, AutogidasAd
-from database.car_query import get_car_query
+from ....database.car_query import get_car_query
 
 # f_1[0]: BMW
 # f_model_14[0]: Series 3
@@ -57,6 +54,7 @@ class AutogidasSpider(scrapy.Spider):
         self.i = 0
 
         if self.car_query_id is None:
+            raise ValueError("No car_query_id passed to spider")
             return
         car_query = get_car_query(int(self.car_query_id))
         

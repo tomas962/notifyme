@@ -62,7 +62,7 @@ interface NewCarQuery {
     price_from: number|null;
     price_to: number|null;
     sites: string[];
-    queryId?: number|null;
+    query_id?: number|null;
 }
 
 interface Make {

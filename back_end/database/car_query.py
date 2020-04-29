@@ -1,4 +1,4 @@
-from database.database import db_connect
+from ..database.database import db_connect
 
 def get_car_query(id):
     with db_connect().cursor() as cursor:
@@ -47,8 +47,6 @@ def get_car_queries_by_user_id(user_id):
 
         result = []
         for c_query in car_queries:
-            print(c_query["id"])
-
             cursor.execute("""SELECT fuel_types.* FROM query_fuel 
                 INNER JOIN fuel_types 
                 ON query_fuel.fuel_id=fuel_types.id
@@ -76,3 +74,24 @@ def get_car_queries_by_user_id(user_id):
             })
         cursor.connection.close()
         return result
+
+def insert_car_query(cursor, query_values):
+    cursor.execute("""INSERT INTO `car_queries`(`price_from`, `price_to`, 
+            `year_from`, `search_term`, `year_to`, `power_from`, `power_to`, user_id, sites, city_id, scrape_interval) 
+            VALUES (%(price_from)s, %(price_to)s, %(year_from)s, %(search_term)s, 
+            %(year_to)s, %(power_from)s, %(power_to)s, %(user_id)s, %(sites)s, %(city_id)s, 300)""", query_values)
+        
+    query_values["query_id"] = cursor.lastrowid
+
+    if query_values["fuel_id"] is not None:
+        cursor.execute("""INSERT INTO `query_fuel`(`query_id`, `fuel_id`) 
+            VALUES (%(query_id)s, %(fuel_id)s)""", query_values)
+
+    if query_values["body_style_id"] is not None:
+        cursor.execute("""INSERT INTO `query_body_style`(`query_id`, `body_style_id`) 
+            VALUES (%(query_id)s, %(body_style_id)s)""", query_values)
+    
+    if query_values["make_id"] is not None:
+        cursor.execute("""INSERT INTO `query_make_model`(`query_id`, `make_id`, `model_id`) 
+            VALUES (%(query_id)s, %(make_id)s, %(model_id)s)""", query_values)
+    return query_values["query_id"]

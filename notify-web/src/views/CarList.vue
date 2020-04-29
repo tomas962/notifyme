@@ -20,19 +20,20 @@ const carsns = namespace('CarList')
   }
 })
 export default class CarList extends Vue {
+  query_id = -1
 
   @carsns.State
   public cars?: Car[];
 
   @carsns.Action
-  public fetchCars!: () => void
+  public fetchCars!: (query_id: {query_id: number}) => void
 
   @carsns.Action
   public sortCars!: (sortFn: (a: Car, b: Car) => number) => void
 
   created() {
-    console.log("CREATED");
-    this.fetchCars()
+    this.query_id = parseInt(this.$route.params.query_id, 10);
+    this.fetchCars({query_id: this.query_id});
   }
 
 }
