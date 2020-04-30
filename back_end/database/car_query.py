@@ -1,4 +1,4 @@
-from ..database.database import db_connect
+from .database import db_connect
 
 def get_car_query(id):
     with db_connect().cursor() as cursor:
@@ -21,13 +21,12 @@ def get_car_query(id):
         body_style = cursor.fetchone()
 
         cursor.execute("""SELECT makes.*, models.* FROM query_make_model 
-            INNER JOIN makes 
+            LEFT JOIN makes 
             ON query_make_model.make_id=makes.id
-            INNER JOIN models
+            LEFT JOIN models
             ON query_make_model.model_id=models.id
             WHERE query_make_model.query_id=%s""", id)
         make_model = cursor.fetchone()
-
         cursor.connection.close()
         return {
             "car_query":car_query,
@@ -77,9 +76,9 @@ def get_car_queries_by_user_id(user_id):
 
 def insert_car_query(cursor, query_values):
     cursor.execute("""INSERT INTO `car_queries`(`price_from`, `price_to`, 
-            `year_from`, `search_term`, `year_to`, `power_from`, `power_to`, user_id, sites, city_id, scrape_interval) 
+            `year_from`, `search_term`, `year_to`, `power_from`, `power_to`, user_id, sites, city_id) 
             VALUES (%(price_from)s, %(price_to)s, %(year_from)s, %(search_term)s, 
-            %(year_to)s, %(power_from)s, %(power_to)s, %(user_id)s, %(sites)s, %(city_id)s, 300)""", query_values)
+            %(year_to)s, %(power_from)s, %(power_to)s, %(user_id)s, %(sites)s, %(city_id)s )""", query_values)
         
     query_values["query_id"] = cursor.lastrowid
 

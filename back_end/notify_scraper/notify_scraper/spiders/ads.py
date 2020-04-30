@@ -1,8 +1,14 @@
 # from scrapy.crawler import CrawlerProcess
 # from notify_scraper.notify_scraper.spiders.autogidas import AutogidasSpider
-from ....database.database import connection, db_connect
+import os
+print(os.getcwd())
+print(__package__)
+import sys
+sys.path.insert(0,'..')
+from database.database import connection, db_connect
 from urllib.parse import urlencode
 from typing import Dict, Union
+from scrapy.http import Response 
 
 db_translations = {
     #autogidas
@@ -66,6 +72,7 @@ db_translations = {
     "CO2 emisija, g/km":"co2_emmision",
     "#1":"autog_id", # for setting to None,
     "VIN kodas":"vin_code",
+    "Telefonas":"phone",
 
     # autoplius
     "Pagaminimo data":"year",
@@ -97,7 +104,7 @@ db_translations = {
     "Pirma registracijos šalis":"first_reg_country",
     "VIN numeris":"vin_code",
     "Klimato kontrolė":"climate_control",
-
+    "Tipas":"?6", # https://www.autobilis.lt/advert/443210/bmw-120-2008
     
     # empty for db columns
     "?0":"autog_id",
@@ -107,12 +114,13 @@ db_translations = {
     "?4":"href",
     "?5":"picture_href",
     "?6":"location"
+    
 }
 
 class CarAd():
     scraped_params: Dict[str, Union[str, int, float]]
     def __init__(self, response, query_id):
-        self.response = response
+        self.response: Response = response
         self.scraped_params = {}
         self.prepared_params = {}
         self.scraped_params["query_id"] = query_id
@@ -156,7 +164,7 @@ class CarAd():
             model = cursor.fetchone()
             self.prepared_params["model"] = model["id"]
         if self.prepared_params["fuel_type"] is not None:
-            cursor.execute("SELECT * from fuel_types WHERE fuel_name=%s", self.prepared_params["fuel_type"])
+            cursor.execute("SELECT * from fuel_types WHERE fuel_name=%s", self.prepared_params["fuel_type"].replace(" ", ""))
             fuel = cursor.fetchone()
             self.prepared_params["fuel_type"] = fuel["id"]
         if self.prepared_params["body_type"] is not None:
@@ -164,7 +172,47 @@ class CarAd():
             body_t = cursor.fetchone()
             self.prepared_params["body_type"] = body_t["id"]
 
+    def extract_relevant_attributes(self):
+        """Extracts only relevant attributes, to return for later data processing."""
+        car = {}
+        car["make"] = self.prepared_params["make"]
+        car["model"] = self.prepared_params["model"]
+        car["year"] = self.prepared_params["year"]
+        car["engine"] = self.prepared_params["engine"]
+        car["fuel_type"] = self.prepared_params["fuel_type"]
+        car["body_type"] = self.prepared_params["body_type"]
+        car["color"] = self.prepared_params["color"]
+        car["gearbox"] = self.prepared_params["gearbox"]
+        car["driven_wheels"] = self.prepared_params["driven_wheels"]
+        car["damage"] = self.prepared_params["damage"]
+        car["steering_column"] = self.prepared_params["steering_column"]
+        car["door_count"] = self.prepared_params["door_count"]
+        car["cylinder_count"] = self.prepared_params["cylinder_count"]
+        car["ts_to"] = self.prepared_params["ts_to"]
+        car["weight"] = self.prepared_params["weight"]
+        car["wheels"] = self.prepared_params["wheels"]
+        car["fuel_urban"] = self.prepared_params["fuel_urban"]
+        car["fuel_overland"] = self.prepared_params["fuel_overland"]
+        car["fuel_overall"] = self.prepared_params["fuel_overall"]
+        car["features"] = self.prepared_params["features"]
+        car["comments"] = self.prepared_params["comments"]
+        car["key_value"] = self.prepared_params["key_value"]
+        car["price"] = self.prepared_params["price"]
+        car["autog_id"] = self.prepared_params["autog_id"]
+        car["autob_id"] = self.prepared_params["autob_id"]
+        car["autop_id"] = self.prepared_params["autop_id"]
+        car["export_price"] = self.prepared_params["export_price"]
+        car["vin_code"] = self.prepared_params["vin_code"]
+        car["query_id"] = self.prepared_params["query_id"]
+        car["href"] = self.prepared_params["href"]
+        car["picture_href"] = self.prepared_params["picture_href"]
+        car["mileage"] = self.prepared_params["mileage"]
+        car["location"] = self.prepared_params["location"]
+        car["id"] = self.prepared_params["id"]
+        return car
+
     def insert_auto_ad(self):
+        """Inserts car ad into database and returns inserted car ad"""
         if "autog_id" in self.prepared_params and self.prepared_params["autog_id"] is not None:
             self.prepared_params["key_column"] = "autog_id"
             self.prepared_params["key_value"] = self.prepared_params["autog_id"]
@@ -179,6 +227,8 @@ class CarAd():
             cursor.execute("SELECT * FROM car_ads WHERE "+self.prepared_params["key_column"]+"=%(key_value)s", self.prepared_params)
             ad_exists = cursor.fetchone()
             self.auto_foreign_keys(cursor)
+            print("DRIVEN_WHEELS:")
+            print(self.prepared_params["driven_wheels"])
             if ad_exists:
                 cursor.execute(f"""UPDATE `car_ads` SET make=%(make)s, model=%(model)s, year=%(year)s, engine=%(engine)s,
                     fuel_type=%(fuel_type)s, body_type=%(body_type)s, 
@@ -189,23 +239,29 @@ class CarAd():
                     wheels=%(wheels)s, fuel_urban=%(fuel_urban)s, fuel_overland=%(fuel_overland)s, 
                     fuel_overall=%(fuel_overall)s, features=%(features)s, comments=%(comments)s, 
                     """+self.prepared_params["key_column"]+f"""=%(key_value)s, price=%(price)s, export_price=%(export_price)s, vin_code=%(vin_code)s,
-                    query_id=%(query_id)s, href=%(href)s, picture_href=%(picture_href)s, mileage=%(mileage)s, location=%(location)s 
+                    query_id=%(query_id)s, href=%(href)s, picture_href=%(picture_href)s, mileage=%(mileage)s, location=%(location)s, when_scraped=unix_timestamp(),
+                    phone=%(phone)s
                     WHERE {self.prepared_params["key_column"]}=%(key_value)s""", self.prepared_params)
-                
+                self.prepared_params["id"] = ad_exists["id"]
             else:
                 cursor.execute("""INSERT INTO `car_ads`(`make`, `model`, `year`, `engine`, `fuel_type`, 
                     `body_type`, `color`, `gearbox`, `driven_wheels`, `damage`, `steering_column`, `door_count`, 
                     `cylinder_count`, `gear_count`, `seat_count`, `ts_to`, `weight`, `wheels`, `fuel_urban`, 
                     `fuel_overland`, `fuel_overall`, `features`, `comments`, """+self.prepared_params["key_column"]+""", `price`,
-                    `export_price`, `vin_code`, query_id, href, picture_href, mileage, location) 
+                    `export_price`, `vin_code`, query_id, href, picture_href, mileage, location, when_scraped, phone) 
                     VALUES (%(make)s, %(model)s, %(year)s, %(engine)s, %(fuel_type)s, %(body_type)s, 
                     %(color)s, %(gearbox)s, %(driven_wheels)s, %(damage)s, %(steering_column)s,
                     %(door_count)s, %(cylinder_count)s, %(gear_count)s, %(seat_count)s, DATE(%(ts_to)s), %(weight)s, 
                     %(wheels)s, %(fuel_urban)s, %(fuel_overland)s, %(fuel_overall)s, %(features)s, %(comments)s, 
                     %(key_value)s, %(price)s, %(export_price)s, %(vin_code)s, %(query_id)s, %(href)s, %(picture_href)s, 
-                    %(mileage)s, %(location)s)""", self.prepared_params)
+                    %(mileage)s, %(location)s, unix_timestamp(), %(phone)s)""", self.prepared_params)
+                self.prepared_params["id"] = cursor.lastrowid
+
             cursor.connection.commit()
             cursor.connection.close()
+        
+        car = self.extract_relevant_attributes()
+        return car
 
     def parse(self):
         NotImplementedError("Child class must implement 'parse' method")
@@ -251,8 +307,19 @@ class AutopliusAd(CarAd):
         self.prepared_params["fuel_overland"] = self.prepared_params["fuel_overland"].replace(',','.') if self.prepared_params["fuel_overland"] is not None else None
         self.prepared_params["fuel_overall"] = self.prepared_params["fuel_overall"].replace(',','.') if self.prepared_params["fuel_overall"] is not None else None
         if self.prepared_params["mileage"] is not None:
-            tmp = self.prepared_params["mileage"].split(" ")
-            self.prepared_params["mileage"] = tmp[0] + tmp[1]
+            self.prepared_params["mileage"] = self.prepared_params["mileage"].replace(" ", "").replace("km", "")
+
+    def scrape_body_type(self):
+        btype = self.response.css(".page-title > h1::text").get()
+        if btype:
+            if "(coupe)" in btype:
+                self.scraped_params["body_type"] = "Coupe"
+            elif "komercinis" in btype:
+                self.scraped_params["body_type"] = "Komercinis auto(su būda)"
+            elif "keleiviniai" in btype:
+                self.scraped_params["body_type"] = "Keleivinis mikroautobusas"
+            else:
+                self.scraped_params["body_type"] = self.response.css(".page-title > h1::text").get().split(", ")[-1].capitalize()
 
     def parse(self):
         self.scraped_params["autop_id"] = self.response.url.split(".")[-2].split("-")[-1]
@@ -290,12 +357,48 @@ class AutopliusAd(CarAd):
 
         self.db_driven_wheels()
 
-        self.scraped_params["body_type"] = self.response.css(".page-title > h1::text").get().split(", ")[-1].capitalize()
+        self.scrape_body_type()
 
-        self.scraped_params["picture_href"] = self.response.css("div.announcement-media-gallery > div.thumbnail > img::attr(src)").get().strip()
+        self.scraped_params["picture_href"] = self.response.css("div.announcement-media-gallery > div.thumbnail > img::attr(src)").get()
+        self.scraped_params["picture_href"] = self.scraped_params["picture_href"].strip() if self.scraped_params["picture_href"] is not None else None
 
+        if "steering_column" in self.scraped_params and self.scraped_params["steering_column"] is not None:
+            if "Dešinėje" in self.scraped_params["steering_column"]:
+                self.scraped_params["steering_column"] = "Dešinėje"
 
 class AutobilisAd(CarAd):
+
+    def prepare_data(self):
+        super().prepare_data()
+
+        if self.prepared_params["mileage"] is not None:
+            self.prepared_params["mileage"] = self.prepared_params["mileage"].replace(" ", "").replace("km", "")
+
+    def convert_body_type(self):
+        if self.scraped_params.get("body_type"):
+            if "Kupė" in self.scraped_params["body_type"]:
+                self.scraped_params["body_type"] = "Coupe"
+            elif "Komercinis" in self.scraped_params["body_type"]:
+                self.scraped_params["body_type"] = "Komercinis auto(su būda)"
+            elif "Kabrioletas" in self.scraped_params["body_type"]:
+                self.scraped_params["body_type"] = "Kabrioletas"
+
+    def gen_location(self):
+        location = self.response.css('div.owner-location::text').get()
+        if self.scraped_params.get("country") and self.scraped_params.get("city"):
+            self.scraped_params["location"] = self.scraped_params["country"] + ", " + self.scraped_params["city"]
+        elif self.scraped_params.get("country"):
+            self.scraped_params["location"] = self.scraped_params["country"]
+        elif self.scraped_params.get("city"):
+            self.scraped_params["location"] = self.scraped_params["city"]
+
+    def gen_engine(self):
+        if "engine_volume" in self.scraped_params and "power" in self.scraped_params:
+            self.scraped_params["engine"] = f'{self.scraped_params["engine_volume"]} L, {self.scraped_params["power"]}'
+        elif "engine_volume" in self.scraped_params:
+            self.scraped_params["engine"] = f'{self.scraped_params["engine_volume"]} L'
+        elif "power" in self.scraped_params:
+            self.scraped_params["engine"] = f'{self.scraped_params["power"]}'
 
     def parse(self):
         self.scraped_params["autob_id"] = self.response.url.split("/")[4]
@@ -303,9 +406,9 @@ class AutobilisAd(CarAd):
         for row in self.response.css("div.row.car-info-r"):
             key = db_translations[row.css('div.col-sm-6.car-info-h > p::text').get().strip()]
             value = row.css('div.col-sm-6.car-info-c > p::text').get()
-            self.scraped_params[key] = value.strip()
+            self.scraped_params[key] = value.strip() if value is not None else None
 
-        self.scraped_params["engine"] = f'{self.scraped_params["engine_volume"]} L, {self.scraped_params["power"]}'
+        self.gen_engine()
         
         self.scraped_params["features"] = ""
         feature_block = self.response.css('div.advert-price-MainInfo-features')
@@ -319,12 +422,17 @@ class AutobilisAd(CarAd):
             comment = comment_block.css('div.advert-price-MainInfo-text > span::text').get()
             self.scraped_params["comments"] = comment.strip() if comment is not None else None
 
-        location = self.response.css('div.owner-location::text').get()
-        self.scraped_params["location"] = self.scraped_params["country"] + ", " + self.scraped_params["city"]
+        self.gen_location()
 
         self.scraped_params["price"] = self.response.css('span.price-value::attr(data-price)').get().strip()
 
-        self.scraped_params["fuel_overall"] = self.scraped_params.get("fuel_overall").split("l")[0] if self.scraped_params["fuel_overall"] else None
+        self.scraped_params["fuel_overall"] = self.scraped_params.get("fuel_overall").split("l")[0] if "fuel_overall" in self.scraped_params and\
+            self.scraped_params["fuel_overall"] else None
         self.db_driven_wheels()
 
         self.scraped_params["href"] = self.response.url
+
+        self.scraped_params["picture_href"] = self.response.css("div.single-item-wrapper > div  img::attr(src)").get()
+        self.scraped_params["picture_href"] = self.scraped_params["picture_href"].strip() if self.scraped_params["picture_href"] is not None else None
+        
+        self.convert_body_type()

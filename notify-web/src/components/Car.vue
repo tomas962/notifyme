@@ -21,7 +21,7 @@
             </b-row>
              <b-row>
                 <b-col class="" cols="12" md="8">
-                    <p>{{car.mileage ? car.mileage + " km.," : ""}} {{car.body_type_name}}, {{car.location ? car.location.split(',')[1] : ""}}</p>
+                    <p>{{car.mileage ? car.mileage + " km.," : ""}} {{car.body_type_name}}, {{car.location}}</p>
                 </b-col>
                 <b-col>
                     <a :href="car.href">Nuoroda</a>
@@ -59,9 +59,7 @@ export default class CarComp extends Vue {
         return ""
     }
     
-    created() {
-        this.car.price *= 10;
-    }
+    
 }
 </script>
 
