@@ -85,6 +85,7 @@ class AutogidasQuery():
         if "fuel_type" in self.params and self.params["fuel_type"] is not None and "fuel_name" in self.params["fuel_type"]:
             new_params[f'f_2[0]'] = self.params["fuel_type"]["fuel_name"] if self.params["fuel_type"]["fuel_name"] is not None else ""
         
+        
         return new_params
 
 class AutobilisQuery():

@@ -10,7 +10,7 @@
                     <b-form>
                         <b-row>
                             <b-col>
-                                <b-form-select v-on:change="getModels();" v-model="newQuery.make_id" :options="queryFormData.makesOptions" ></b-form-select>
+                                <b-form-select v-on:change="getModels(); log_('make changed')" v-model="newQuery.make_id" :options="queryFormData.makesOptions" ></b-form-select>
                             </b-col>
                             <b-col>
                                 <b-form-select v-model="newQuery.model_id" :options="queryFormData.modelsOptions" ></b-form-select>
@@ -175,6 +175,11 @@ export default class CarQueries extends Vue {
         cities: []
     }
 
+    log_(msg: string) {
+        console.log(msg);
+        
+    }
+
     @Watch('queries')
     onQueriesChanged(newQueries: CarQueryResponse[]) {  
         const tmp: CarQueryResponse[][] = []
@@ -194,7 +199,6 @@ export default class CarQueries extends Vue {
         this.queriesBy4 = tmp;
     }
 
-
     async getQueries() {
         const response = await fetch(window.SERVER_URL + "/users/" + this.$store.state.User.identity.user_id + "/queries");
         const data: CarQueryResponse[] = await response.json();
@@ -212,13 +216,14 @@ export default class CarQueries extends Vue {
                 value: model.id
             }
         }));
-        console.log(this.queryFormData.modelsOptions);
         
     }
 
     created() {
         this.getQueries();
         this.$root.$on("query-edit", async (query: CarQueryResponse) => {
+            console.log("ON QUERY-EDIT EMMITED");
+            
             this.editForm = true;
             this.newQuery.make_id = (query.make_model !== null && query.make_model.make_id !== null) ? query.make_model.make_id : 1
             this.newQuery.model_id = query.make_model ? query.make_model.model_id : null
@@ -233,6 +238,7 @@ export default class CarQueries extends Vue {
             this.newQuery.year_from = query.car_query.year_from
             this.newQuery.body_style_id = query.body_style ? query.body_style.id : null
             this.newQuery.query_id = query.car_query.id
+            this.newQuery.fuel_id = query.fuel_type ? query.fuel_type.id : null
             this.getFormData();
             this.getModels();
         })

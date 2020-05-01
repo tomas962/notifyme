@@ -75,6 +75,7 @@ export default class CarQueryComp extends Vue {
 
 
     edit(){
+        
         this.$root.$emit("query-edit", this.query)
         this.$bvModal.show("queryEditModal")
     }

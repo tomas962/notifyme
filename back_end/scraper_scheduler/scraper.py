@@ -1,5 +1,5 @@
 import threading
-from ..database.database import db_connect
+from database.database import db_connect
 import time
 import math
 from scrapy.crawler import CrawlerProcess
@@ -9,14 +9,15 @@ from multiprocessing import Process
 from multiprocessing import Queue
 from scrapy import cmdline
 import os
-from ..notify_scraper.notify_scraper.spiders.autobilis import AutobilisSpider
-from ..notify_scraper.notify_scraper.spiders.autogidas import AutogidasSpider
-from ..notify_scraper.notify_scraper.spiders.autoplius import AutopliusSpider
+from notify_scraper.notify_scraper.spiders.autobilis import AutobilisSpider
+from notify_scraper.notify_scraper.spiders.autogidas import AutogidasSpider
+from notify_scraper.notify_scraper.spiders.autoplius import AutopliusSpider
 SCRAPE_INTERVAL = 600
-from ..notify_scraper.notify_scraper import settings
+from notify_scraper.notify_scraper import settings
 from scrapy.settings import Settings
-from database.car import get_cars_by_query_id
 from notifier.notifier import Notifier 
+from database.car import get_cars_by_query_id
+from database.car_query import get_all_car_queries
 
 items = []
 class ItemCollector():
@@ -27,7 +28,7 @@ class ItemCollector():
         items.append(item)
 
 
-class Scraper():
+class ScraperScheduler():
     
     def __init__(self):
         self.car_queries = {}
@@ -37,9 +38,12 @@ class Scraper():
         self.current_query = None
 
         with db_connect().cursor() as cursor:
-            cursor.execute("SELECT * FROM car_queries")
-            queries = cursor.fetchall()
-            
+            full_queries = get_all_car_queries()
+            queries = [x["car_query"] for x in full_queries]
+            self.full_queries = {}
+            for query in full_queries:
+                self.full_queries[query["car_query"]["id"]] = query
+
             for query in queries:
                 query["query_id"] = query["id"]
                 self.car_queries[query["id"]] = query
@@ -58,7 +62,7 @@ class Scraper():
 
         # self.updater_thread = threading.Thread(target=self.run)
         # self.updater_thread.start()
-        self.scraper_thread = threading.Thread(target=self.car_scraper)
+        self.scraper_thread = threading.Thread(target=self.car_scraper_loop)
         self.scraper_thread.start()
         
 
@@ -72,7 +76,7 @@ class Scraper():
         sett = Settings({
             'COOKIES_ENABLED': settings.COOKIES_ENABLED, 
             'DOWNLOAD_DELAY': settings.DOWNLOAD_DELAY,
-            'ITEM_PIPELINES': {'back_end.scraper_scheduler.scraper.ItemCollector': 100}
+            'ITEM_PIPELINES': {'scraper_scheduler.scraper.ItemCollector': 100}
         })
         # print("SETTINGS:")
         # print(vars(sett))
@@ -89,8 +93,9 @@ class Scraper():
         print("TIME ON Q.PUT()")
         print(time.time())
         q.put(items)
+        
     
-    def car_scraper(self):
+    def car_scraper_loop(self):
         while True:
             lowest = math.inf
             self.current_query = None
@@ -106,14 +111,20 @@ class Scraper():
                 print(time_to_wait)
                 # time.sleep(time_to_wait)
                 with self.cv:
-                    if self.cv.wait(time_to_wait):
-                        print("Sleep got interrupted: new query added.")
+                    if time_to_wait == math.inf:
+                        if self.cv.wait():
+                            print("Sleep got interrupted: new query added.")
+                        else:
+                            print("Sleep ended, continue scraping")
                     else:
-                        print("Sleep ended, continue scraping")
+                        if self.cv.wait(time_to_wait):
+                            print("Sleep got interrupted: new query added.")
+                        else:
+                            print("Sleep ended, continue scraping")
             else:
                 print("NO NEED TO WAIT")
             
-            if time.time() < self.current_query["next_scrape"]:
+            if self.current_query is None or time.time() < self.current_query["next_scrape"]:
                 continue
 
             # get old cars
@@ -130,14 +141,16 @@ class Scraper():
             print("TIME after Q.get()")
             print(time.time())
             print("SCRAPED ITEMS:")
-            print(scraped_cars)
             # get new cars
             # check differences and notify
-            notif = Notifier(old_cars, scraped_cars, self.current_query)
+            ttt = time.time()
+            notif = Notifier(old_cars, scraped_cars, self.full_queries[query["id"]])
+            print("NOTIFIER TOOK TIME:")
+            print(time.time() - ttt)
             # update last scraped
             self.current_query["last_scraped"] = int(time.time())
             with db_connect().cursor() as cursor:
-                cursor.execute("UPDATE car_queries SET last_scraped=%(last_scraped)s WHERE id=%(query_id)s", self.current_query)
+                cursor.execute("UPDATE car_queries SET last_scraped=%(last_scraped)s, was_scraped=1 WHERE id=%(query_id)s", self.current_query)
                 cursor.connection.commit()
                 cursor.connection.close()
 
@@ -156,14 +169,5 @@ class Scraper():
             self.added_query_id = query["query_id"]
             self.cv.notify()
 
-    # def run(self):
-    #     while True:
-    #         with self.cv:
-    #             self.cv.wait_for(lambda: self.new_query_added)
-    #             print("FROM RUN: NEW QUERY ADDED")
-    #             print(self.car_queries[self.added_query_id])
-    #             # for q, qe in self.car_queries.items():
-    #             #     print(qe)
-    #             self.new_query_added = False
 
                     

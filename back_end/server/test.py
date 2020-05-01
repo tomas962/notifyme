@@ -5,8 +5,8 @@ import time
 threads = []
 
 t1 = time.time()
-for i in range(2000):
-    t = multiprocessing.Process(target=lambda: i > 1)
+for i in range(10000):
+    t = threading.Thread(target=lambda: i > 1)
     threads.append(t)
     t.start()
 

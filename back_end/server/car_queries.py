@@ -1,8 +1,8 @@
 from flask import Blueprint, jsonify, request, Response
-from ..database.database import db_connect
-from ..database.car_query import get_car_queries_by_user_id, insert_car_query
-from .main import car_scraper
+from database.database import db_connect
+from database.car_query import get_car_queries_by_user_id, insert_car_query
 query_api = Blueprint('car_queries', __name__)
+from .car_scraper import car_scraper
 
 @query_api.route("/users/<int:user_id>/queries")
 def user_query_list(user_id): #TODO filter by user id and car query id
@@ -80,7 +80,7 @@ def put_car_query(user_id, query_id):
             cursor.execute("""UPDATE `car_queries` SET price_from=%(price_from)s, price_to=%(price_to)s, 
                 year_from=%(year_from)s, search_term=%(search_term)s, 
                 year_to=%(year_to)s, power_from=%(power_from)s, power_to=%(power_to)s, 
-                user_id=%(user_id)s, sites=%(sites)s, city_id=%(city_id)s WHERE id=%(query_id)s AND user_id=%(user_id)s""", query_values)
+                user_id=%(user_id)s, sites=%(sites)s, city_id=%(city_id)s, was_scraped=0 WHERE id=%(query_id)s AND user_id=%(user_id)s""", query_values)
         
             if query_values["fuel_id"] is not None:
                 cursor.execute("SELECT * FROM query_fuel WHERE query_id=%(query_id)s", query_values)

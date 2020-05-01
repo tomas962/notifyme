@@ -73,6 +73,7 @@ db_translations = {
     "#1":"autog_id", # for setting to None,
     "VIN kodas":"vin_code",
     "Telefonas":"phone",
+    "Pardavėjas": "?",
 
     # autoplius
     "Pagaminimo data":"year",
@@ -158,18 +159,22 @@ class CarAd():
         if self.prepared_params["make"] is not None:
             cursor.execute("SELECT * from makes WHERE make=%s", self.prepared_params["make"])
             make = cursor.fetchone()
+            self.prepared_params["make_name"] = self.prepared_params["make"]
             self.prepared_params["make"] = make["id"]
         if self.prepared_params["model"] is not None:
             cursor.execute("SELECT * from models WHERE make_id=%s AND model_name=%s", (self.prepared_params["make"], self.prepared_params["model"]))
             model = cursor.fetchone()
+            self.prepared_params["model_name"] = self.prepared_params["model"]
             self.prepared_params["model"] = model["id"]
         if self.prepared_params["fuel_type"] is not None:
             cursor.execute("SELECT * from fuel_types WHERE fuel_name=%s", self.prepared_params["fuel_type"].replace(" ", ""))
             fuel = cursor.fetchone()
+            self.prepared_params["fuel_type_name"] = self.prepared_params["fuel_type"]
             self.prepared_params["fuel_type"] = fuel["id"]
         if self.prepared_params["body_type"] is not None:
             cursor.execute("SELECT * from body_styles WHERE name=%s", self.prepared_params["body_type"])
             body_t = cursor.fetchone()
+            self.prepared_params["body_type_name"] = self.prepared_params["body_type"]
             self.prepared_params["body_type"] = body_t["id"]
 
     def extract_relevant_attributes(self):
@@ -209,6 +214,10 @@ class CarAd():
         car["mileage"] = self.prepared_params["mileage"]
         car["location"] = self.prepared_params["location"]
         car["id"] = self.prepared_params["id"]
+        car["make_name"] = self.prepared_params["make_name"]
+        car["model_name"] = self.prepared_params["model_name"]
+        car["body_type_name"] = self.prepared_params["body_type_name"]
+        car["fuel_type_name"] = self.prepared_params["fuel_type_name"]
         return car
 
     def insert_auto_ad(self):
@@ -240,7 +249,7 @@ class CarAd():
                     fuel_overall=%(fuel_overall)s, features=%(features)s, comments=%(comments)s, 
                     """+self.prepared_params["key_column"]+f"""=%(key_value)s, price=%(price)s, export_price=%(export_price)s, vin_code=%(vin_code)s,
                     query_id=%(query_id)s, href=%(href)s, picture_href=%(picture_href)s, mileage=%(mileage)s, location=%(location)s, when_scraped=unix_timestamp(),
-                    phone=%(phone)s
+                    phone=%(phone)s, deleted=0
                     WHERE {self.prepared_params["key_column"]}=%(key_value)s""", self.prepared_params)
                 self.prepared_params["id"] = ad_exists["id"]
             else:
@@ -248,13 +257,13 @@ class CarAd():
                     `body_type`, `color`, `gearbox`, `driven_wheels`, `damage`, `steering_column`, `door_count`, 
                     `cylinder_count`, `gear_count`, `seat_count`, `ts_to`, `weight`, `wheels`, `fuel_urban`, 
                     `fuel_overland`, `fuel_overall`, `features`, `comments`, """+self.prepared_params["key_column"]+""", `price`,
-                    `export_price`, `vin_code`, query_id, href, picture_href, mileage, location, when_scraped, phone) 
+                    `export_price`, `vin_code`, query_id, href, picture_href, mileage, location, when_scraped, phone, deleted) 
                     VALUES (%(make)s, %(model)s, %(year)s, %(engine)s, %(fuel_type)s, %(body_type)s, 
                     %(color)s, %(gearbox)s, %(driven_wheels)s, %(damage)s, %(steering_column)s,
                     %(door_count)s, %(cylinder_count)s, %(gear_count)s, %(seat_count)s, DATE(%(ts_to)s), %(weight)s, 
                     %(wheels)s, %(fuel_urban)s, %(fuel_overland)s, %(fuel_overall)s, %(features)s, %(comments)s, 
                     %(key_value)s, %(price)s, %(export_price)s, %(vin_code)s, %(query_id)s, %(href)s, %(picture_href)s, 
-                    %(mileage)s, %(location)s, unix_timestamp(), %(phone)s)""", self.prepared_params)
+                    %(mileage)s, %(location)s, unix_timestamp(), %(phone)s, 0)""", self.prepared_params)
                 self.prepared_params["id"] = cursor.lastrowid
 
             cursor.connection.commit()
@@ -296,6 +305,10 @@ class AutogidasAd(CarAd):
             country = words[1].strip()
             city = words[0].strip()
             self.scraped_params["location"] = country + ", " + city
+
+        self.scraped_params["phone"] = self.response.css("div.seller-info > div.seller-ico.seller-phones.btn-action::text").get()
+        self.scraped_params["phone"] = self.scraped_params["phone"].strip() if self.scraped_params["phone"] is not None else None
+
         
 
 class AutopliusAd(CarAd):
@@ -365,6 +378,9 @@ class AutopliusAd(CarAd):
         if "steering_column" in self.scraped_params and self.scraped_params["steering_column"] is not None:
             if "Dešinėje" in self.scraped_params["steering_column"]:
                 self.scraped_params["steering_column"] = "Dešinėje"
+
+        self.scraped_params["phone"] = self.response.css("div.announcement-owner-contacts-main.js-owner-contacts > div.contacts-column.owner-contacts > ul > li > div::text").get()
+        self.scraped_params["phone"] = self.scraped_params["phone"].strip() if self.scraped_params["phone"] is not None else None
 
 class AutobilisAd(CarAd):
 
@@ -436,3 +452,9 @@ class AutobilisAd(CarAd):
         self.scraped_params["picture_href"] = self.scraped_params["picture_href"].strip() if self.scraped_params["picture_href"] is not None else None
         
         self.convert_body_type()
+
+        for row in self.response.css("div.clearfix"):
+            vals = row.css("div::text").getall()
+            if 0 in vals and vals[0] is not None and vals[0].strip() == "Telefonas":
+                self.scraped_params["phone"] = vals[1].strip() if 1 in vals and vals[1] is not None else None
+                
