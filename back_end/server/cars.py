@@ -1,6 +1,6 @@
 from flask import Blueprint, jsonify
 from database.database import db_connect
-from database.car import get_cars_by_query_id
+from database.car import get_cars_by_query_id, get_car_by_id
 cars_api = Blueprint('cars', __name__)
 
 @cars_api.route("/cars")
@@ -23,6 +23,11 @@ def car_list():
 def query_car_list(query_id):
     car_ads = get_cars_by_query_id(query_id)
     return jsonify(car_ads)
+
+@cars_api.route("/queries/<int:query_id>/cars/<int:car_id>")
+def get_car(query_id, car_id):
+    car_ad = get_car_by_id(car_id)
+    return jsonify(car_ad)
 
 @cars_api.route("/makes")
 def get_makes():

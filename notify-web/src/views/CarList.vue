@@ -1,9 +1,19 @@
 <template>
-  <div>
+<div>
     <a href="#" v-on:click="sortCars((a, b) => a.price - b.price);">SORT </a>
-    <CarComp v-for="car in cars" :key="car.id" :car="car" />
-
-  </div>
+    <b-row class="text-center">
+        <b-col>
+            <b-pagination 
+            v-model="currentPage"
+            :total-rows="cars.length"
+            :per-page="perPage"
+            align="center"
+            ></b-pagination>
+        </b-col>
+    </b-row>
+    
+    <CarComp v-for="car in carPage" :key="car.id" :car="car" />
+</div>
 </template>
 
 <script lang="ts">
@@ -15,26 +25,38 @@ import {Car} from '../store/modules/cars'
 const carsns = namespace('CarList')
 
 @Component({
-  components: {
+components: {
     CarComp
-  }
+}
 })
 export default class CarList extends Vue {
-  query_id = -1
+    query_id = -1;
 
-  @carsns.State
-  public cars?: Car[];
+    perPage = 10;
+    currentPage = 1;
 
-  @carsns.Action
-  public fetchCars!: (query_id: {query_id: number}) => void
+    @carsns.State
+    public cars!: Car[];
 
-  @carsns.Action
-  public sortCars!: (sortFn: (a: Car, b: Car) => number) => void
+    @carsns.Action
+    public fetchCars!: (query_id: {query_id: number}) => void
 
-  created() {
-    this.query_id = parseInt(this.$route.params.query_id, 10);
-    this.fetchCars({query_id: this.query_id});
-  }
+    @carsns.Action
+    public sortCars!: (sortFn: (a: Car, b: Car) => number) => void
+
+    created() {
+        this.query_id = parseInt(this.$route.params.query_id, 10);
+        this.fetchCars({query_id: this.query_id});
+}
+
+get carPage() {
+    const start = (this.currentPage-1) * this.perPage
+    const end = start + this.perPage
+    console.log(start);
+    console.log(end);
+    
+    return this.cars.slice(start, end);
+}
 
 }
 </script>

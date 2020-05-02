@@ -4,6 +4,7 @@ import Home from '../views/Home.vue'
 import CarList from '../views/CarList.vue'
 import Login from '../views/Login.vue'
 import CarQueries from '../views/CarQueries.vue'
+import CarView from '@/views/CarView.vue'
 
 Vue.use(VueRouter)
 
@@ -30,6 +31,11 @@ Vue.use(VueRouter)
     path: '/queries',
     name: 'Queries',
     component: CarQueries
+  },
+  {
+    path: '/queries/:query_id/cars/:car_id',
+    name: 'CarView',
+    component: CarView
   }
 ]
 

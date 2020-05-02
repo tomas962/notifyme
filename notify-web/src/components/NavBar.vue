@@ -7,13 +7,12 @@
     <b-collapse id="nav-collapse" is-nav>
         <b-navbar-nav>
             <b-nav-item v-if="identity.email == ''"><router-link to="/login">Login</router-link></b-nav-item>
-            <b-nav-item><router-link to="/queries">Queries</router-link></b-nav-item>
-            <b-nav-item><router-link to="/cars">Cars</router-link></b-nav-item>
+            <b-nav-item><router-link to="/queries">Automobiliai</router-link></b-nav-item>
         </b-navbar-nav>
         <!-- Right aligned nav items -->
         <b-navbar-nav class="ml-auto">
           <b-nav-item>Sveiki, {{identity.email || 'svečias'}}</b-nav-item>
-          <b-nav-item v-on:click="logout();" >Logout</b-nav-item>
+          <b-nav-item v-on:click="logout();" >Atsijungti</b-nav-item>
         </b-navbar-nav>
     </b-collapse>
     </b-navbar>

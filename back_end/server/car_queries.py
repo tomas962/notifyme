@@ -1,6 +1,6 @@
 from flask import Blueprint, jsonify, request, Response
 from database.database import db_connect
-from database.car_query import get_car_queries_by_user_id, insert_car_query
+from database.car_query import get_car_queries_by_user_id, insert_car_query, update_car_query
 query_api = Blueprint('car_queries', __name__)
 from .car_scraper import car_scraper
 
@@ -24,6 +24,7 @@ def post_car_query(user_id):
     query_values["power_to"] = json["power_to"] if "power_to" in json else None
     query_values["city_id"] = json["city_id"] if "city_id" in json else None
     query_values["user_id"] = user_id
+    query_values["was_scraped"] = 0
 
     # query_fuel
     query_values["fuel_id"] = json["fuel_id"] if "fuel_id" in json else None
@@ -60,7 +61,8 @@ def put_car_query(user_id, query_id):
     query_values["power_to"] = json["power_to"] if "power_to" in json else None
     query_values["city_id"] = json["city_id"] if "city_id" in json else None
     query_values["user_id"] = user_id
-    query_values["query_id"] = query_id
+    query_values["id"] = query_id
+    query_values["was_scraped"] = 0
 
     # query_fuel
     query_values["fuel_id"] = json["fuel_id"] if "fuel_id" in json else None
@@ -75,38 +77,9 @@ def put_car_query(user_id, query_id):
     query_values["sites"] = ",".join(json["sites"]) if "sites" in json else None
 
     with db_connect().cursor() as cursor:
-        cursor.execute("SELECT * FROM car_queries WHERE user_id=%(user_id)s AND id=%(query_id)s", query_values)
+        cursor.execute("SELECT * FROM car_queries WHERE user_id=%(user_id)s AND id=%(id)s", query_values)
         if cursor.fetchone(): #update existing
-            cursor.execute("""UPDATE `car_queries` SET price_from=%(price_from)s, price_to=%(price_to)s, 
-                year_from=%(year_from)s, search_term=%(search_term)s, 
-                year_to=%(year_to)s, power_from=%(power_from)s, power_to=%(power_to)s, 
-                user_id=%(user_id)s, sites=%(sites)s, city_id=%(city_id)s, was_scraped=0 WHERE id=%(query_id)s AND user_id=%(user_id)s""", query_values)
-        
-            if query_values["fuel_id"] is not None:
-                cursor.execute("SELECT * FROM query_fuel WHERE query_id=%(query_id)s", query_values)
-                if cursor.fetchone():
-                    cursor.execute("""UPDATE `query_fuel` SET fuel_id=%(fuel_id)s WHERE query_id=%(query_id)s""", query_values)
-                else:
-                    cursor.execute("""INSERT INTO `query_fuel`(`query_id`, `fuel_id`) 
-                        VALUES (%(query_id)s, %(fuel_id)s)""", query_values)
-
-            if query_values["body_style_id"] is not None:
-                cursor.execute("SELECT * FROM query_body_style WHERE query_id=%(query_id)s", query_values)
-                if cursor.fetchone():
-                    cursor.execute("""UPDATE `query_body_style` SET
-                        body_style_id=%(body_style_id)s WHERE query_id=%(query_id)s""", query_values)
-                else:
-                    cursor.execute("""INSERT INTO `query_body_style`(`query_id`, `body_style_id`) 
-                        VALUES (%(query_id)s, %(body_style_id)s)""", query_values)
-        
-            if query_values["make_id"] is not None:
-                cursor.execute("SELECT * FROM query_make_model WHERE query_id=%(query_id)s", query_values)
-                if cursor.fetchone():
-                    cursor.execute("""UPDATE `query_make_model` SET
-                        make_id=%(make_id)s, model_id=%(model_id)s WHERE query_id=%(query_id)s""", query_values)
-                else:
-                    cursor.execute("""INSERT INTO `query_make_model`(`query_id`, `make_id`, `model_id`) 
-                        VALUES (%(query_id)s, %(make_id)s, %(model_id)s)""", query_values)
+            update_car_query(cursor, query_values)
             cursor.connection.commit()
             cursor.connection.close()
             car_scraper.update_queries(query_values)

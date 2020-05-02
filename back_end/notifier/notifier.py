@@ -6,8 +6,6 @@ class Notifier():
         self.old_cars = {}
         self.new_cars = {}
         self.car_changes = {}
-        print("SCRAPED CARS PASSED:")
-        print(scraped_cars)
         for car in old_cars:
             self.old_cars[car["id"]] = car
 
@@ -24,16 +22,15 @@ class Notifier():
         print("CAR_CHANGES:")
         print(self.car_changes)
 
-        if len(self.car_changes) != 0:
+        if self.car_query["car_query"]["was_scraped"] and len(self.car_changes) != 0:
             msg = self.generate_message()
             print("MESSAGE TO SEND TO THE USER:")
             print(msg)
+        else:
+            print("NO CAR CHANGES OR CAR QUERY IS NEW")
 
     def _diff(self, car_id, new_car, key):
         if self.old_cars[car_id][key] != new_car[key]:
-            print(key+" CHANGED:")
-            print(self.old_cars[car_id][key])
-            print(new_car[key])
             if car_id not in self.car_changes:
                 self.car_changes[car_id] = {}
             self.car_changes[car_id][key] = True
@@ -55,15 +52,10 @@ class Notifier():
 
     def deleted_car_ads(self):
         cars_to_delete = []
-        print("CARS TO DELETE:")
         for car_id, car in self.old_cars.items():
             if car_id not in self.new_cars:
                 cars_to_delete.append(car_id)
-                print(car)
-                print()
 
-        print("NEW CARS")
-        print(self.new_cars)
         return cars_to_delete
     
 

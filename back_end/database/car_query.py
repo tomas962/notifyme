@@ -41,7 +41,7 @@ def get_all_car_queries():
         car_queries = cursor.fetchall()
         
         if len(car_queries) == 0:
-            return None
+            return []
             
 
         result = []
@@ -80,7 +80,7 @@ def get_car_queries_by_user_id(user_id):
         car_queries = cursor.fetchall()
         
         if len(car_queries) == 0:
-            return None
+            return []
             
 
         result = []
@@ -117,19 +117,53 @@ def insert_car_query(cursor, query_values):
     cursor.execute("""INSERT INTO `car_queries`(`price_from`, `price_to`, 
             `year_from`, `search_term`, `year_to`, `power_from`, `power_to`, user_id, sites, city_id, was_scraped) 
             VALUES (%(price_from)s, %(price_to)s, %(year_from)s, %(search_term)s, 
-            %(year_to)s, %(power_from)s, %(power_to)s, %(user_id)s, %(sites)s, %(city_id)s, 0)""", query_values)
+            %(year_to)s, %(power_from)s, %(power_to)s, %(user_id)s, %(sites)s, %(city_id)s, %(was_scraped)s)""", query_values)
         
-    query_values["query_id"] = cursor.lastrowid
+    query_values["id"] = cursor.lastrowid
 
     if query_values["fuel_id"] is not None:
         cursor.execute("""INSERT INTO `query_fuel`(`query_id`, `fuel_id`) 
-            VALUES (%(query_id)s, %(fuel_id)s)""", query_values)
+            VALUES (%(id)s, %(fuel_id)s)""", query_values)
 
     if query_values["body_style_id"] is not None:
         cursor.execute("""INSERT INTO `query_body_style`(`query_id`, `body_style_id`) 
-            VALUES (%(query_id)s, %(body_style_id)s)""", query_values)
+            VALUES (%(id)s, %(body_style_id)s)""", query_values)
     
     if query_values["make_id"] is not None:
         cursor.execute("""INSERT INTO `query_make_model`(`query_id`, `make_id`, `model_id`) 
-            VALUES (%(query_id)s, %(make_id)s, %(model_id)s)""", query_values)
-    return query_values["query_id"]
+            VALUES (%(id)s, %(make_id)s, %(model_id)s)""", query_values)
+    return query_values["id"]
+
+def update_car_query(cursor, query_values):
+    cursor.execute("""UPDATE `car_queries` SET price_from=%(price_from)s, price_to=%(price_to)s, 
+        year_from=%(year_from)s, search_term=%(search_term)s, 
+        year_to=%(year_to)s, power_from=%(power_from)s, power_to=%(power_to)s, 
+        user_id=%(user_id)s, sites=%(sites)s, city_id=%(city_id)s, was_scraped=%(was_scraped)s WHERE id=%(id)s AND user_id=%(user_id)s""", query_values)
+
+    if query_values["fuel_id"] is not None:
+        cursor.execute("SELECT * FROM query_fuel WHERE query_id=%(id)s", query_values)
+        if cursor.fetchone():
+            cursor.execute("""UPDATE `query_fuel` SET fuel_id=%(fuel_id)s WHERE query_id=%(id)s""", query_values)
+        else:
+            cursor.execute("""INSERT INTO `query_fuel`(`query_id`, `fuel_id`) 
+                VALUES (%(id)s, %(fuel_id)s)""", query_values)
+
+    if query_values["body_style_id"] is not None:
+        cursor.execute("SELECT * FROM query_body_style WHERE query_id=%(id)s", query_values)
+        if cursor.fetchone():
+            cursor.execute("""UPDATE `query_body_style` SET
+                body_style_id=%(body_style_id)s WHERE query_id=%(id)s""", query_values)
+        else:
+            cursor.execute("""INSERT INTO `query_body_style`(`query_id`, `body_style_id`) 
+                VALUES (%(id)s, %(body_style_id)s)""", query_values)
+
+    if query_values["make_id"] is not None:
+        cursor.execute("SELECT * FROM query_make_model WHERE query_id=%(id)s", query_values)
+        if cursor.fetchone():
+            cursor.execute("""UPDATE `query_make_model` SET
+                make_id=%(make_id)s, model_id=%(model_id)s WHERE query_id=%(id)s""", query_values)
+        else:
+            cursor.execute("""INSERT INTO `query_make_model`(`query_id`, `make_id`, `model_id`) 
+                VALUES (%(id)s, %(make_id)s, %(model_id)s)""", query_values)
+
+    cursor.execute("DELETE FROM query_car_fk WHERE query_id=%(id)s", query_values)

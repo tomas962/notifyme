@@ -9,6 +9,7 @@ from database.database import connection, db_connect
 from urllib.parse import urlencode
 from typing import Dict, Union
 from scrapy.http import Response 
+import pymysql
 
 db_translations = {
     #autogidas
@@ -236,8 +237,6 @@ class CarAd():
             cursor.execute("SELECT * FROM car_ads WHERE "+self.prepared_params["key_column"]+"=%(key_value)s", self.prepared_params)
             ad_exists = cursor.fetchone()
             self.auto_foreign_keys(cursor)
-            print("DRIVEN_WHEELS:")
-            print(self.prepared_params["driven_wheels"])
             if ad_exists:
                 cursor.execute(f"""UPDATE `car_ads` SET make=%(make)s, model=%(model)s, year=%(year)s, engine=%(engine)s,
                     fuel_type=%(fuel_type)s, body_type=%(body_type)s, 
@@ -248,24 +247,30 @@ class CarAd():
                     wheels=%(wheels)s, fuel_urban=%(fuel_urban)s, fuel_overland=%(fuel_overland)s, 
                     fuel_overall=%(fuel_overall)s, features=%(features)s, comments=%(comments)s, 
                     """+self.prepared_params["key_column"]+f"""=%(key_value)s, price=%(price)s, export_price=%(export_price)s, vin_code=%(vin_code)s,
-                    query_id=%(query_id)s, href=%(href)s, picture_href=%(picture_href)s, mileage=%(mileage)s, location=%(location)s, when_scraped=unix_timestamp(),
-                    phone=%(phone)s, deleted=0
+                    href=%(href)s, picture_href=%(picture_href)s, mileage=%(mileage)s, location=%(location)s, when_scraped=unix_timestamp(),
+                    phone=%(phone)s, deleted=0, first_reg_country=%(first_reg_country)s
                     WHERE {self.prepared_params["key_column"]}=%(key_value)s""", self.prepared_params)
                 self.prepared_params["id"] = ad_exists["id"]
+                try:
+                    cursor.execute("INSERT INTO query_car_fk (query_id, car_id) VALUES (%(query_id)s, %(id)s)", self.prepared_params)
+                except pymysql.IntegrityError as err:
+                    print("Car ad already existed: ")
+                    print(err)
             else:
                 cursor.execute("""INSERT INTO `car_ads`(`make`, `model`, `year`, `engine`, `fuel_type`, 
                     `body_type`, `color`, `gearbox`, `driven_wheels`, `damage`, `steering_column`, `door_count`, 
                     `cylinder_count`, `gear_count`, `seat_count`, `ts_to`, `weight`, `wheels`, `fuel_urban`, 
                     `fuel_overland`, `fuel_overall`, `features`, `comments`, """+self.prepared_params["key_column"]+""", `price`,
-                    `export_price`, `vin_code`, query_id, href, picture_href, mileage, location, when_scraped, phone, deleted) 
+                    `export_price`, `vin_code`, href, picture_href, mileage, location, when_scraped, phone, deleted, first_reg_country) 
                     VALUES (%(make)s, %(model)s, %(year)s, %(engine)s, %(fuel_type)s, %(body_type)s, 
                     %(color)s, %(gearbox)s, %(driven_wheels)s, %(damage)s, %(steering_column)s,
                     %(door_count)s, %(cylinder_count)s, %(gear_count)s, %(seat_count)s, DATE(%(ts_to)s), %(weight)s, 
                     %(wheels)s, %(fuel_urban)s, %(fuel_overland)s, %(fuel_overall)s, %(features)s, %(comments)s, 
-                    %(key_value)s, %(price)s, %(export_price)s, %(vin_code)s, %(query_id)s, %(href)s, %(picture_href)s, 
-                    %(mileage)s, %(location)s, unix_timestamp(), %(phone)s, 0)""", self.prepared_params)
+                    %(key_value)s, %(price)s, %(export_price)s, %(vin_code)s, %(href)s, %(picture_href)s, 
+                    %(mileage)s, %(location)s, unix_timestamp(), %(phone)s, 0, %(first_reg_country)s)""", self.prepared_params)
                 self.prepared_params["id"] = cursor.lastrowid
 
+                cursor.execute("INSERT INTO query_car_fk (query_id, car_id) VALUES (%(query_id)s, %(id)s)", self.prepared_params)
             cursor.connection.commit()
             cursor.connection.close()
         

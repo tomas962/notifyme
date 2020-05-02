@@ -4,6 +4,9 @@
     <b-container>
       <router-view/>
     </b-container>
+    <div id="to-top-btn" class="border rounded" v-if="showScrollButton" v-on:click="scrollUp">
+      <b-icon-chevron-double-up class="mt-3 ml-3" scale="3"></b-icon-chevron-double-up>
+    </div>
   </div>
 </template>
 
@@ -24,7 +27,7 @@ export default class App extends Vue {
   @userns.Action
   setUser!: (state: UserState) => void;
 
-
+  showScrollButton = false
   created(){ //if token exists in localStorage set user info in Vuex
     console.log("APP CREATED");
     const access_token = localStorage.getItem("access_token")
@@ -46,22 +49,40 @@ export default class App extends Vue {
       
       this.setUser(user_state);
     }
+      
+    
+    setInterval(() => {
+      this.showScrollButton = document.body.scrollHeight > document.body.clientHeight
+    }, 500)
+    
+  }
+
+  scrollUp() {
+    window.scrollTo({
+      top: 0,
+      left: 0,
+      behavior: "smooth"
+    })
   }
 }
 </script>
 
 <style lang="scss">
+$background-color: #1c2023;
+
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background-color: #212935;
+  // background-color: #212935;
+  background-color: $background-color;
   color: aliceblue;
   min-height: 100vh;
 }
 
 html { 
-  background-color: #212935;
+  // background-color: #212935;
+  background-color: $background-color;
 }
 
 body {
@@ -80,5 +101,30 @@ body {
       color: #42b983;
     }
   }
+}
+
+#to-top-btn {
+  position: fixed;
+  bottom: 10%;
+  right: 10%;
+  width: 50px;
+  height: 50px;
+  cursor: pointer;
+}
+
+#to-top-btn:hover {
+  color: rgb(89, 89, 233);
+}
+
+.pointer {
+  cursor: pointer;
+}
+
+.hoverable {
+  transition: background-color .5s;
+}
+
+.hoverable:hover {
+  background-color: lighten($background-color, 10%);
 }
 </style>
