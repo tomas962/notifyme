@@ -20,7 +20,7 @@ def get_car_query(id):
             WHERE car_queries.id=%s""", id)
         body_style = cursor.fetchone()
 
-        cursor.execute("""SELECT makes.*, models.* FROM query_make_model 
+        cursor.execute("""SELECT makes.*, makes.id as make_ID, models.* FROM query_make_model 
             LEFT JOIN makes 
             ON query_make_model.make_id=makes.id
             LEFT JOIN models
@@ -167,3 +167,10 @@ def update_car_query(cursor, query_values):
                 VALUES (%(id)s, %(make_id)s, %(model_id)s)""", query_values)
 
     cursor.execute("DELETE FROM query_car_fk WHERE query_id=%(id)s", query_values)
+
+def delete_car_query(user_id, query_id):
+    with db_connect().cursor() as cursor:
+        cursor.execute("DELETE FROM car_queries WHERE id=%s AND user_id=%s", (query_id, user_id))
+        cursor.connection.commit()
+        cursor.connection.close()
+        return True

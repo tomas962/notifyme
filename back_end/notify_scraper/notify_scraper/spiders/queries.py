@@ -7,7 +7,14 @@ class AutopliusQuery():
         self.params: dict = query
 
     def check_params(self):
+
         if "make_model" in self.params and self.params["make_model"] is not None:
+            if self.params["make_model"]["autoplius_make_id"] is None: 
+                for key, value in self.params["make_model"].items():
+                    if "_make_" in key:
+                        if value is not None and self.params["make_model"]["make_ID"] != 1:
+                            print("NOT SCRAPING AUTOPLIUS: MAKE ID NOT FOUND")
+                            return False # don't scrape
             if self.params["make_model"]["autoplius_model_id"] is None: 
                 #only scrape if all other model_id's are also None to prevent scraping random models when 
                 for key, value in self.params["make_model"].items():
@@ -93,6 +100,12 @@ class AutobilisQuery():
         self.params: dict = query
     def check_params(self):
         if "make_model" in self.params and self.params["make_model"] is not None:
+            if self.params["make_model"]["autobilis_make_id"] is None: 
+                for key, value in self.params["make_model"].items():
+                    if "_make_" in key:
+                        if value is not None and self.params["make_model"]["make_ID"] != 1:
+                            print("NOT SCRAPING AUTOBILIS: MAKE ID NOT FOUND")
+                            return False # don't scrape
             if self.params["make_model"]["autobilis_model_id"] is None: 
                 #only scrape if all other model_id's are also None to prevent scraping random models when 
                 for key, value in self.params["make_model"].items():

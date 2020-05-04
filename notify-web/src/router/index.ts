@@ -5,6 +5,7 @@ import CarList from '../views/CarList.vue'
 import Login from '../views/Login.vue'
 import CarQueries from '../views/CarQueries.vue'
 import CarView from '@/views/CarView.vue'
+import RegisterView from '@/views/RegisterView.vue'
 
 Vue.use(VueRouter)
 
@@ -36,7 +37,12 @@ Vue.use(VueRouter)
     path: '/queries/:query_id/cars/:car_id',
     name: 'CarView',
     component: CarView
-  }
+  },
+  {
+    path: '/register',
+    name: 'RegisterView',
+    component: RegisterView
+  },
 ]
 
 const router = new VueRouter({

@@ -124,8 +124,8 @@ class ScraperScheduler():
             if self.current_query is None or time.time() < self.current_query["next_scrape"]:
                 continue
 
-            print("SCRAPER TURNED OFF")
-            time.sleep(99999999)
+            # print("SCRAPER TURNED OFF")
+            # time.sleep(99999999)
             # get old cars
             old_cars = get_cars_by_query_id(self.current_query["id"])
             # SCRAPE HERE, more threads? maybe with proxy
@@ -171,5 +171,3 @@ class ScraperScheduler():
             self.car_queries[query["id"]] = full_query["car_query"]
             self.cv.notify()
 
-
-                    

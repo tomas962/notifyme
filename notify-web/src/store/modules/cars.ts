@@ -24,7 +24,7 @@ class Car {
     id?: number
     make?: number
     model?: number
-    picture_href?: string
+    picture_href?: string[]
     price?: number
     query_id?: number
     seat_count?: number
@@ -54,7 +54,11 @@ class CarList extends VuexModule {
     
     @Action({ rawError: true })
     public fetchCars(query: {query_id: number}): void {
-        fetch(window.SERVER_URL + `/queries/${query.query_id}/cars`)
+        fetch(window.SERVER_URL + `/queries/${query.query_id}/cars`, {
+            headers: {
+                'Authorization': 'Bearer ' + localStorage.getItem("access_token")
+            }
+        })
         .then((response) => {
             if (response.status === 200){
                 response.json()

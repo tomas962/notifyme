@@ -1,4 +1,5 @@
 import { VuexModule, Module, Mutation, Action, } from 'vuex-module-decorators'
+import JWT from 'jwt-decode'
 
 class Identity {
     email = "";
@@ -32,6 +33,16 @@ class User extends VuexModule {
     setUser(state: UserState) {
         console.log("ACTION");
         this.context.commit('updateUser', state)
+    }
+
+    @Action
+    watchToken() {
+        const timestamp = (Date.now() / 1000) | 0;
+        const decoded_token: any = JWT(this.access_token)
+        setTimeout(() => {
+            console.log("LOGGING OUT USER");
+            
+        }, decoded_token.exp - timestamp)
     }
 
 }

@@ -200,14 +200,22 @@ export default class CarQueries extends Vue {
     }
 
     async getQueries() {
-        const response = await fetch(window.SERVER_URL + "/users/" + this.$store.state.User.identity.user_id + "/queries");
+        const response = await fetch(window.SERVER_URL + "/users/" + this.$store.state.User.identity.user_id + "/queries", {
+            headers: {
+                'Authorization': 'Bearer ' + this.$store.state.User.access_token
+            }
+        });
         const data: CarQueryResponse[] = await response.json();
         this.queries = data
         
     }
 
     async getModels() {
-        const response = await fetch(window.SERVER_URL + "/makes/" + this.newQuery.make_id + "/models");
+        const response = await fetch(window.SERVER_URL + "/makes/" + this.newQuery.make_id + "/models",  {
+            headers: {
+                'Authorization': 'Bearer ' + this.$store.state.User.access_token
+            }
+        });
         const data = await response.json();
         this.queryFormData.modelsOptions = [{text:"Visi modeliai", value: null}]
         this.queryFormData.modelsOptions = this.queryFormData.modelsOptions.concat(data.map((model: any) => {
@@ -219,9 +227,14 @@ export default class CarQueries extends Vue {
         
     }
 
+    beforeDestroy() {
+        window.eventBus.$off('query-edit')
+        window.eventBus.$off('car-query-deleted')
+    }
+
     created() {
         this.getQueries();
-        this.$root.$on("query-edit", async (query: CarQueryResponse) => {
+        window.eventBus.$on("query-edit", async (query: CarQueryResponse) => {
             console.log("ON QUERY-EDIT EMMITED");
             
             this.editForm = true;
@@ -242,10 +255,20 @@ export default class CarQueries extends Vue {
             this.getFormData();
             this.getModels();
         })
+
+        window.eventBus.$on('car-query-deleted', () => {
+            console.log("car query delted");
+            this.getQueries();
+        })
+    
     }
 
     async getMakes() {
-        const response = await fetch(window.SERVER_URL + "/makes");
+        const response = await fetch(window.SERVER_URL + "/makes",  {
+            headers: {
+                'Authorization': 'Bearer ' + this.$store.state.User.access_token
+            }
+        });
         if (response.ok) {
             const data: Make[] = await response.json();
             this.queryFormData.makes = data;
@@ -261,7 +284,11 @@ export default class CarQueries extends Vue {
 
 
     async getBodyStyles() {
-        const response = await fetch(window.SERVER_URL + "/body_styles");
+        const response = await fetch(window.SERVER_URL + "/body_styles", {
+            headers: {
+                'Authorization': 'Bearer ' + this.$store.state.User.access_token
+            }
+        });
         const data = await response.json();
         this.queryFormData.bodyStyles = [{text:"Kėbulo tipas", value: null}]
         this.queryFormData.bodyStyles = this.queryFormData.bodyStyles.concat(data.map((body_style: any) => {
@@ -273,7 +300,11 @@ export default class CarQueries extends Vue {
     }
 
     async getFuelTypes() {
-        const response = await fetch(window.SERVER_URL + "/fuel_types");
+        const response = await fetch(window.SERVER_URL + "/fuel_types", {
+            headers: {
+                'Authorization': 'Bearer ' + this.$store.state.User.access_token
+            }
+        });
         const data = await response.json();
         this.queryFormData.fuelTypes = [{text:"Kuro tipas", value: null}]
         this.queryFormData.fuelTypes = this.queryFormData.fuelTypes.concat(data.map((fuel_type: any) => {
@@ -285,7 +316,11 @@ export default class CarQueries extends Vue {
     }
 
     async getCities() {
-        const response = await fetch(window.SERVER_URL + "/cities");
+        const response = await fetch(window.SERVER_URL + "/cities", {
+            headers: {
+                'Authorization': 'Bearer ' + this.$store.state.User.access_token
+            }
+        });
         const data = await response.json();
         this.queryFormData.cities = [{text:"Visi miestai", value: null}]
         this.queryFormData.cities = this.queryFormData.cities.concat(data.map((city: any) => {
@@ -334,7 +369,8 @@ export default class CarQueries extends Vue {
             const response = await fetch(window.SERVER_URL + "/users/" + this.$store.state.User.identity.user_id + "/queries", {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + this.$store.state.User.access_token
                 },
                 body: JSON.stringify(this.newQuery)
             })
@@ -343,18 +379,19 @@ export default class CarQueries extends Vue {
             const response = await fetch(window.SERVER_URL + "/users/" + this.$store.state.User.identity.user_id + "/queries/" + this.newQuery.query_id, {
                 method: 'PUT',
                 headers: {
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + this.$store.state.User.access_token
                 },
                 body: JSON.stringify(this.newQuery)
             })
 
         }
         this.getQueries();
+        this.newQuery = this.defaultQueryValues()
     }
 
-    onCancelClick() {
-        this.editForm = false;
-        this.newQuery = { //reset values
+    defaultQueryValues() {
+        return { //reset values
             make_id: 1,
             model_id: null,
             city_id: null,
@@ -370,6 +407,11 @@ export default class CarQueries extends Vue {
             sites: ["autogidas","autobilis","autoplius"],
             query_id: null
         }
+    }
+
+    onCancelClick() {
+        this.editForm = false;
+        this.newQuery = this.defaultQueryValues()
     }
 }
 </script>

@@ -21,15 +21,42 @@
                     </b-card-text>
                     <template v-slot:footer>
                         <b-row>
-                            <b-col cols="6">
+                            <b-col class="text-center" cols="12">
+                                <b-btn :to="'/queries/' + query.car_query.id + '/cars'" class="btn-success">Rezultatai</b-btn>
+                            </b-col>
+                        </b-row>
+                        <b-row class="mt-2">
+                            <b-col class="text-center">
+                            <b-btn-group size="sm">
+                                <b-button class="btn-danger" v-b-modal="'del-query'+query.car_query.id">Pašalinti</b-button>
+                                <b-modal :id="'del-query'+query.car_query.id" title="Paieškos trynimas"
+                                ok-title="Ištrinti" cancel-title="Atšaukti" v-on:ok="delQuery()" ok-variant="danger">
+                                    <p>
+                                        Ar tikrai norite ištrinti šią paiešką? (<strong>{{card_title}}</strong>)
+                                    </p>
+                                    <strong class="font-italic">Bus ištrinti visi šios paieškos rezultatai!</strong>
+                                </b-modal>
+                                <b-btn v-on:click="edit();">Redaguoti</b-btn>
+                            </b-btn-group>
+                            </b-col>
+
+                            <!-- <b-col cols="4">
+                            <b-button  v-b-modal.modal-1>Pašalinti</b-button>
+
+                            <b-modal id="modal-1" title="BootstrapVue">
+                                <p class="my-4">Hello from modal!</p>
+                            </b-modal>
+                            </b-col>
+                            <b-col cols="4">
                                 <b-btn v-on:click="edit();">Redaguoti</b-btn>
                             </b-col>
-                            <b-col cols="6">
+                            <b-col cols="4">
                                 <router-link :to="'/queries/' + query.car_query.id + '/cars'">
                                     <b-btn class="btn-success">Rezultatai</b-btn>
                                 </router-link>
-                            </b-col>
+                            </b-col> -->
                         </b-row>
+                        <b-alert class="mt-2" variant="danger" :show="showErr" dismissible v-on:dismissed="showErr=false">{{errMsg}}</b-alert>
                     </template>
                 </b-card>
         </b-col>
@@ -42,6 +69,8 @@ import {CarQueryResponse} from "@/models/interfaces"
 @Component
 export default class CarQueryComp extends Vue {
     @Prop() query!: CarQueryResponse
+    showErr = false;
+    errMsg: string|null = null;
 
     get card_title() {
         if (this.query.make_model && this.query.make_model.make) 
@@ -76,8 +105,29 @@ export default class CarQueryComp extends Vue {
 
     edit(){
         
-        this.$root.$emit("query-edit", this.query)
+        window.eventBus.$emit("query-edit", this.query)
         this.$bvModal.show("queryEditModal")
+    }
+
+    async delQuery() {
+        console.log("deleting query:");
+        console.log(this.query);
+        
+        const response = await fetch(window.SERVER_URL + "/users/" + this.$store.state.User.identity.user_id + "/queries/" + this.query.car_query.id, {
+            headers: {
+                'Authorization': 'Bearer ' + this.$store.state.User.access_token
+            },
+            method: 'DELETE'
+        })
+
+        if (!response.ok) {
+            this.errMsg = "Įvyko klaida ištrinant paiešką."
+            this.showErr = true
+        } else {
+            window.eventBus.$emit('car-query-deleted')
+        }
+
+        
     }
 }
 </script>

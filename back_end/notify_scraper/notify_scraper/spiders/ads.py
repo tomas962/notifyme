@@ -10,6 +10,7 @@ from urllib.parse import urlencode
 from typing import Dict, Union
 from scrapy.http import Response 
 import pymysql
+import json
 
 db_translations = {
     #autogidas
@@ -91,6 +92,8 @@ db_translations = {
     "Nauja / naudota":"?4",
     "Vidutinės":"fuel_overall",
     "Eksportui":"export_price",
+    "":"?", # ikraunamas elektr
+    "Elektra nuvažiuojamas atstumas":"el_range",
 
     #autobilis
     "Mėnuo":"?5",
@@ -247,8 +250,8 @@ class CarAd():
                     wheels=%(wheels)s, fuel_urban=%(fuel_urban)s, fuel_overland=%(fuel_overland)s, 
                     fuel_overall=%(fuel_overall)s, features=%(features)s, comments=%(comments)s, 
                     """+self.prepared_params["key_column"]+f"""=%(key_value)s, price=%(price)s, export_price=%(export_price)s, vin_code=%(vin_code)s,
-                    href=%(href)s, picture_href=%(picture_href)s, mileage=%(mileage)s, location=%(location)s, when_scraped=unix_timestamp(),
-                    phone=%(phone)s, deleted=0, first_reg_country=%(first_reg_country)s
+                    href=%(href)s, mileage=%(mileage)s, location=%(location)s, when_scraped=unix_timestamp(),
+                    phone=%(phone)s, deleted=0, first_reg_country=%(first_reg_country)s, el_range=%(el_range)s
                     WHERE {self.prepared_params["key_column"]}=%(key_value)s""", self.prepared_params)
                 self.prepared_params["id"] = ad_exists["id"]
                 try:
@@ -256,21 +259,31 @@ class CarAd():
                 except pymysql.IntegrityError as err:
                     print("Car ad already existed: ")
                     print(err)
+                
+                try:
+                    cursor.executemany("INSERT INTO `car_pictures`(`car_id`, `picture_href`) VALUES (%s, %s)",
+                        [(self.prepared_params["id"], p_href) for p_href in self.prepared_params["picture_href"]])
+                except pymysql.IntegrityError as err:
+                    print("Picture already exists: ")
+                    print(err)
             else:
                 cursor.execute("""INSERT INTO `car_ads`(`make`, `model`, `year`, `engine`, `fuel_type`, 
                     `body_type`, `color`, `gearbox`, `driven_wheels`, `damage`, `steering_column`, `door_count`, 
                     `cylinder_count`, `gear_count`, `seat_count`, `ts_to`, `weight`, `wheels`, `fuel_urban`, 
                     `fuel_overland`, `fuel_overall`, `features`, `comments`, """+self.prepared_params["key_column"]+""", `price`,
-                    `export_price`, `vin_code`, href, picture_href, mileage, location, when_scraped, phone, deleted, first_reg_country) 
+                    `export_price`, `vin_code`, href, mileage, location, when_scraped, phone, deleted, first_reg_country, el_range) 
                     VALUES (%(make)s, %(model)s, %(year)s, %(engine)s, %(fuel_type)s, %(body_type)s, 
                     %(color)s, %(gearbox)s, %(driven_wheels)s, %(damage)s, %(steering_column)s,
                     %(door_count)s, %(cylinder_count)s, %(gear_count)s, %(seat_count)s, DATE(%(ts_to)s), %(weight)s, 
                     %(wheels)s, %(fuel_urban)s, %(fuel_overland)s, %(fuel_overall)s, %(features)s, %(comments)s, 
-                    %(key_value)s, %(price)s, %(export_price)s, %(vin_code)s, %(href)s, %(picture_href)s, 
-                    %(mileage)s, %(location)s, unix_timestamp(), %(phone)s, 0, %(first_reg_country)s)""", self.prepared_params)
+                    %(key_value)s, %(price)s, %(export_price)s, %(vin_code)s, %(href)s, 
+                    %(mileage)s, %(location)s, unix_timestamp(), %(phone)s, 0, %(first_reg_country)s, %(el_range)s)""", self.prepared_params)
                 self.prepared_params["id"] = cursor.lastrowid
 
                 cursor.execute("INSERT INTO query_car_fk (query_id, car_id) VALUES (%(query_id)s, %(id)s)", self.prepared_params)
+
+                cursor.executemany("INSERT INTO `car_pictures`(`car_id`, `picture_href`) VALUES (%s, %s)",
+                    [(self.prepared_params["id"], p_href) for p_href in self.prepared_params["picture_href"]])
             cursor.connection.commit()
             cursor.connection.close()
         
@@ -286,6 +299,13 @@ class AutogidasAd(CarAd):
         super().prepare_data()
         self.prepared_params["mileage"] = self.prepared_params["mileage"].split(" ")[0] if self.prepared_params["mileage"] is not None else None
 
+    def scrape_imgs(self):
+        self.scraped_params["picture_href"] = []
+        js: str = self.response.css("body > script:nth-child(13)::text").get()
+        if js is not None:
+            for line in js.splitlines():
+                if "gallery.addImage" in line:
+                    self.scraped_params["picture_href"].append(line.split("'")[1])
 
     def parse(self):
         self.scraped_params["autog_id"] = self.response.url.split(".")[-2].split("-")[-1]
@@ -314,7 +334,7 @@ class AutogidasAd(CarAd):
         self.scraped_params["phone"] = self.response.css("div.seller-info > div.seller-ico.seller-phones.btn-action::text").get()
         self.scraped_params["phone"] = self.scraped_params["phone"].strip() if self.scraped_params["phone"] is not None else None
 
-        
+        self.scrape_imgs()
 
 class AutopliusAd(CarAd):
 
@@ -326,6 +346,9 @@ class AutopliusAd(CarAd):
         self.prepared_params["fuel_overall"] = self.prepared_params["fuel_overall"].replace(',','.') if self.prepared_params["fuel_overall"] is not None else None
         if self.prepared_params["mileage"] is not None:
             self.prepared_params["mileage"] = self.prepared_params["mileage"].replace(" ", "").replace("km", "")
+        if self.prepared_params["el_range"] is not None:
+            self.prepared_params["el_range"] = self.prepared_params["el_range"].replace(" ", "").replace("km", "")
+        
 
     def scrape_body_type(self):
         btype = self.response.css(".page-title > h1::text").get()
@@ -338,6 +361,17 @@ class AutopliusAd(CarAd):
                 self.scraped_params["body_type"] = "Keleivinis mikroautobusas"
             else:
                 self.scraped_params["body_type"] = self.response.css(".page-title > h1::text").get().split(", ")[-1].capitalize()
+
+    def scrape_imgs(self):
+        self.scraped_params["picture_href"] = []
+        # self.scraped_params["picture_href"].append(self.response.css("div.announcement-media-gallery > div.thumbnail > img::attr(src)").get())
+        # self.scraped_params["picture_href"][0] = self.scraped_params["picture_href"][0].strip() if self.scraped_params["picture_href"][0] is not None else None
+        js_code: str = self.response.css('body > div.body-wrapper > div.page-wrapper > div.content-container > div.row.native-baner-theme > div.col-7 > script:nth-child(4)::text').get()
+        pic_json = js_code.split("mediaGalleryItems")[1].strip(" =;\n\t")
+        pic_list = json.loads(pic_json)
+        for p in pic_list:
+            self.scraped_params["picture_href"].append(p["url"])
+       
 
     def parse(self):
         self.scraped_params["autop_id"] = self.response.url.split(".")[-2].split("-")[-1]
@@ -377,15 +411,15 @@ class AutopliusAd(CarAd):
 
         self.scrape_body_type()
 
-        self.scraped_params["picture_href"] = self.response.css("div.announcement-media-gallery > div.thumbnail > img::attr(src)").get()
-        self.scraped_params["picture_href"] = self.scraped_params["picture_href"].strip() if self.scraped_params["picture_href"] is not None else None
-
+   
         if "steering_column" in self.scraped_params and self.scraped_params["steering_column"] is not None:
             if "Dešinėje" in self.scraped_params["steering_column"]:
                 self.scraped_params["steering_column"] = "Dešinėje"
 
         self.scraped_params["phone"] = self.response.css("div.announcement-owner-contacts-main.js-owner-contacts > div.contacts-column.owner-contacts > ul > li > div::text").get()
         self.scraped_params["phone"] = self.scraped_params["phone"].strip() if self.scraped_params["phone"] is not None else None
+
+        self.scrape_imgs()
 
 class AutobilisAd(CarAd):
 
@@ -421,6 +455,15 @@ class AutobilisAd(CarAd):
         elif "power" in self.scraped_params:
             self.scraped_params["engine"] = f'{self.scraped_params["power"]}'
 
+    def scrape_imgs(self):
+        self.scraped_params["picture_href"] = []
+        pic: str = self.response.css("div.single-item-wrapper div img::attr(src)").get()
+        if pic is not None:
+            self.scraped_params["picture_href"].append(pic.replace("big", "large", 1))
+        for attr in self.response.css("div.single-item-wrapper div img::attr(data-lazy)"):
+            pic = attr.get()
+            if pic is not None:
+                self.scraped_params["picture_href"].append(pic.replace("big", "large", 1))
     def parse(self):
         self.scraped_params["autob_id"] = self.response.url.split("/")[4]
 
@@ -463,3 +506,4 @@ class AutobilisAd(CarAd):
             if 0 in vals and vals[0] is not None and vals[0].strip() == "Telefonas":
                 self.scraped_params["phone"] = vals[1].strip() if 1 in vals and vals[1] is not None else None
                 
+        self.scrape_imgs()

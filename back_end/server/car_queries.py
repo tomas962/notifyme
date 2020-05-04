@@ -1,16 +1,22 @@
 from flask import Blueprint, jsonify, request, Response
 from database.database import db_connect
-from database.car_query import get_car_queries_by_user_id, insert_car_query, update_car_query
+from database.car_query import get_car_queries_by_user_id, insert_car_query, update_car_query, delete_car_query
 query_api = Blueprint('car_queries', __name__)
-from .car_scraper import car_scraper
+from .scraper_interface import update_query
+from flask_jwt_extended import jwt_required, fresh_jwt_required, get_jwt_identity
+from .jwt_validations import validate_resource
 
 @query_api.route("/users/<int:user_id>/queries")
+@jwt_required
 def user_query_list(user_id): #TODO filter by user id and car query id
     car_queries = get_car_queries_by_user_id(user_id)
     return jsonify(car_queries)
 
 @query_api.route("/users/<int:user_id>/queries", methods=["POST"])
+@jwt_required
 def post_car_query(user_id):
+    if res := validate_resource(user_id) != True:
+        return res
     json = request.get_json()
     query_values = {}
 
@@ -43,11 +49,14 @@ def post_car_query(user_id):
         cursor.connection.commit()
         cursor.connection.close()
 
-    car_scraper.update_queries(query_values)
+    update_query(query_values)
     return Response(status=200)
 
 @query_api.route("/users/<int:user_id>/queries/<int:query_id>", methods=["PUT"])
+@jwt_required
 def put_car_query(user_id, query_id):
+    if res := validate_resource(user_id) != True:
+        return res
     json = request.get_json()
     query_values = {}
     
@@ -82,12 +91,22 @@ def put_car_query(user_id, query_id):
             update_car_query(cursor, query_values)
             cursor.connection.commit()
             cursor.connection.close()
-            car_scraper.update_queries(query_values)
+            update_query(query_values)
             return Response(status=200)
 
         else: #insert new
             new_query_id = insert_car_query(cursor, query_values)
             cursor.connection.commit()
             cursor.connection.close()
-            car_scraper.update_queries(query_values)
+            update_query(query_values)
             return Response(status=201, headers={'Content-Location':f'/users/{user_id}/queries/{new_query_id}'})
+
+
+@query_api.route("/users/<int:user_id>/queries/<int:query_id>", methods=["DELETE"])
+@jwt_required
+def del_query(user_id, query_id):
+    if res := validate_resource(user_id) != True:
+        return res
+    if delete_car_query(user_id, query_id):
+        return Response(status=200)
+

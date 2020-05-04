@@ -2,7 +2,8 @@
 <router-link style="text-decoration: none; color: inherit;" :to="'./cars/' + car.id" tag="a">
     <b-row  class="pointer hoverable rounded border-right border-top border-bottom mb-5 mb-sm-4">
         <b-col class="pl-0 pr-0 rounded-left" cols="12" sm="7" lg="4">
-            <img width="100%" height="100%" :src="car.picture_href">
+            <b-img :src="car.picture_href && car.picture_href.length > 0 ? car.picture_href[0] : '/img/icons/no-image-icon.png' " fluid-grow></b-img>
+            <!-- <img width="100%" height="100%" :src="car.picture_href"> -->
         </b-col>
         <b-col>
             <b-row :class="headerColorClass">

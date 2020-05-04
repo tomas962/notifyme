@@ -6,12 +6,15 @@ import store from './store'
 import { BootstrapVue, IconsPlugin } from 'bootstrap-vue'
 import ElementUI from "element-ui"
 import 'element-ui/lib/theme-chalk/index.css';
-
+import Lingallery from 'lingallery';
+import '@/assets/main.css'
+Vue.component('lingallery', Lingallery);
 declare global {
-  interface Window { SERVER_URL: string }
+  interface Window { SERVER_URL: string; eventBus: Vue }
 }
 
 window.SERVER_URL = "http://192.168.100.7:5000"
+window.eventBus = new Vue();
 
 Vue.use(ElementUI)
 // Install BootstrapVue

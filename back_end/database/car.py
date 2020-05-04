@@ -11,6 +11,11 @@ def get_cars_by_query_id(query_id):
             LEFT JOIN fuel_types ON car_ads.fuel_type=fuel_types.id
             WHERE query_car_fk.query_id=%s AND car_ads.deleted=0""", query_id)
         car_ads = cursor.fetchall()
+
+        for car in car_ads:
+            cursor.execute("SELECT picture_href FROM car_pictures WHERE car_id=%s", car["id"])
+            car["picture_href"] = [x["picture_href"] for x in cursor.fetchall()]
+
         cursor.connection.close()
         return car_ads
     
@@ -30,5 +35,7 @@ def get_car_by_id(car_id):
             LEFT JOIN fuel_types ON car_ads.fuel_type=fuel_types.id
             WHERE car_ads.id=%s AND car_ads.deleted=0""", car_id)
         car_ad = cursor.fetchone()
+        cursor.execute("SELECT picture_href FROM car_pictures WHERE car_id=%s", car_ad["id"])
+        car_ad["picture_href"] = [x["picture_href"] for x in cursor.fetchall()]
         cursor.connection.close()
         return car_ad

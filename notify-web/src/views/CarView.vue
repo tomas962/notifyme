@@ -8,16 +8,26 @@
         </b-col>
    </b-row>
    <b-row>
-       <b-col cols="12" sm="8">
-           <img class=" car-pic" style="heigth: 100%;"  :src="car.picture_href">
+       <b-col cols="12" sm="12" md="8">
+           <lingallery v-if="car.picture_href && car.picture_href.length > 0" width="100%" :iid.sync="picId" :items="car.picture_href"></lingallery>
+            <b-img v-if="!car.picture_href || car.picture_href.length == 0" fluid-grow="" src="/img/icons/no-image-icon.png"></b-img> 
        </b-col>
-       <b-col cols="12" sm="4">
+       <b-col cols="12" sm="12" md="4">
            <b-row class="mt-2">
                <b-col cols="5">
                    Kaina
                </b-col>
                <b-col>
                    <h3 class="param">{{car.price}} €</h3>
+               </b-col>
+           </b-row>
+
+           <b-row class="mt-2">
+               <b-col cols="5">
+                   Kaina eksportui
+               </b-col>
+               <b-col>
+                   <h3 class="param">{{car.export_price}} €</h3>
                </b-col>
            </b-row>
 
@@ -167,6 +177,15 @@
 
            <b-row class="mt-2">
                <b-col cols="5">
+                   VIN kodas
+               </b-col>
+               <b-col class="param">
+                   {{car.vin_code}}
+               </b-col>
+           </b-row>
+
+           <b-row class="mt-2">
+               <b-col cols="5">
                    Ratlankiai
                </b-col>
                <b-col class="param">
@@ -183,8 +202,17 @@
                </b-col>
            </b-row>
 
+           <b-row class="mt-2">
+               <b-col cols="5">
+                   Rida su vienu įkrovimu
+               </b-col>
+               <b-col class="param">
+                   {{car.el_range}} km
+               </b-col>
+           </b-row>
+
            <b-row class="mt-5">
-               <b-col class="param" cols="3">
+               <b-col class="param" cols="3" sm="5" md="5" lg="4">
                    <div>Ypatybės</div>
                </b-col>
                <b-col class="border-bottom mb-2"></b-col>
@@ -200,6 +228,42 @@
                            </ul>
                         </li>
                    </ul>
+               </b-col>
+           </b-row>
+
+           <b-row class="mt-5">
+               <b-col class="param" cols="4" sm="6" md="6" lg="4">
+                   <div>Komentarai</div>
+               </b-col>
+               <b-col class="border-bottom mb-2"></b-col>
+           </b-row>
+
+           <b-row class="mt-2">
+               <b-col>
+                   <p>{{car.comments}}</p>
+               </b-col>
+           </b-row>
+
+           <b-row class="mt-5">
+               <b-col class="param" cols="3" sm="5" md="5" lg="4">
+                   <div>Kontaktai</div>
+               </b-col>
+               <b-col class="border-bottom mb-2"></b-col>
+           </b-row>
+
+            <b-row class="mt-2">
+                <b-col cols="3">
+               </b-col>
+               <b-col cols="7" class="param">
+                   Tel. nr.: {{car.phone}}
+               </b-col>
+           </b-row>
+
+           <b-row class="mt-2">
+               <b-col cols="3">
+               </b-col>
+               <b-col class="param">
+                   {{car.location}}
                </b-col>
            </b-row>
        </b-col>
@@ -272,7 +336,8 @@ export default {
                 ,wheels: null
                 ,when_scraped: 1588442155
                 ,year: "1984"},
-        tmp: {}
+        tmp: {},
+        picId: null
     }
   },
 	methods: {
@@ -339,10 +404,22 @@ export default {
                 ,year: "1984"
             }
             
-            const response = await fetch(window.SERVER_URL + "/queries/" + this.$route.params.query_id + "/cars/" + this.$route.params.car_id);
+            const response = await fetch(window.SERVER_URL + "/queries/" + this.$route.params.query_id + "/cars/" + this.$route.params.car_id, {
+                headers: {
+                    'Authorization': 'Bearer ' + this.$store.state.User.access_token
+                }
+            });
             const data = await response.json();
             this.car = data
             
+            for (let i = 0; i < this.car.picture_href.length; i++) {
+                this.car.picture_href[i] = {
+                    src: this.car.picture_href[i],
+                    thumbnail: this.car.picture_href[i],
+                    id: i
+                }
+                
+            }
         },
 
         autopFeatures() {

@@ -1,6 +1,6 @@
 <template>
     <b-row class="ml-2">
-        <CarQueryComp v-for="query1 in queries4" :key="query1.car_query.id" :query="query1"></CarQueryComp>
+        <CarQueryComp  v-for="query1 in queries4" :key="query1.car_query.id" :query="query1"></CarQueryComp>
     </b-row>
 </template>
 
