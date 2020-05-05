@@ -1,4 +1,7 @@
 from database.car import mark_as_deleted_multiple_cars_by_id
+from database.user import get_user
+import yagmail
+import threading
 
 class Notifier():
     def __init__(self, old_cars, scraped_cars, query):
@@ -26,6 +29,7 @@ class Notifier():
             msg = self.generate_message()
             print("MESSAGE TO SEND TO THE USER:")
             print(msg)
+            threading.Thread(target=self.send_email, args=(msg,)).start()
         else:
             print("NO CAR CHANGES OR CAR QUERY IS NEW")
 
@@ -64,18 +68,30 @@ class Notifier():
         lines.append(f"Įvyko pokyčiai jūsų pasirinktoje paieškoje ({self.car_query['make_model']['make']} {self.car_query['make_model']['model_name']}):")
         for car_id, change in self.car_changes.items():
             if change == True:
-                lines.append(f"    Pridėtas naujas skelbimas: {self.new_cars[car_id]['make_name']} {self.new_cars[car_id]['model_name']}. /queries/{self.car_query['car_query']['id']}/cars/{car_id}")
+                lines.append(f"\tPridėtas naujas skelbimas: {self.new_cars[car_id]['make_name']} {self.new_cars[car_id]['model_name']}. http://192.168.100.7:8080/queries/{self.car_query['car_query']['id']}/cars/{car_id}")
                 continue
             
-            line = "    "
+            line = "\t"
             if "price" in change:
                 line += f"Pasikeitė kaina iš {self.old_cars[car_id]['price']}€ į {self.new_cars[car_id]['price']}€. "
 
             if "comments" in change:
                 line += f"Pasikeitė aprašymas. "
 
-            if line != "    ":
-                line += f"({self.new_cars[car_id]['make_name']} {self.new_cars[car_id]['model_name']}. /queries/{self.car_query['car_query']['id']}/cars/{car_id})"
+            if line != "\t":
+                line += f"({self.new_cars[car_id]['make_name']} {self.new_cars[car_id]['model_name']}. http://192.168.100.7:8080/queries/{self.car_query['car_query']['id']}/cars/{car_id})"
                 lines.append(line)
         
         return "\n".join(lines)
+
+    def send_email(self, msg):
+        user = get_user(self.car_query["car_query"]["user_id"])
+        if user is None:
+            print(__name__ + " notifier.py error: USER NOT FOUND")
+            return
+        
+        print(f"SENDING EMAIL TO {user['email']}")
+        print(f"EMAIL CONTENT:")
+        print(msg)
+        yag = yagmail.SMTP("skelbimupranesejas")
+        yag.send(to=user["email"], subject="Naujas/pasikeitęs skelbimas", contents=msg)

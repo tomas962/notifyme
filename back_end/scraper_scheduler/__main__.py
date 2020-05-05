@@ -6,7 +6,7 @@ import socket
 
 car_scraper_scheduler = ScraperScheduler()
 
-@app.route("/query", methods=['POST'])
+@app.route("/queries", methods=['POST'])
 def add_query():
     query = request.get_json()
     print("NEW QUERY:")
@@ -15,6 +15,16 @@ def add_query():
     print("TIME AFTER UPDATE QUERY:")
     print(time.time())
     return jsonify(200)
+
+@app.route("/users/<int:user_id>/queries/<int:query_id>", methods=['DELETE'])
+def delete_query(user_id, query_id):
+    query = request.get_json()
+    print("DELETING QUERY:")
+    print(query)
+    car_scraper_scheduler.delete_query(query_id)
+    print("TIME AFTER DELETE QUERY:")
+    print(time.time())
+    return Response(status=200)
 
 if __name__ == "__main__":
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)

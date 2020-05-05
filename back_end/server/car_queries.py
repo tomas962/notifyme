@@ -1,8 +1,8 @@
 from flask import Blueprint, jsonify, request, Response
 from database.database import db_connect
-from database.car_query import get_car_queries_by_user_id, insert_car_query, update_car_query, delete_car_query
+from database.car_query import get_car_queries_by_user_id, insert_car_query, update_car_query, delete_car_query, get_car_query
 query_api = Blueprint('car_queries', __name__)
-from .scraper_interface import update_query
+import server.scraper_interface as scraper_interface
 from flask_jwt_extended import jwt_required, fresh_jwt_required, get_jwt_identity
 from .jwt_validations import validate_resource
 
@@ -49,14 +49,21 @@ def post_car_query(user_id):
         cursor.connection.commit()
         cursor.connection.close()
 
-    update_query(query_values)
+    scraper_interface.update_car_query(query_values)
     return Response(status=200)
 
 @query_api.route("/users/<int:user_id>/queries/<int:query_id>", methods=["PUT"])
 @jwt_required
 def put_car_query(user_id, query_id):
-    if res := validate_resource(user_id) != True:
-        return res
+    jwt = get_jwt_identity()
+    query = get_car_query(query_id)
+    if query is None:
+        if res := validate_resource(user_id) != True:
+            return res
+    elif query["car_query"]["user_id"] != jwt["user_id"]:
+        if jwt["group"] != "admin":
+            return jsonify({"error":"You can only access your own resources."}), 403
+    
     json = request.get_json()
     query_values = {}
     
@@ -91,22 +98,29 @@ def put_car_query(user_id, query_id):
             update_car_query(cursor, query_values)
             cursor.connection.commit()
             cursor.connection.close()
-            update_query(query_values)
+            scraper_interface.update_car_query(query_values)
             return Response(status=200)
 
         else: #insert new
             new_query_id = insert_car_query(cursor, query_values)
             cursor.connection.commit()
             cursor.connection.close()
-            update_query(query_values)
+            scraper_interface.update_car_query(query_values)
             return Response(status=201, headers={'Content-Location':f'/users/{user_id}/queries/{new_query_id}'})
 
 
 @query_api.route("/users/<int:user_id>/queries/<int:query_id>", methods=["DELETE"])
 @jwt_required
 def del_query(user_id, query_id):
-    if res := validate_resource(user_id) != True:
-        return res
+    jwt = get_jwt_identity()
+    query = get_car_query(query_id)
+    if query is None:
+        return Response(status=404)
+    if query["car_query"]["user_id"] != jwt["user_id"]:
+        if jwt["group"] != "admin":
+            return jsonify({"error":"You can only access your own resources."}), 403
+
     if delete_car_query(user_id, query_id):
+        scraper_interface.delete_car_query(user_id, query_id)
         return Response(status=200)
 

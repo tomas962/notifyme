@@ -110,12 +110,12 @@ class ScraperScheduler():
                 with self.cv:
                     if time_to_wait == math.inf:
                         if self.cv.wait():
-                            print("Sleep got interrupted: new query added.")
+                            print("Sleep got interrupted: new query added or deleted.")
                         else:
                             print("Sleep ended, continue scraping")
                     else:
                         if self.cv.wait(time_to_wait):
-                            print("Sleep got interrupted: new query added.")
+                            print("Sleep got interrupted: new query added or deleted.")
                         else:
                             print("Sleep ended, continue scraping")
             else:
@@ -171,3 +171,8 @@ class ScraperScheduler():
             self.car_queries[query["id"]] = full_query["car_query"]
             self.cv.notify()
 
+    def delete_query(self, query_id):
+        with self.cv:
+            self.car_queries.pop(query_id, None) # TODO implement current query scraping cancellation
+            self.full_queries.pop(query_id, None)
+            self.cv.notify()

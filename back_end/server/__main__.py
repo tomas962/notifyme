@@ -8,8 +8,9 @@ from flask_jwt_extended import (
     get_jwt_identity, create_refresh_token, jwt_refresh_token_required, fresh_jwt_required
 )
 from datetime import datetime, timedelta
+from .jwt_validations import validate_resource
 app.config['JWT_SECRET_KEY'] = 'dsafn87987345 3Q#$GRWE#$()_)*%@&#()nvdkJS*#@QW$%&BHDFSudsfkj'
-app.config['JWT_ACCESS_TOKEN_EXPIRES'] = timedelta(minutes=1)
+app.config['JWT_ACCESS_TOKEN_EXPIRES'] = timedelta(minutes=60)
 app.config['JWT_REFRESH_TOKEN_EXPIRES'] = timedelta(days=7)
 jwt = JWTManager(app)
 
@@ -111,6 +112,64 @@ def register_user():
         cursor.connection.commit()
         cursor.connection.close()
         return Response(status=200)
+
+@app.route('/changepw', methods=['POST'])
+@jwt_required
+def change_password():
+    json = request.get_json()
+
+    if not json or "old_password" not in json or "new_password" not in json or "confirm_password" not in json \
+        or json["old_password"] == "" or json["new_password"] == "" or json["confirm_password"] == "":
+        return jsonify({"error":"Incorrect request json"}),400
+
+    if json["new_password"] != json["confirm_password"]:
+        return jsonify({'error':'Passwords do not match.'}), 400
+
+    user_ident = get_jwt_identity()
+    with db_connect().cursor() as cursor:
+        cursor.execute("SELECT * FROM users WHERE id=%s", user_ident["user_id"])
+        user = cursor.fetchone()
+        if user is None:
+            cursor.connection.close()
+            return Response(status=404)
+        
+        if not bcrypt.checkpw(bytes(json["old_password"], 'utf-8'), bytes(user["password"], 'utf-8')):
+            cursor.connection.close()
+            return jsonify({'error':'Incorrect password'}), 403
+
+        pw_hash = bcrypt.hashpw(bytes(json["new_password"], 'utf-8'), bcrypt.gensalt())
+        cursor.execute("UPDATE users SET password=%s WHERE id=%s", (pw_hash, user_ident["user_id"]))
+        cursor.connection.commit()
+        cursor.connection.close()
+        return "", 200
+
+@app.route('/users/<int:user_id>/settings', methods=['GET'])
+@jwt_required
+def user_settings(user_id):
+    if res := validate_resource(user_id) != True:
+        return res
+
+    with db_connect().cursor() as cursor:
+        cursor.execute("SELECT email_notifications FROM users WHERE id=%s", user_id)
+        settings = cursor.fetchone()
+        return jsonify(settings)
+
+@app.route('/users/<int:user_id>/settings', methods=['POST'])
+@jwt_required
+def update_user_settings(user_id):
+    if res := validate_resource(user_id) != True:
+        return res
+
+    settings = request.get_json()
+
+    if not settings or "email_notifications" not in settings:
+        return "", 403
+
+    with db_connect().cursor() as cursor:
+        cursor.execute("UPDATE users SET email_notifications=%s WHERE id=%s", (settings["email_notifications"], user_id))
+        cursor.connection.commit()
+        cursor.connection.close()
+        return "", 200
 
 print("__name__")
 print(__name__)

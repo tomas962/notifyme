@@ -110,6 +110,7 @@ db_translations = {
     "VIN numeris":"vin_code",
     "Klimato kontrolė":"climate_control",
     "Tipas":"?6", # https://www.autobilis.lt/advert/443210/bmw-120-2008
+    "CO₂ emisija, g/km": "co2_emmision",
     
     # empty for db columns
     "?0":"autog_id",
@@ -118,7 +119,7 @@ db_translations = {
     "?3":"query_id",
     "?4":"href",
     "?5":"picture_href",
-    "?6":"location"
+    "?6":"location",
     
 }
 
@@ -314,7 +315,7 @@ class AutogidasAd(CarAd):
             addons += addon.get().strip() + ", "
         addons = addons[:-2]
         self.scraped_params["features"] = addons
-        comment = self.response.css('div.comments::text').get()
+        comment = self.response.css('div.comments').get()
         self.scraped_params["comments"] = comment.strip() if comment is not None else None
         for param in self.response.css('div.param'):
             value = param.css('div.price::text').get() or param.css('div.right::text').get()
@@ -384,7 +385,7 @@ class AutopliusAd(CarAd):
             addons = addons[:-2] + "\n"
         
         self.scraped_params["features"] = addons
-        comment = self.response.css("div.announcement-description::text").get()
+        comment = self.response.css("div.announcement-description").get()
         self.scraped_params["comments"] = comment.strip() if comment is not None else None
 
         for param in self.response.css('div.parameter-row'):
@@ -483,7 +484,7 @@ class AutobilisAd(CarAd):
         
         comment_block = self.response.css("div.advert-price-MainInfo-comments")
         if comment_block is not None:
-            comment = comment_block.css('div.advert-price-MainInfo-text > span::text').get()
+            comment = comment_block.css('div.advert-price-MainInfo-text > span').get()
             self.scraped_params["comments"] = comment.strip() if comment is not None else None
 
         self.gen_location()
