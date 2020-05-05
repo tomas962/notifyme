@@ -22,7 +22,7 @@
                     <template v-slot:footer>
                         <b-row>
                             <b-col class="text-center" cols="12">
-                                <b-btn :to="'/queries/' + query.car_query.id + '/cars'" class="btn-success">Rezultatai</b-btn>
+                                <b-btn :click="setPage({page: 1})" :to="'/queries/' + query.car_query.id + '/cars'" class="btn-success">Rezultatai</b-btn>
                             </b-col>
                         </b-row>
                         <b-row class="mt-2">
@@ -66,11 +66,17 @@
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import {CarQueryResponse} from "@/models/interfaces"
 
+import {namespace} from 'vuex-class'
+const UIns = namespace('UIState')
+
 @Component
 export default class CarQueryComp extends Vue {
     @Prop() query!: CarQueryResponse
     showErr = false;
     errMsg: string|null = null;
+
+    @UIns.Action
+    setPage!: (state: {page: number}) => void
 
     get card_title() {
         if (this.query.make_model && this.query.make_model.make) 

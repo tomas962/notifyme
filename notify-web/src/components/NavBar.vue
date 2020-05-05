@@ -6,12 +6,13 @@
     <b-navbar-toggle target="nav-collapse"></b-navbar-toggle>
     <b-collapse id="nav-collapse" is-nav>
         <b-navbar-nav>
-            <b-nav-item v-if="identity.email == ''"><router-link to="/login">Prisijungti</router-link></b-nav-item>
-            <b-nav-item v-if="identity.email"><router-link to="/queries">Automobiliai</router-link></b-nav-item>
+            <b-nav-item to="/login" v-if="identity.email == ''">Prisijungti</b-nav-item>
+            <b-nav-item v-if="identity.email" to="/queries">Automobiliai</b-nav-item>
         </b-navbar-nav>
         <!-- Right aligned nav items -->
         <b-navbar-nav class="ml-auto">
           <b-nav-item>Sveiki, {{identity.email || 'svečias'}}</b-nav-item>
+          <b-nav-item v-if="identity.email" to="/settings">Nustatymai</b-nav-item>
           <b-nav-item v-if="identity.email" v-on:click="logout();" >Atsijungti</b-nav-item>
         </b-navbar-nav>
     </b-collapse>

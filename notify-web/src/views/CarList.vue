@@ -23,6 +23,7 @@ import {namespace} from 'vuex-class'
 import {Car} from '../store/modules/cars'
 
 const carsns = namespace('CarList')
+const UI = namespace('UIState')
 
 @Component({
 components: {
@@ -33,7 +34,21 @@ export default class CarList extends Vue {
     query_id = -1;
 
     perPage = 10;
-    currentPage = 1;
+
+    get currentPage () {
+        return this.carAdsPage
+    }
+    set currentPage(val) {
+        this.setPage({
+            page: val
+        });
+    }
+
+    @UI.State
+    carAdsPage!: number;
+    @UI.Action
+    setPage!: (state: {page: number}) => void
+
 
     @carsns.State
     public cars!: Car[];
@@ -45,18 +60,24 @@ export default class CarList extends Vue {
     public sortCars!: (sortFn: (a: Car, b: Car) => number) => void
 
     created() {
+        if (this.currentPage == null) {
+            this.currentPage = 1
+        }
         this.query_id = parseInt(this.$route.params.query_id, 10);
         this.fetchCars({query_id: this.query_id});
-}
+        console.log("_currentPage:");
+        console.log(this.currentPage);
+        
+    }
 
-get carPage() {
-    const start = (this.currentPage-1) * this.perPage
-    const end = start + this.perPage
-    console.log(start);
-    console.log(end);
-    
-    return this.cars.slice(start, end);
-}
+    get carPage() {
+        const start = (this.currentPage-1) * this.perPage
+        const end = start + this.perPage
+        console.log(start);
+        console.log(end);
+        
+        return this.cars.slice(start, end);
+    }
 
 }
 </script>
