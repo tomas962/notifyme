@@ -17,6 +17,18 @@
             <b-col sm="3"></b-col>
         </b-row>
 
+        <b-row class="mt-2">
+            <b-col sm="3"></b-col>
+            <b-col  cols="6" sm="3" class="text-center mt-1">
+                Tiesioginiai pranešimai į įrenginį (ang. "Push Notifications")
+            </b-col>
+            <b-col cols="6" sm="3" class="text-center">
+                <b-form-checkbox @input="pushNotifInput" switch size="lg">
+                </b-form-checkbox>
+            </b-col>
+            <b-col sm="3"></b-col>
+        </b-row>
+
         <b-row class="mt-5">
         </b-row>
         <b-row class="mt-5">
@@ -60,10 +72,13 @@ export default class SettingsView extends Vue {
     succMsg = ""
     showErr = false
     showSucc = false
-
+    notificationsSupported = false
     email_notifications = 0
 
     async created() {
+        if ('Notification' in window && 'serviceWorker' in navigator) {
+            this.notificationsSupported = true
+        }
         const response = await fetch(window.SERVER_URL + "/users/" + this.$store.state.User.identity.user_id + '/settings', {
             headers: {
                 'Authorization': 'Bearer ' + this.$store.state.User.access_token,
@@ -77,13 +92,22 @@ export default class SettingsView extends Vue {
         }
     }
 
-
+    async pushNotifInput() {
+        if (this.notificationsSupported) {
+            const result = await Notification.requestPermission();
+            console.log("result:");
+            console.log(result);
+            if (result === 'granted') {
+                new Notification("test")
+            }
+        }
+    }
 
     async changePw() {
         console.log("changing passowrd");
         console.log(this.password);
 
-        if (this.password.old_password !== this.password.confirm_password) {
+        if (this.password.new_password !== this.password.confirm_password) {
             this.showErr = true
             this.errMsg = "Slaptažodžiai nesutampa!"
         }

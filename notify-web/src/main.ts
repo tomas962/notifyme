@@ -10,11 +10,12 @@ import Lingallery from 'lingallery';
 import '@/assets/main.css'
 Vue.component('lingallery', Lingallery);
 declare global {
-  interface Window { SERVER_URL: string; eventBus: Vue }
+  interface Window { SERVER_URL: string; eventBus: Vue; SCRAPE_INTERVAL: number }
 }
 
 window.SERVER_URL = "http://192.168.100.7:5000"
 window.eventBus = new Vue();
+window.SCRAPE_INTERVAL = 600;
 
 Vue.use(ElementUI)
 // Install BootstrapVue

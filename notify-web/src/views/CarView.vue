@@ -58,6 +58,15 @@
                </b-col>
            </b-row>
 
+           <b-row v-if="car.year" class="mt-2">
+               <b-col cols="5">
+                   Rida
+               </b-col>
+               <b-col class="param">
+                   {{car.mileage}} km
+               </b-col>
+           </b-row>
+
            <b-row v-if="car.engine" class="mt-2">
                <b-col cols="5">
                    Variklis
@@ -244,7 +253,7 @@
                </b-col>
            </b-row>
 
-           <b-row v-if="car.phone || car.location" class="mt-5">
+           <b-row v-if="car.phone || car.location || hrefTitle" class="mt-5">
                <b-col class="param" cols="3" sm="5" md="5" lg="4">
                    <div>Kontaktai</div>
                </b-col>
@@ -266,7 +275,8 @@
                    {{car.location}}
                </b-col>
            </b-row>
-           <b-row v-if="car.location" class="mt-2">
+           
+           <b-row v-if="hrefTitle" class="mt-2">
                <b-col cols="3">
                </b-col>
                <b-col class="font-italic">
@@ -285,64 +295,64 @@ export default {
 	},
   data () {
     return {
-        car: {autob_id: null
-                ,autobilis_fuel_id: 0
-                ,autobilis_id: 0
-                ,autobilis_make_id: 143
-                ,autobilis_model_id: 960
-                ,autog_id: null
-                ,autop_id: 9206815
-                ,autoplius_fuel_id: 30
-                ,autoplius_id: 4
-                ,autoplius_make_id: 99
-                ,autoplius_model_id: 1343
-                ,'body_styles.id': 1
-                ,body_type: 1
-                ,body_type_name: "Sedanas"
-                ,color: null
-                ,comments: "Puikiai važiuojantis automobilis, pakeista daug detalių naujomis."
-                ,cylinder_count: null
-                ,damage: null
-                ,deleted: 0
-                ,door_count: null
-                ,driven_wheels: "Priekiniai varantys ratai"
-                ,engine: "2200 cm³, 135 AG (100kW)"
-                ,export_price: null
-                ,features: ""
-                ,fuel_name: "Benzinas"
-                ,fuel_overall: null
-                ,fuel_overland: null
-                ,fuel_type: 2
-                ,'fuel_types.fuel_name': "Benzinas"
-                ,'fuel_types.id': 2
-                ,fuel_urban: null
-                ,gear_count: null
-                ,gearbox: "Mechaninė"
-                ,href: "https://autoplius.lt/skelbimai/audi-90-2-2-l-sedanas-1984-benzinas-9206815.html"
-                ,id: 794
-                ,location: "Panevėžys, Lietuva"
-                ,make: 10
-                ,make_id: 10
-                ,make_name: "Audi"
-                ,'makes.id': 10
-                ,'makes.make': "Audi"
-                ,mileage: 230844
-                ,model: 11019
-                ,model_name: "90"
-                ,'models.id': 11019
-                ,'models.model_name': "90"
-                ,name: "Sedanas"
-                ,phone: "+370 684 72168"
-                ,picture_href: "https://autoplius-img.dgn.lt/ann_3_88848153/audi-90-2-2-l-sedanas-1984-benzinas.jpg"
-                ,price: 2999
-                ,seat_count: 5
-                ,steering_column: "Kairėje"
-                ,ts_to: null
-                ,vin_code: null
-                ,weight: 1100
-                ,wheels: null
-                ,when_scraped: 1588442155
-                ,year: "1984"},
+         car: {},//{autob_id: null
+        //         ,autobilis_fuel_id: 0
+        //         ,autobilis_id: 0
+        //         ,autobilis_make_id: 143
+        //         ,autobilis_model_id: 960
+        //         ,autog_id: null
+        //         ,autop_id: 9206815
+        //         ,autoplius_fuel_id: 30
+        //         ,autoplius_id: 4
+        //         ,autoplius_make_id: 99
+        //         ,autoplius_model_id: 1343
+        //         ,'body_styles.id': 1
+        //         ,body_type: 1
+        //         ,body_type_name: "Sedanas"
+        //         ,color: null
+        //         ,comments: "Puikiai važiuojantis automobilis, pakeista daug detalių naujomis."
+        //         ,cylinder_count: null
+        //         ,damage: null
+        //         ,deleted: 0
+        //         ,door_count: null
+        //         ,driven_wheels: "Priekiniai varantys ratai"
+        //         ,engine: "2200 cm³, 135 AG (100kW)"
+        //         ,export_price: null
+        //         ,features: ""
+        //         ,fuel_name: "Benzinas"
+        //         ,fuel_overall: null
+        //         ,fuel_overland: null
+        //         ,fuel_type: 2
+        //         ,'fuel_types.fuel_name': "Benzinas"
+        //         ,'fuel_types.id': 2
+        //         ,fuel_urban: null
+        //         ,gear_count: null
+        //         ,gearbox: "Mechaninė"
+        //         ,href: "https://autoplius.lt/skelbimai/audi-90-2-2-l-sedanas-1984-benzinas-9206815.html"
+        //         ,id: 794
+        //         ,location: "Panevėžys, Lietuva"
+        //         ,make: 10
+        //         ,make_id: 10
+        //         ,make_name: "Audi"
+        //         ,'makes.id': 10
+        //         ,'makes.make': "Audi"
+        //         ,mileage: 230844
+        //         ,model: 11019
+        //         ,model_name: "90"
+        //         ,'models.id': 11019
+        //         ,'models.model_name': "90"
+        //         ,name: "Sedanas"
+        //         ,phone: "+370 684 72168"
+        //         ,picture_href: []
+        //         ,price: 2999
+        //         ,seat_count: 5
+        //         ,steering_column: "Kairėje"
+        //         ,ts_to: null
+        //         ,vin_code: null
+        //         ,weight: 1100
+        //         ,wheels: null
+        //         ,when_scraped: 1588442155
+        //         ,year: "1984"},
         tmp: {},
         picId: null
     }
@@ -418,8 +428,10 @@ export default {
                 }
             });
             const data = await response.json();
-            data.comments = data.comments.replace(/<div class="announcement-description">/, "").replace(/<\/div>/g, "")
-                .replace(/<span>/, "").replace(/<\/span>/, "").replace(/<div class="comments" itemprop="description">/, "").split('<br>')
+            if (data.comments)
+                data.comments = data.comments.replace(/<div class="announcement-description">/, "").replace(/<\/div>/g, "").replace(/&amp;/g, "&")
+                    .replace(/<span>/, "").replace(/<\/span>/, "").replace(/<div class="comments" itemprop="description">/, "").split('<br>')
+
             this.car = data
             
             for (let i = 0; i < this.car.picture_href.length; i++) {
@@ -462,7 +474,7 @@ export default {
     
     computed: {
         header() {
-            const hdr = `${this.car.make_name} ${this.car.model_name} ${this.car.fuel_name} ${this.car.year} m` 
+            const hdr = `${this.car.make_name||''} ${this.car.model_name||''} ${this.car.fuel_name||''} ${this.car.year||''} m` 
             return hdr
         },
 
@@ -482,8 +494,10 @@ export default {
                 return "Autobilis.lt nuoroda"
             else if (this.car.autog_id) 
                 return "Autogidas.lt nuoroda"
-            else 
-                return "Autoplius.lt nuoroda" 
+            else if (this.car.autop_id)
+                return "Autoplius.lt nuoroda"
+            else
+                return ""
         }   
     },
 

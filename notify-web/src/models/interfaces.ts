@@ -12,6 +12,10 @@ interface CarQuery {
     year_from: number;
     year_to: number;
     sites?: string;
+    currently_scraping: number;
+    last_scraped: number; 
+    scrape_interval: number|null; 
+    was_scraped: number;
 }
 
 interface BodyStyle {
@@ -47,6 +51,7 @@ interface CarQueryResponse {
 }
 
 interface NewCarQuery {
+    [key: string]: any;
     make_id: number|null;
     model_id: number|null;
     city_id: number|null;

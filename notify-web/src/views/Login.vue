@@ -65,9 +65,9 @@ export default class Login extends Vue {
     setUser!: (state: UserState) => void;
 
     created() {
-        if (this.$root.reg_success) {
-            this.succMsg = this.$root.reg_success;
-            this.$root.reg_success = undefined;
+        if ((this.$root as any).reg_success) {
+            this.succMsg = (this.$root as any).reg_success;
+            (this.$root as any).reg_success = undefined;
             this.showSucc = true;
         }
     }

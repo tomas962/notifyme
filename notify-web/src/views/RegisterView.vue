@@ -83,7 +83,7 @@ export default class RegisterView extends Vue {
             this.showErr = true;
             return;
         } else {
-            this.$root.reg_success = "Registracija sėkminga. Prisijunkite."
+            (this.$root as any).reg_success = "Registracija sėkminga. Prisijunkite."
             this.$router.push('/login')
         }
 

@@ -22,7 +22,10 @@
                     <template v-slot:footer>
                         <b-row>
                             <b-col class="text-center" cols="12">
-                                <b-btn :click="setPage({page: 1})" :to="'/queries/' + query.car_query.id + '/cars'" class="btn-success">Rezultatai</b-btn>
+                                <b-btn :disabled="query.car_query.currently_scraping ? true : false" @click="setPage({page: 1})" :to="'/queries/' + query.car_query.id + '/cars'" class="btn-success">
+                                    <b-spinner v-if="query.car_query.currently_scraping ? true : false" small></b-spinner>
+                                    {{query.car_query.currently_scraping ? 'Paieška vykdoma' : 'Rezultatai'}}
+                                </b-btn>
                             </b-col>
                         </b-row>
                         <b-row class="mt-2">
@@ -39,24 +42,13 @@
                                 <b-btn v-on:click="edit();">Redaguoti</b-btn>
                             </b-btn-group>
                             </b-col>
-
-                            <!-- <b-col cols="4">
-                            <b-button  v-b-modal.modal-1>Pašalinti</b-button>
-
-                            <b-modal id="modal-1" title="BootstrapVue">
-                                <p class="my-4">Hello from modal!</p>
-                            </b-modal>
-                            </b-col>
-                            <b-col cols="4">
-                                <b-btn v-on:click="edit();">Redaguoti</b-btn>
-                            </b-col>
-                            <b-col cols="4">
-                                <router-link :to="'/queries/' + query.car_query.id + '/cars'">
-                                    <b-btn class="btn-success">Rezultatai</b-btn>
-                                </router-link>
-                            </b-col> -->
                         </b-row>
                         <b-alert class="mt-2" variant="danger" :show="showErr" dismissible v-on:dismissed="showErr=false">{{errMsg}}</b-alert>
+                        <b-row v-if="nextScrape > 0">
+                            <b-col>
+                                Bus atnaujinama už: {{Math.floor(nextScrape/60)}}min {{nextScrape%60}}s
+                            </b-col>
+                        </b-row>
                     </template>
                 </b-card>
         </b-col>
@@ -74,9 +66,19 @@ export default class CarQueryComp extends Vue {
     @Prop() query!: CarQueryResponse
     showErr = false;
     errMsg: string|null = null;
+    intervalID = 0
 
     @UIns.Action
     setPage!: (state: {page: number}) => void
+
+    destroyed() {
+        clearInterval(this.intervalID)
+    }
+
+    created() {
+        this._nextScrape();
+        this.intervalID = setInterval(this._nextScrape, 1000);
+    }
 
     get card_title() {
         if (this.query.make_model && this.query.make_model.make) 
@@ -108,6 +110,11 @@ export default class CarQueryComp extends Vue {
         return ""
     }
 
+    nextScrape = 0;
+    _nextScrape() {
+        const timestamp = (Date.now() / 1000) | 0;
+        this.nextScrape = (this.query.car_query.last_scraped + (this.query.car_query.scrape_interval || window.SCRAPE_INTERVAL)) - timestamp
+    }
 
     edit(){
         
