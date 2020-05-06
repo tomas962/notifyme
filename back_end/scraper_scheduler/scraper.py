@@ -12,7 +12,7 @@ import os
 from notify_scraper.notify_scraper.spiders.autobilis import AutobilisSpider
 from notify_scraper.notify_scraper.spiders.autogidas import AutogidasSpider
 from notify_scraper.notify_scraper.spiders.autoplius import AutopliusSpider
-SCRAPE_INTERVAL = 600
+from config import SCRAPE_INTERVAL
 from notify_scraper.notify_scraper import settings
 from scrapy.settings import Settings
 from notifier.notifier import Notifier 
@@ -20,6 +20,13 @@ from database.car import get_cars_by_query_id
 from database.car_query import get_all_car_queries, get_car_query
 
 items = []
+config = {
+    'COOKIES_ENABLED': False, 
+    'DOWNLOAD_DELAY': 0.3,
+    'ITEM_PIPELINES': {'scraper_scheduler.scraper.ItemCollector': 100}
+}
+
+
 class ItemCollector():
     def __init__(self):
         self.ids_seen = set()
@@ -70,11 +77,7 @@ class ScraperScheduler():
         print(os.getpid())
         print('__name__:')
         print(__name__)
-        sett = Settings({
-            'COOKIES_ENABLED': settings.COOKIES_ENABLED, 
-            'DOWNLOAD_DELAY': settings.DOWNLOAD_DELAY,
-            'ITEM_PIPELINES': {'scraper_scheduler.scraper.ItemCollector': 100}
-        })
+        sett = Settings(config)
         # print("SETTINGS:")
         # print(vars(sett))
         # exit(0)
@@ -130,12 +133,22 @@ class ScraperScheduler():
             old_cars = get_cars_by_query_id(self.current_query["id"])
             # SCRAPE HERE, more threads? maybe with proxy
             q = Queue()
-            
+            self.current_query["currently_scraping"] = True
+            with db_connect().cursor() as cursor:
+                cursor.execute("UPDATE car_queries SET currently_scraping=1 WHERE id=%s", self.current_query["id"])
+                cursor.connection.commit()
+                cursor.connection.close()
+                
             p = Process(target=self.scrape, args=(q,)) 
             p.start()
             scraped_cars = q.get(True)
             
             p.join()
+            self.current_query["currently_scraping"] = False
+            with db_connect().cursor() as cursor:
+                cursor.execute("UPDATE car_queries SET currently_scraping=0 WHERE id=%s", self.current_query["id"])
+                cursor.connection.commit()
+                cursor.connection.close()
             print("JOINED")
             print("TIME after Q.get()")
             print(time.time())

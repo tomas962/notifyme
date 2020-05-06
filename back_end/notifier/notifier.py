@@ -90,6 +90,11 @@ class Notifier():
             print(__name__ + " notifier.py error: USER NOT FOUND")
             return
         
+        if not user["email_notifications"]:
+            print("email notifications disabled for this user:")
+            print(user)
+            return
+        
         print(f"SENDING EMAIL TO {user['email']}")
         print(f"EMAIL CONTENT:")
         print(msg)

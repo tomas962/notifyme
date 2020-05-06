@@ -48,6 +48,13 @@ class AutopliusQuery():
                 new_params["make_date_to"] = self.params["car_query"]["year_to"] if self.params["car_query"]["year_to"] is not None else ""
             if "search_term" in self.params["car_query"] and self.params["car_query"]["search_term"] is not None:
                 new_params["qt"] = self.params["car_query"]["search_term"] if self.params["car_query"]["search_term"] is not None else ""
+            if "power_from" in self.params["car_query"] and self.params["car_query"]["power_from"] is not None:
+                new_params["power_from"] = self.params["car_query"]["power_from"]
+            if "power_to" in self.params["car_query"] and self.params["car_query"]["power_to"] is not None:
+                new_params["power_to"] = self.params["car_query"]["power_to"]
+            if "autop_city_id" in self.params["car_query"] and self.params["car_query"]["autop_city_id"] is not None:
+                new_params["fk_place_cities_id"] = self.params["car_query"]["autop_city_id"]
+            
 
         if "body_style" in self.params and self.params["body_style"] is not None and "autoplius_id" in self.params["body_style"]:
             new_params["body_type_id"] = self.params["body_style"]["autoplius_id"] if self.params["body_style"]["autoplius_id"] is not None else ""
@@ -68,10 +75,12 @@ class AutogidasQuery():
         if not self.check_params():
             return None
         new_params = {}
-        if "make_model" in self.params and self.params["make_model"] is not None and "make" in self.params["make_model"]:
+        
+        if "make_model" in self.params and self.params["make_model"] is not None and "make" in self.params["make_model"] and \
+         self.params["make_model"]["make"] != "Visos markės":
             new_params[f'f_1[0]'] = self.params["make_model"]["make"] or ""
-        if "make_model" in self.params and self.params["make_model"] and "model_name" in self.params["make_model"]:
-            new_params[f'f_model_14[0]'] = self.params["make_model"]["model_name"] or ""
+            if "make_model" in self.params and self.params["make_model"] and "model_name" in self.params["make_model"]:
+                new_params[f'f_model_14[0]'] = self.params["make_model"]["model_name"] or ""
 
         if "car_query" in self.params and self.params["car_query"] is not None:
             if "price_from" in self.params["car_query"]:
@@ -85,6 +94,12 @@ class AutogidasQuery():
                 new_params['f_42'] = self.params["car_query"]["year_to"] if self.params["car_query"]["year_to"] is not None else ""
             if "search_term" in self.params["car_query"] and self.params["car_query"]["search_term"] is not None:
                 new_params['f_376'] = self.params["car_query"]["search_term"] if self.params["car_query"]["search_term"] is not None else ""
+            if "power_from" in self.params["car_query"] and self.params["car_query"]["power_from"] is not None:
+                new_params["f_63"] = self.params["car_query"]["power_from"]
+            if "power_to" in self.params["car_query"] and self.params["car_query"]["power_to"] is not None:
+                new_params["f_64"] = self.params["car_query"]["power_to"]
+            if "city" in self.params["car_query"] and self.params["car_query"]["city"] is not None:
+                new_params["f_13"] = self.params["car_query"]["city"]
 
         if "body_style" in self.params and self.params["body_style"] is not None and "name" in self.params["body_style"]:
             new_params[f'f_3[0]'] = self.params["body_style"]["name"] if self.params["body_style"]["name"] is not None else ""
@@ -139,6 +154,12 @@ class AutobilisQuery():
                 new_params["year_to"] = self.params["car_query"]["year_to"] if self.params["car_query"]["year_to"] is not None else ""
             if "search_term" in self.params["car_query"] and self.params["car_query"]["search_term"] is not None:
                 new_params["qt"] = self.params["car_query"]["search_term"] if self.params["car_query"]["search_term"] is not None else ""
+            if "power_from" in self.params["car_query"] and self.params["car_query"]["power_from"] is not None:
+                new_params["engine_power_from"] = self.params["car_query"]["power_from"]
+            if "power_to" in self.params["car_query"] and self.params["car_query"]["power_to"] is not None:
+                new_params["engine_power_to"] = self.params["car_query"]["power_to"]
+            if "autob_city_id" in self.params["car_query"] and self.params["car_query"]["autob_city_id"] is not None:
+                new_params["city"] = self.params["car_query"]["autob_city_id"]
 
         if "body_style" in self.params and self.params["body_style"] is not None and "autobilis_id" in self.params["body_style"]:
             new_params["body_type"] = self.params["body_style"]["autobilis_id"] if self.params["body_style"]["autobilis_id"] is not None else ""

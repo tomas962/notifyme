@@ -1,6 +1,7 @@
 from flask import Blueprint, jsonify, request, Response
 from database.database import db_connect
-from database.car_query import get_car_queries_by_user_id, insert_car_query, update_car_query, delete_car_query, get_car_query
+from database.car_query import (get_car_queries_by_user_id, insert_car_query, update_car_query,
+    delete_car_query, get_car_query, get_car_queries_state)
 query_api = Blueprint('car_queries', __name__)
 import server.scraper_interface as scraper_interface
 from flask_jwt_extended import jwt_required, fresh_jwt_required, get_jwt_identity
@@ -8,7 +9,7 @@ from .jwt_validations import validate_resource
 
 @query_api.route("/users/<int:user_id>/queries")
 @jwt_required
-def user_query_list(user_id): #TODO filter by user id and car query id
+def user_query_list(user_id):
     car_queries = get_car_queries_by_user_id(user_id)
     return jsonify(car_queries)
 
@@ -124,3 +125,10 @@ def del_query(user_id, query_id):
         scraper_interface.delete_car_query(user_id, query_id)
         return Response(status=200)
 
+@query_api.route("/users/<int:user_id>/queries/state")
+@jwt_required
+def user_car_queries_state(user_id):
+    if res := validate_resource(user_id) != True:
+        return res
+    car_queries = get_car_queries_state(user_id)
+    return jsonify(car_queries)

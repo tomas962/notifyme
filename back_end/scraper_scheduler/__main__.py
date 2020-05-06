@@ -27,12 +27,12 @@ def delete_query(user_id, query_id):
     return Response(status=200)
 
 if __name__ == "__main__":
-    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    sock.bind(('localhost', 0))
-    port = sock.getsockname()[1]
-    sock.close()
-    print("WRITING")
-    with open("config.py", "w") as f:
-        f.write(f"SCRAPER_PORT={port}\n")
+    # sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    # sock.bind(('localhost', 0))
+    port = 40375 #sock.getsockname()[1]
+    # sock.close()
+    # print("WRITING")
+    # with open("config.py", "w") as f:
+    #     f.write(f"SCRAPER_PORT={port}\n")
     app.run(host="127.0.0.1", port=port, debug=True, use_reloader=False, )  
     

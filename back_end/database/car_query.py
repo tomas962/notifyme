@@ -2,7 +2,8 @@ from .database import db_connect
 
 def get_car_query(id):
     with db_connect().cursor() as cursor:
-        cursor.execute("SELECT * FROM car_queries WHERE id=%s", id)
+        cursor.execute("SELECT car_queries.*, cities.city, cities.autop_id as autop_city_id, cities.autob_id as autob_city_id\
+              FROM car_queries LEFT JOIN cities on city_id=cities.id  WHERE car_queries.id=%s", id)
         car_query = cursor.fetchone()
         
         if car_query is None:
@@ -174,3 +175,11 @@ def delete_car_query(user_id, query_id):
         cursor.connection.commit()
         cursor.connection.close()
         return True
+
+
+def get_car_queries_state(user_id):
+    with db_connect().cursor() as cursor:
+        cursor.execute("SELECT id, scrape_interval, last_scraped, was_scraped, currently_scraping FROM car_queries WHERE user_id=%s", (user_id))
+        queries = cursor.fetchall()
+        cursor.connection.close()
+        return queries

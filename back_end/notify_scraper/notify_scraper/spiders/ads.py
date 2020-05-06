@@ -167,6 +167,7 @@ class CarAd():
             self.prepared_params["make_name"] = self.prepared_params["make"]
             self.prepared_params["make"] = make["id"]
         if self.prepared_params["model"] is not None:
+            #TODO fix not matching model names
             cursor.execute("SELECT * from models WHERE make_id=%s AND model_name=%s", (self.prepared_params["make"], self.prepared_params["model"]))
             model = cursor.fetchone()
             self.prepared_params["model_name"] = self.prepared_params["model"]
