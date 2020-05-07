@@ -27,6 +27,25 @@ class AutopliusQuery():
         return True # scrape
 
 
+    def _gearbox(self, value):
+        if value == "Mechaninė":
+            return 37
+        else: 
+            return 38
+
+    def _driven_wheels(self, value):
+        switch = {}
+        def _front():
+            return 17363
+        switch["Priekiniai varantys ratai"] = _front
+        def _back():
+            return 17362
+        switch["Galiniai varantys ratai"] = _back
+        def _all():
+            return 17364
+        switch["Visi varantys ratai"] = _all
+        return switch[value]()
+
     def generate(self):
         if not self.check_params():
             return None
@@ -54,7 +73,12 @@ class AutopliusQuery():
                 new_params["power_to"] = self.params["car_query"]["power_to"]
             if "autop_city_id" in self.params["car_query"] and self.params["car_query"]["autop_city_id"] is not None:
                 new_params["fk_place_cities_id"] = self.params["car_query"]["autop_city_id"]
-            
+            if "gearbox" in self.params["car_query"] and self.params["car_query"]["gearbox"] is not None:
+                new_params["gearbox_id"] = self._gearbox(self.params["car_query"]["gearbox"])
+            if "driven_wheels" in self.params["car_query"] and self.params["car_query"]["driven_wheels"] is not None:
+                new_params["wheel_drive_id"] = self._driven_wheels(self.params["car_query"]["driven_wheels"])
+            if "steering_column" in self.params["car_query"] and self.params["car_query"]["steering_column"] is not None:
+                new_params["steering_wheel_id"] = 10922 if self.params["car_query"]["steering_column"] == "Kairėje" else 10921
 
         if "body_style" in self.params and self.params["body_style"] is not None and "autoplius_id" in self.params["body_style"]:
             new_params["body_type_id"] = self.params["body_style"]["autoplius_id"] if self.params["body_style"]["autoplius_id"] is not None else ""
@@ -100,6 +124,12 @@ class AutogidasQuery():
                 new_params["f_64"] = self.params["car_query"]["power_to"]
             if "city" in self.params["car_query"] and self.params["car_query"]["city"] is not None:
                 new_params["f_13"] = self.params["car_query"]["city"]
+            if "gearbox" in self.params["car_query"] and self.params["car_query"]["gearbox"] is not None:
+                new_params["f_10"] = self.params["car_query"]["gearbox"]
+            if "driven_wheels" in self.params["car_query"] and self.params["car_query"]["driven_wheels"] is not None:
+                new_params["f_12"] = self.params["car_query"]["driven_wheels"]
+            if "steering_column" in self.params["car_query"] and self.params["car_query"]["steering_column"] is not None:
+                new_params["f_265"] = self.params["car_query"]["steering_column"]
 
         if "body_style" in self.params and self.params["body_style"] is not None and "name" in self.params["body_style"]:
             new_params[f'f_3[0]'] = self.params["body_style"]["name"] if self.params["body_style"]["name"] is not None else ""
@@ -132,6 +162,13 @@ class AutobilisQuery():
         print("RETURNING TRUE")
         return True # scrape
 
+    def _driven_wheels(self, value):
+        if value == "Priekiniai varantys ratai":
+            return 0
+        if value == "Galiniai varantys ratai":
+            return 1
+        if value == "Visi varantys ratai":
+            return 2
 
     def generate(self):
         if not self.check_params():
@@ -160,6 +197,12 @@ class AutobilisQuery():
                 new_params["engine_power_to"] = self.params["car_query"]["power_to"]
             if "autob_city_id" in self.params["car_query"] and self.params["car_query"]["autob_city_id"] is not None:
                 new_params["city"] = self.params["car_query"]["autob_city_id"]
+            if "gearbox" in self.params["car_query"] and self.params["car_query"]["gearbox"] is not None:
+                new_params["drivetrain"] = "AT" if self.params["car_query"]["gearbox"] == "Automatinė" else "MT"
+            if "driven_wheels" in self.params["car_query"] and self.params["car_query"]["driven_wheels"] is not None:
+                new_params["transmision_type"] = self._driven_wheels(self.params["car_query"]["driven_wheels"])
+            if "steering_column" in self.params["car_query"] and self.params["car_query"]["steering_column"] is not None:
+                new_params["steering_wheel"] = 0 if self.params["car_query"]["steering_column"] == "Kairėje" else 1
 
         if "body_style" in self.params and self.params["body_style"] is not None and "autobilis_id" in self.params["body_style"]:
             new_params["body_type"] = self.params["body_style"]["autobilis_id"] if self.params["body_style"]["autobilis_id"] is not None else ""

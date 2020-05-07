@@ -32,6 +32,9 @@ def post_car_query(user_id):
     query_values["city_id"] = json["city_id"] if "city_id" in json else None
     query_values["user_id"] = user_id
     query_values["was_scraped"] = 0
+    query_values["driven_wheels"] = json["driven_wheels"] if "driven_wheels" in json else None
+    query_values["steering_column"] = json["steering_column"] if "steering_column" in json else None
+    query_values["gearbox"] = json["gearbox"] if "gearbox" in json else None
 
     # query_fuel
     query_values["fuel_id"] = json["fuel_id"] if "fuel_id" in json else None
@@ -77,6 +80,9 @@ def put_car_query(user_id, query_id):
     query_values["power_from"] = json["power_from"] if "power_from" in json else None
     query_values["power_to"] = json["power_to"] if "power_to" in json else None
     query_values["city_id"] = json["city_id"] if "city_id" in json else None
+    query_values["driven_wheels"] = json["driven_wheels"] if "driven_wheels" in json else None
+    query_values["steering_column"] = json["steering_column"] if "steering_column" in json else None
+    query_values["gearbox"] = json["gearbox"] if "gearbox" in json else None
     query_values["user_id"] = user_id
     query_values["id"] = query_id
     query_values["was_scraped"] = 0

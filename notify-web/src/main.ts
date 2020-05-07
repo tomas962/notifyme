@@ -13,9 +13,21 @@ declare global {
   interface Window { SERVER_URL: string; eventBus: Vue; SCRAPE_INTERVAL: number }
 }
 
+import io from 'socket.io-client'
 window.SERVER_URL = "http://192.168.100.7:5000"
 window.eventBus = new Vue();
 window.SCRAPE_INTERVAL = 600;
+
+
+const socket = io(window.SERVER_URL)
+console.log(socket);
+
+socket.on('connect', () => {
+  console.log("socketio connect");
+  console.log(socket);
+  socket.emit("join", {"test":"hello"})
+})
+
 
 Vue.use(ElementUI)
 // Install BootstrapVue

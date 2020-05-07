@@ -1,5 +1,7 @@
 import Vue from 'vue'
 import VueRouter, { RouteConfig } from 'vue-router'
+import store from '@/store/index'
+import {User} from '@/store/modules/user'
 import CarList from '../views/CarList.vue'
 import Login from '../views/Login.vue'
 import CarQueries from '../views/CarQueries.vue'
@@ -54,6 +56,14 @@ const router = new VueRouter({
   mode: 'history',
   base: process.env.BASE_URL,
   routes
+})
+
+router.beforeEach((to, from, next) => {
+  //if (!((store.state as any).User as User).identity.email && to.path !== '/login' && to.path !== '/register')
+  if (!localStorage.getItem("access_token") && to.path !== '/login' && to.path !== '/register')
+    next({ path: '/login' })
+  else 
+    next()
 })
 
 export default router

@@ -12,15 +12,22 @@ from .jwt_validations import validate_resource
 app.config['JWT_SECRET_KEY'] = 'dsafn87987345 3Q#$GRWE#$()_)*%@&#()nvdkJS*#@QW$%&BHDFSudsfkj'
 app.config['JWT_ACCESS_TOKEN_EXPIRES'] = timedelta(minutes=60)
 app.config['JWT_REFRESH_TOKEN_EXPIRES'] = timedelta(days=7)
-jwt = JWTManager(app)
+app.config['SECRET_KEY'] = 'secret!'
 
+jwt = JWTManager(app)
+from flask_socketio import SocketIO
+
+socketio = SocketIO(app, cors_allowed_origins="*")
+print("after socketio")
 
 import os
 print(os.getpid())
 from .cars import cars_api
 from .car_queries import query_api
+from .api_for_scraper import scraper_api 
 app.register_blueprint(cars_api)
 app.register_blueprint(query_api)
+app.register_blueprint(scraper_api)
 
 from flask_cors import CORS
 app.debug = True
@@ -32,8 +39,19 @@ CORS(app, support_credentials=True)
 #     print(response.headers)
 #     return response
 
+
+
+@socketio.on('connect')
+def test_connect():
+    print("CONNECTED")
+    socketio.emit('my response', {'data': 'Connected'})
+
+@socketio.on('join')
+def join(arg):
+    print("joined")
+    print(arg)
+
 @app.route("/")
-@fresh_jwt_required
 def hello():
     result = 'empty'
     with connection.cursor() as cursor:
@@ -175,5 +193,4 @@ print("__name__")
 print(__name__)
 if __name__ == "__main__":
     print("RAN ONCE")
-    app.run(host="0.0.0.0", port=5000, debug=True, use_reloader=False)  
-
+    socketio.run(app, host="0.0.0.0", port=5000, debug=True, use_reloader=False)  

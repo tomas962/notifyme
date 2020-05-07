@@ -16,6 +16,9 @@ interface CarQuery {
     last_scraped: number; 
     scrape_interval: number|null; 
     was_scraped: number;
+    gearbox: null|string;
+    driven_wheels: null|string;
+    steering_column: null|string;
 }
 
 interface BodyStyle {
@@ -60,7 +63,10 @@ interface NewCarQuery {
     search_term: string|null;
     year_to: number|null;
     year_from: number|null;
-    
+    gearbox: null|string;
+    driven_wheels: null|string;
+    steering_column: null|string;
+
     /**body_styles.id in database */
     body_style_id: number|null;
     fuel_id: number|null;

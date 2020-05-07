@@ -81,13 +81,32 @@
                                             <b-form-group label="Galingumas (kW)">
                                                 <b-row>
                                                     <b-col cols="6">
-                                                        <b-form-input number="" v-model="newQuery.power_from" type="number" placeholder="Nuo"></b-form-input>
+                                                        <b-form-input number="" v-model.number="newQuery.power_from" type="number" placeholder="Nuo"></b-form-input>
                                                     </b-col>
                                                     <b-col cols="6">
-                                                        <b-form-input  number="" v-model="newQuery.power_to" type="number" placeholder="Iki"></b-form-input>
+                                                        <b-form-input  number="" v-model.number="newQuery.power_to" type="number" placeholder="Iki"></b-form-input>
                                                     </b-col>
                                                 </b-row>
                                             </b-form-group>
+                                        </b-col>
+                                        <b-col style="margin-top: 2rem">
+                                            <b-form-select v-model="newQuery.gearbox" :options='[
+                                                {value:null, text:"Pavarų dėžė"}, "Automatinė", "Mechaninė"
+                                            ]' ></b-form-select>
+                                        </b-col>
+                                    </b-row>
+                                    <b-row>
+                                        <b-col>
+                                            <b-form-select v-model="newQuery.driven_wheels" :options="[
+                                            {value:null, text:'Varomieji ratai'},
+                                            'Priekiniai varantys ratai',
+                                            'Galiniai varantys ratai',
+                                            'Visi varantys ratai']" ></b-form-select>
+                                        </b-col>
+                                        <b-col>
+                                            <b-form-select v-model="newQuery.steering_column" :options="[
+                                            {value:null, text:'Vairo padėtis'}, 
+                                            'Kairėje','Dešinėje']" ></b-form-select>
                                         </b-col>
                                     </b-row>
                                 </b-collapse>
@@ -164,7 +183,10 @@ export default class CarQueries extends Vue {
         price_from: null,
         price_to: null,
         sites: ["autogidas","autobilis","autoplius"],
-        query_id: null
+        query_id: null,
+        gearbox: null,
+        driven_wheels: null,
+        steering_column: null
     }
 
     queryFormData: QueryFormData = {
@@ -256,6 +278,9 @@ export default class CarQueries extends Vue {
             this.newQuery.body_style_id = query.body_style ? query.body_style.id : null
             this.newQuery.query_id = query.car_query.id
             this.newQuery.fuel_id = query.fuel_type ? query.fuel_type.id : null
+            this.newQuery.gearbox = query.car_query ? query.car_query.gearbox : null
+            this.newQuery.driven_wheels = query.car_query ? query.car_query.driven_wheels : null
+            this.newQuery.steering_column = query.car_query ? query.car_query.steering_column : null
             this.getFormData();
             this.getModels();
         })
@@ -415,7 +440,7 @@ export default class CarQueries extends Vue {
         this.newQuery = this.defaultQueryValues()
     }
 
-    defaultQueryValues() {
+    defaultQueryValues(): NewCarQuery {
         return { //reset values
             make_id: 1,
             model_id: null,
@@ -430,7 +455,10 @@ export default class CarQueries extends Vue {
             price_from: null,
             price_to: null,
             sites: ["autogidas","autobilis","autoplius"],
-            query_id: null
+            query_id: null,
+            gearbox: null,
+            driven_wheels: null,
+            steering_column: null
         }
     }
 

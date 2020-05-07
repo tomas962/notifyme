@@ -18,11 +18,13 @@ from scrapy.settings import Settings
 from notifier.notifier import Notifier 
 from database.car import get_cars_by_query_id
 from database.car_query import get_all_car_queries, get_car_query
+import requests
+from config import SECRET, SERVER_PORT
 
 items = []
 config = {
     'COOKIES_ENABLED': False, 
-    'DOWNLOAD_DELAY': 0.3,
+    'DOWNLOAD_DELAY': 0.8,
     'ITEM_PIPELINES': {'scraper_scheduler.scraper.ItemCollector': 100}
 }
 
@@ -132,23 +134,26 @@ class ScraperScheduler():
             # get old cars
             old_cars = get_cars_by_query_id(self.current_query["id"])
             # SCRAPE HERE, more threads? maybe with proxy
+            requests
             q = Queue()
             self.current_query["currently_scraping"] = True
             with db_connect().cursor() as cursor:
                 cursor.execute("UPDATE car_queries SET currently_scraping=1 WHERE id=%s", self.current_query["id"])
                 cursor.connection.commit()
                 cursor.connection.close()
-                
+            
+            requests.post(f'http://localhost:{SERVER_PORT}/started_scraping_car_query/{self.current_query["id"]}', json={'secret':SECRET})
             p = Process(target=self.scrape, args=(q,)) 
             p.start()
             scraped_cars = q.get(True)
-            
             p.join()
+
             self.current_query["currently_scraping"] = False
             with db_connect().cursor() as cursor:
                 cursor.execute("UPDATE car_queries SET currently_scraping=0 WHERE id=%s", self.current_query["id"])
                 cursor.connection.commit()
                 cursor.connection.close()
+            requests.post(f'http://localhost:{SERVER_PORT}/done_scraping_car_query/{self.current_query["id"]}', json={'secret':SECRET})
             print("JOINED")
             print("TIME after Q.get()")
             print(time.time())

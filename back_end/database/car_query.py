@@ -116,9 +116,11 @@ def get_car_queries_by_user_id(user_id):
 
 def insert_car_query(cursor, query_values):
     cursor.execute("""INSERT INTO `car_queries`(`price_from`, `price_to`, 
-            `year_from`, `search_term`, `year_to`, `power_from`, `power_to`, user_id, sites, city_id, was_scraped) 
+            `year_from`, `search_term`, `year_to`, `power_from`, `power_to`, user_id, sites, city_id, was_scraped, 
+            gearbox, driven_wheels, steering_column) 
             VALUES (%(price_from)s, %(price_to)s, %(year_from)s, %(search_term)s, 
-            %(year_to)s, %(power_from)s, %(power_to)s, %(user_id)s, %(sites)s, %(city_id)s, %(was_scraped)s)""", query_values)
+            %(year_to)s, %(power_from)s, %(power_to)s, %(user_id)s, %(sites)s, %(city_id)s, %(was_scraped)s,
+            %(gearbox)s, %(driven_wheels)s, %(steering_column)s)""", query_values)
         
     query_values["id"] = cursor.lastrowid
 
@@ -139,7 +141,9 @@ def update_car_query(cursor, query_values):
     cursor.execute("""UPDATE `car_queries` SET price_from=%(price_from)s, price_to=%(price_to)s, 
         year_from=%(year_from)s, search_term=%(search_term)s, 
         year_to=%(year_to)s, power_from=%(power_from)s, power_to=%(power_to)s, 
-        user_id=%(user_id)s, sites=%(sites)s, city_id=%(city_id)s, was_scraped=%(was_scraped)s WHERE id=%(id)s AND user_id=%(user_id)s""", query_values)
+        user_id=%(user_id)s, sites=%(sites)s, city_id=%(city_id)s, was_scraped=%(was_scraped)s, 
+        gearbox=%(gearbox)s, driven_wheels=%(driven_wheels)s, steering_column=%(steering_column)s
+         WHERE id=%(id)s AND user_id=%(user_id)s""", query_values)
 
     if query_values["fuel_id"] is not None:
         cursor.execute("SELECT * FROM query_fuel WHERE query_id=%(id)s", query_values)
