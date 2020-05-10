@@ -10,8 +10,17 @@ if (process.env.NODE_ENV === 'production') {
         'For more details, visit https://goo.gl/AFskqB'
       )
     },
-    registered () {
+    async registered (reg) {
       console.log('Service worker has been registered.')
+      const sub = await reg.pushManager.getSubscription()
+      if (sub === null){
+        console.log("Notifications not enabled");
+      }
+      else {
+        console.log("Notifications are enabled. Object:");
+        console.log(sub);
+      }
+        
     },
     cached () {
       console.log('Content has been cached for offline use.')

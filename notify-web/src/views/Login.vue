@@ -70,6 +70,11 @@ export default class Login extends Vue {
             (this.$root as any).reg_success = undefined;
             this.showSucc = true;
         }
+        if ((this.$root as any).login_err) {
+            this.errMsg = (this.$root as any).login_err;
+            (this.$root as any).login_err = undefined;
+            this.showErr = true;
+        }
     }
 
     async onSubmit(evt: Event) {
@@ -89,14 +94,33 @@ export default class Login extends Vue {
             this.showErr = true
             return
         }
-
+        
         const result = await response.json()
 
         localStorage.setItem("access_token", result.access_token);
+        const decoded_token = (JWT(result.access_token) as any)
+        const timestamp = (Date.now() / 1000) | 0;
+        setTimeout(() => {
+            if (localStorage.getItem("access_token")){
+                console.log('jwt expired, deleting');
+                
+                localStorage.removeItem("access_token");
+                this.$router.push('/login');
+                (this.$root as any).login_err = "Baigėsi sesija, prisijunkite iš naujo."
+            }
+        }, ((decoded_token.exp - timestamp) * 1000))
+
+        window.socket.emit("join", {"access_token":result.access_token}, (connected: boolean) => {
+            if (connected)
+                console.log("socketio connected succesfully");
+            else 
+                console.log("failed socketio connection");
+                
+        })
         localStorage.setItem("refresh_token", result.refresh_token);
         const state: UserState = {
             // eslint-disable-next-line
-            identity: (JWT(result.access_token) as any).identity, 
+            identity: decoded_token.identity, 
             access_token: result.access_token,
             refresh_token: result.refresh_token
         } 

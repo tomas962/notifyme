@@ -13,11 +13,12 @@
             >
                 <b-icon-chevron-double-up class="mt-3 ml-3" scale="3"></b-icon-chevron-double-up>
             </div>
-            <footer
-                id="footer"
-                class="text-center font-italic font-weight-bold mt-2"
-            >Tomas Čižauskas @ 2020</footer>
+            
         </div>
+        <footer
+            id="footer"
+            class="text-center font-italic font-weight-bold"
+        ><br>Tomas Čižauskas @ 2020</footer>
     </div>
 </template>
 
@@ -54,6 +55,14 @@ export default class App extends Vue {
                 console.log("EXPIRED");
                 localStorage.removeItem("access_token");
                 return;
+            } else {
+                setTimeout(() => {
+                    if (localStorage.getItem("access_token")){
+                        localStorage.removeItem("access_token");
+                        (this.$root as any).login_err = "Baigėsi sesija, prisijunkite iš naujo."
+                        this.$router.push('/login')
+                    }
+                }, ((decoded_token.exp - timestamp) * 1000))
             }
 
             const user_identity: Identity = decoded_token.identity;
@@ -64,11 +73,8 @@ export default class App extends Vue {
             };
 
             this.setUser(user_state);
-        } else if (refresh_token) {
-			const decoded_token: any = JWT(refresh_token);
-			console.log("ACCESS_TOKEN EXPIRED, REFRESH_TOKEN:");
-			console.log(decoded_token);
-			
+
+            
         }
 
         setInterval(() => {
@@ -99,7 +105,7 @@ $font-color: aliceblue;
     // background-color: #212935;
     background-color: $background-color;
     color: $font-color;
-    min-height: 100vh;
+    min-height: 95vh;
 }
 
 html {
@@ -108,9 +114,8 @@ html {
 }
 
 body {
-    min-height: 100vh;
     padding: 0;
-    margin-bottom: 20px;
+    background-color: $background-color;
 }
 
 #nav {
@@ -155,8 +160,7 @@ body {
     text-align: center;
     background-color: $background-color;
     color: $font-color;
-    height: 30px;
-    bottom: 0;
+    height: 50px;
     left: 45%;
 }
 </style>

@@ -21,6 +21,14 @@
                     </b-card-text>
                     <template v-slot:footer>
                         <b-row>
+                            <b-col v-if="identity.group == 'admin'" class="text-center mb-1" cols="12">
+                                <b-btn :disabled="query.car_query.currently_scraping || nextScrape <= 0 ? true : false" 
+                                class="btn-info" v-b-tooltip.hover title="Priverstinai pradėti paiešką" @click="requestQueryStart()">
+                                    Pradėti paiešką
+                                </b-btn>
+                            </b-col>
+                        </b-row>
+                        <b-row>
                             <b-col class="text-center" cols="12">
                                 <b-btn :disabled="query.car_query.currently_scraping ? true : false" @click="setPage({page: 1})" :to="'/queries/' + query.car_query.id + '/cars'" class="btn-success">
                                     <b-spinner v-if="query.car_query.currently_scraping ? true : false" small></b-spinner>
@@ -44,9 +52,12 @@
                             </b-col>
                         </b-row>
                         <b-alert class="mt-2" variant="danger" :show="showErr" dismissible v-on:dismissed="showErr=false">{{errMsg}}</b-alert>
-                        <b-row v-if="nextScrape > 0">
-                            <b-col>
+                        <b-row v-if="!query.car_query.currently_scraping">
+                            <b-col v-if="nextScrape > 0">
                                 Bus atnaujinama už: {{Math.floor(nextScrape/60)}}min {{nextScrape%60}}s
+                            </b-col>
+                            <b-col v-else>
+                                Paieška laukia eilėje
                             </b-col>
                         </b-row>
                     </template>
@@ -59,7 +70,9 @@ import { Component, Prop, Vue } from 'vue-property-decorator';
 import {CarQueryResponse} from "@/models/interfaces"
 
 import {namespace} from 'vuex-class'
+import {Identity} from '@/store/modules/user'
 const UIns = namespace('UIState')
+const userns = namespace('User')
 
 @Component
 export default class CarQueryComp extends Vue {
@@ -67,6 +80,10 @@ export default class CarQueryComp extends Vue {
     showErr = false;
     errMsg: string|null = null;
     intervalID = 0
+
+    @userns.State
+    identity!: Identity;
+
 
     @UIns.Action
     setPage!: (state: {page: number}) => void
@@ -139,8 +156,23 @@ export default class CarQueryComp extends Vue {
         } else {
             window.eventBus.$emit('car-query-deleted')
         }
+    }
 
-        
+    async requestQueryStart() {
+        const response = await fetch(window.SERVER_URL + `/users/${this.$store.state.User.identity.user_id}/queries/${this.query.car_query.id}/start`, {
+            headers: {
+                'Authorization': 'Bearer ' + this.$store.state.User.access_token
+            },
+            method: 'POST'
+        })
+
+        if (!response.ok) {
+            this.errMsg = "Įvyko klaida pradedant paiešką."
+            this.showErr = true
+        } else {
+            this.query.car_query.last_scraped = ((Date.now() / 1000) | 0) - window.SCRAPE_INTERVAL;
+        }
+
     }
 }
 </script>

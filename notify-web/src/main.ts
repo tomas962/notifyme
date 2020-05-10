@@ -10,22 +10,25 @@ import Lingallery from 'lingallery';
 import '@/assets/main.css'
 Vue.component('lingallery', Lingallery);
 declare global {
-  interface Window { SERVER_URL: string; eventBus: Vue; SCRAPE_INTERVAL: number }
+  interface Window { SERVER_URL: string; eventBus: Vue; SCRAPE_INTERVAL: number; socket: SocketIOClient.Socket }
 }
 
 import io from 'socket.io-client'
+
 window.SERVER_URL = "http://192.168.100.7:5000"
 window.eventBus = new Vue();
 window.SCRAPE_INTERVAL = 600;
 
-
 const socket = io(window.SERVER_URL)
+window.socket = socket
 console.log(socket);
 
-socket.on('connect', () => {
+window.socket.on('connect', () => {
   console.log("socketio connect");
   console.log(socket);
-  socket.emit("join", {"test":"hello"})
+  const ac = localStorage.getItem("access_token")
+  if (ac)
+    window.socket.emit("join", {"access_token":ac})
 })
 
 

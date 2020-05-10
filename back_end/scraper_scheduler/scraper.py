@@ -142,7 +142,7 @@ class ScraperScheduler():
                 cursor.connection.commit()
                 cursor.connection.close()
             
-            requests.post(f'http://localhost:{SERVER_PORT}/started_scraping_car_query/{self.current_query["id"]}', json={'secret':SECRET})
+            requests.post(f'http://localhost:{SERVER_PORT}/started_scraping_car_query/{self.current_query["user_id"]}/{self.current_query["id"]}', json={'secret':SECRET})
             p = Process(target=self.scrape, args=(q,)) 
             p.start()
             scraped_cars = q.get(True)
@@ -153,7 +153,7 @@ class ScraperScheduler():
                 cursor.execute("UPDATE car_queries SET currently_scraping=0 WHERE id=%s", self.current_query["id"])
                 cursor.connection.commit()
                 cursor.connection.close()
-            requests.post(f'http://localhost:{SERVER_PORT}/done_scraping_car_query/{self.current_query["id"]}', json={'secret':SECRET})
+            requests.post(f'http://localhost:{SERVER_PORT}/done_scraping_car_query/{self.current_query["user_id"]}/{self.current_query["id"]}', json={'secret':SECRET})
             print("JOINED")
             print("TIME after Q.get()")
             print(time.time())
@@ -194,3 +194,11 @@ class ScraperScheduler():
             self.car_queries.pop(query_id, None) # TODO implement current query scraping cancellation
             self.full_queries.pop(query_id, None)
             self.cv.notify()
+
+    def start_scraping(self, query_id):
+        with self.cv:
+            if query_id in self.car_queries:
+                self.car_queries[query_id]["next_scrape"] = time.time() #now
+                self.cv.notify()
+                return True
+            return False

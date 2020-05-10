@@ -2,22 +2,23 @@ from flask import Flask, request, Response, jsonify
 import sys
 import bcrypt
 from database.database import connection, db_connect
-app = Flask(__name__)
+from .init_apps import app, socketio
+import server.socketio_api
 from flask_jwt_extended import (
     JWTManager, jwt_required, create_access_token,
-    get_jwt_identity, create_refresh_token, jwt_refresh_token_required, fresh_jwt_required
+    get_jwt_identity, create_refresh_token, jwt_refresh_token_required, fresh_jwt_required,
+    decode_token
 )
 from datetime import datetime, timedelta
 from .jwt_validations import validate_resource
 app.config['JWT_SECRET_KEY'] = 'dsafn87987345 3Q#$GRWE#$()_)*%@&#()nvdkJS*#@QW$%&BHDFSudsfkj'
 app.config['JWT_ACCESS_TOKEN_EXPIRES'] = timedelta(minutes=60)
 app.config['JWT_REFRESH_TOKEN_EXPIRES'] = timedelta(days=7)
-app.config['SECRET_KEY'] = 'secret!'
+app.config['JWT_TOKEN_LOCATION'] = ['headers', 'json']
+#app.config['SECRET_KEY'] = 'secret!'
 
 jwt = JWTManager(app)
-from flask_socketio import SocketIO
 
-socketio = SocketIO(app, cors_allowed_origins="*")
 print("after socketio")
 
 import os
@@ -38,18 +39,6 @@ CORS(app, support_credentials=True)
 #     print(request)
 #     print(response.headers)
 #     return response
-
-
-
-@socketio.on('connect')
-def test_connect():
-    print("CONNECTED")
-    socketio.emit('my response', {'data': 'Connected'})
-
-@socketio.on('join')
-def join(arg):
-    print("joined")
-    print(arg)
 
 @app.route("/")
 def hello():

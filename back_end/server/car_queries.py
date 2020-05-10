@@ -138,3 +138,13 @@ def user_car_queries_state(user_id):
         return res
     car_queries = get_car_queries_state(user_id)
     return jsonify(car_queries)
+
+@query_api.route("/users/<int:user_id>/queries/<int:query_id>/start", methods=['POST'])
+@jwt_required
+def start_scraping_car_query(user_id, query_id):
+    user = get_jwt_identity()
+    if user["group"] != "admin":
+        return jsonify({"error":"Only admin can access this endpoint"}), 403
+
+    status_code = scraper_interface.start_query(user_id, query_id)
+    return "", status_code

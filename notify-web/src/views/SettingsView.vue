@@ -100,6 +100,7 @@ export default class SettingsView extends Vue {
             if (result === 'granted') {
                 new Notification("test")
             }
+            this.subscribeUser();
         }
     }
 
@@ -149,6 +150,37 @@ export default class SettingsView extends Vue {
             },
             body: JSON.stringify({email_notifications: this.email_notifications})
         })
+    }
+
+    subscribeUser() {
+        if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.ready.then(function(reg) {
+            const publicKeyBytes = [0x04,0x3d,0xdd,0x3d,0x83,0x7c,0x54,0x03,0xde,0x5c,0x27,0x4a,0xe8,0x71,0x75,
+            0xf1,0xff,0x25,0x65,0x49,0x8d,0x6a,0x8a,0x06,0x14,0x27,0x85,0x9c,0x71,0xde,
+            0x0d,0xa1,0x92,0x7d,0x48,0x63,0xe5,0x10,0x83,0x42,0x36,0xe7,0x9f,0x33,0xe7,
+            0xb6,0x2e,0x29,0x57,0x40,0x84,0x48,0x62,0x16,0x1c,0xa0,0x4d,0x15,0x5a,0x6d,
+            0x7c,0xa1,0x22,0x4c,0xf4]
+            const key = new Uint8Array(65)
+            for (let i = 0; i < key.length; i++) {
+                key[i] = publicKeyBytes[i]
+            }
+            reg.pushManager.subscribe({
+                userVisibleOnly: true,
+                applicationServerKey: key
+            }).then(function(sub) {
+                console.log('Endpoint URL: ', sub.endpoint);
+                console.log(JSON.stringify(sub));
+                
+                
+            }).catch(function(e) {
+                if (Notification.permission === 'denied') {
+                    console.warn('Permission for notifications was denied');
+                } else {
+                    console.error('Unable to subscribe to push', e);
+                }
+            });
+            })
+        }
     }
 }
 </script>

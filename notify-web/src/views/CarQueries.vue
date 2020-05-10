@@ -253,12 +253,34 @@ export default class CarQueries extends Vue {
     beforeDestroy() {
         window.eventBus.$off('query-edit')
         window.eventBus.$off('car-query-deleted')
+        window.socket.off('car_query_started')
+        window.socket.off('car_query_ended')
         clearInterval(this.intervalID)
     }
 
     created() {
         this.getQueries();
-        this.intervalID = setInterval(this.getCarQueriesState, 60000);
+        window.socket.on('car_query_started', (data: {user_id: number; query_id: number}) => {
+            console.log('query started:');
+            console.log(data);
+            const q = this.queries.find((query) => 
+                query.car_query.user_id == data.user_id && query.car_query.id == data.query_id
+            )
+            if (q)
+                q.car_query.currently_scraping = 1
+        })
+
+        window.socket.on('car_query_ended', (data: {user_id: number; query_id: number}) => {
+            console.log('query ended:');
+            console.log(data);
+            const q = this.queries.find((query) => 
+                query.car_query.user_id == data.user_id && query.car_query.id == data.query_id
+            )
+            if (q){
+                q.car_query.currently_scraping = 0
+                q.car_query.last_scraped = (Date.now() / 1000) | 0;
+            }
+        })
         
         window.eventBus.$on("query-edit", async (query: CarQueryResponse) => {
             console.log("ON QUERY-EDIT EMMITED");
@@ -290,27 +312,6 @@ export default class CarQueries extends Vue {
             this.getQueries();
         })
     
-    }
-
-    async getCarQueriesState() {
-        const response = await fetch(window.SERVER_URL + '/users/'+this.$store.state.User.identity.user_id+'/queries/state', {
-            headers: {
-                'Authorization': 'Bearer ' + this.$store.state.User.access_token
-            }
-        })
-
-        if (response.ok) {
-            const data = await response.json()
-            for (const row of data) {
-                const query = this.queries.find((q) => q.car_query.id == row.id)
-                if (query) {
-                    query.car_query.currently_scraping = row.currently_scraping;
-                    query.car_query.was_scraped = row.was_scraped;
-                    query.car_query.scrape_interval = row.scrape_interval || window.SCRAPE_INTERVAL;
-                    query.car_query.last_scraped = row.last_scraped;
-                }
-            }
-        }
     }
 
     async getMakes() {

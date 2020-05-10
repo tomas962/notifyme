@@ -1,19 +1,25 @@
 from flask import Blueprint, jsonify, request, Response
 from config import SECRET
+from .socketio_api import auth_users, socketio
+import time
 scraper_api = Blueprint('scraper_api', __name__)
-
-@scraper_api.route("/done_scraping_car_query/<int:query_id>", methods=['POST'])
-def done_scraping_car_query(query_id):
+#TODO one user connected with multiple devices
+@scraper_api.route("/done_scraping_car_query/<int:user_id>/<int:query_id>", methods=['POST'])
+def done_scraping_car_query(user_id, query_id):
     json = request.get_json()
     if json["secret"] != SECRET:
         return "", 404
     print(f"DONE SCRAPING {query_id}")
+    if user_id in auth_users and auth_users[user_id]['expires'] > time.time():
+        socketio.emit('car_query_ended', {'user_id':user_id, 'query_id':query_id}, room=auth_users[user_id]['sid'])
     return "", 200
 
-@scraper_api.route("/started_scraping_car_query/<int:query_id>", methods=['POST'])
-def started_scraping_car_query(query_id):
+@scraper_api.route("/started_scraping_car_query/<int:user_id>/<int:query_id>", methods=['POST'])
+def started_scraping_car_query(user_id, query_id):
     json = request.get_json()
     if json["secret"] != SECRET:
         return "", 404
     print(f"STARTED SCRAPING {query_id}")
+    if user_id in auth_users and auth_users[user_id]['expires'] > time.time():
+        socketio.emit('car_query_started', {'user_id':user_id, 'query_id':query_id}, room=auth_users[user_id]['sid'])
     return "", 200
