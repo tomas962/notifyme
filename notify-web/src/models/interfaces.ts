@@ -81,6 +81,15 @@ interface Make {
     make: string;
 }
 
+interface MessageResponse {
+    id: number;
+    text: string;
+    timestamp: string;
+    title: string;
+    user_id: number;
+}
+
+
 export {
     CarQueryResponse,
     CarQuery,
@@ -88,5 +97,6 @@ export {
     FuelType,
     MakeModel,
     NewCarQuery,
-    Make
+    Make,
+    MessageResponse
 }

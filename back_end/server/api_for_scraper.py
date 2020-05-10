@@ -11,6 +11,7 @@ def done_scraping_car_query(user_id, query_id):
         return "", 404
     print(f"DONE SCRAPING {query_id}")
     if user_id in auth_users and auth_users[user_id]['expires'] > time.time():
+        print("emitting to socket car_query_ended")
         socketio.emit('car_query_ended', {'user_id':user_id, 'query_id':query_id}, room=auth_users[user_id]['sid'])
     return "", 200
 
@@ -21,5 +22,6 @@ def started_scraping_car_query(user_id, query_id):
         return "", 404
     print(f"STARTED SCRAPING {query_id}")
     if user_id in auth_users and auth_users[user_id]['expires'] > time.time():
+        print("emitting to socket car_query_started")
         socketio.emit('car_query_started', {'user_id':user_id, 'query_id':query_id}, room=auth_users[user_id]['sid'])
     return "", 200

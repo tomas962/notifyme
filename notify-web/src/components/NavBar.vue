@@ -8,6 +8,7 @@
         <b-navbar-nav>
             <b-nav-item to="/login" v-if="identity.email == ''">Prisijungti</b-nav-item>
             <b-nav-item v-if="identity.email" to="/queries">Automobiliai</b-nav-item>
+            <b-nav-item v-if="identity.email" :to="`/users/${identity.user_id}/messages`">Pranešimai</b-nav-item>
         </b-navbar-nav>
         <!-- Right aligned nav items -->
         <b-navbar-nav class="ml-auto">

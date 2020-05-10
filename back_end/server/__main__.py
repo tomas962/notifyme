@@ -1,9 +1,11 @@
 from flask import Flask, request, Response, jsonify
 import sys
 import bcrypt
+import pymysql
 from database.database import connection, db_connect
 from .init_apps import app, socketio
 import server.socketio_api
+import server.messages
 from flask_jwt_extended import (
     JWTManager, jwt_required, create_access_token,
     get_jwt_identity, create_refresh_token, jwt_refresh_token_required, fresh_jwt_required,
@@ -26,9 +28,11 @@ print(os.getpid())
 from .cars import cars_api
 from .car_queries import query_api
 from .api_for_scraper import scraper_api 
+from .messages import message_api 
 app.register_blueprint(cars_api)
 app.register_blueprint(query_api)
 app.register_blueprint(scraper_api)
+app.register_blueprint(message_api)
 
 from flask_cors import CORS
 app.debug = True
@@ -174,6 +178,23 @@ def update_user_settings(user_id):
 
     with db_connect().cursor() as cursor:
         cursor.execute("UPDATE users SET email_notifications=%s WHERE id=%s", (settings["email_notifications"], user_id))
+        cursor.connection.commit()
+        cursor.connection.close()
+        return "", 200
+
+@app.route('/users/<int:user_id>/push_auth', methods=['POST'])
+@jwt_required
+def push_auth_post(user_id):
+    if res := validate_resource(user_id) != True:
+        return res
+    
+    data = request.get_json()
+    with db_connect().cursor() as cursor:
+        try:
+            cursor.execute("INSERT INTO `push_notification_auth`(`user_id`, `auth_json`) VALUES (%s, %s)", (user_id, data["auth_json"]))
+        except pymysql.IntegrityError as err:
+            print("This push auth token already exists")
+            print(err)
         cursor.connection.commit()
         cursor.connection.close()
         return "", 200

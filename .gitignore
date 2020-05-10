@@ -130,3 +130,6 @@ dmypy.json
 
 
 vapid_private.pem
+privkey.pem
+cert.pem
+

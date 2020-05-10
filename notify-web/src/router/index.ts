@@ -8,6 +8,7 @@ import CarQueries from '../views/CarQueries.vue'
 import CarView from '@/views/CarView.vue'
 import RegisterView from '@/views/RegisterView.vue'
 import SettingsView from '@/views/SettingsView.vue'
+import MessagesView from '@/views/MessagesView.vue'
 
 Vue.use(VueRouter)
 
@@ -49,6 +50,11 @@ Vue.use(VueRouter)
     path: '/settings',
     name: 'SettingsView',
     component: SettingsView
+  },
+  {
+    path: '/users/:user_id/messages',
+    name: 'MessagesView',
+    component: MessagesView
   },
 ]
 

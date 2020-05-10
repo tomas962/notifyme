@@ -23,7 +23,7 @@
                 Tiesioginiai pranešimai į įrenginį (ang. "Push Notifications")
             </b-col>
             <b-col cols="6" sm="3" class="text-center">
-                <b-form-checkbox @input="pushNotifInput" switch size="lg">
+                <b-form-checkbox @input="pushNotifInput" v-model="notificationsEnabled" v-b-tooltip.hover title="Jei neleidžia įjungti, patikrinkite savo naršyklės pranešimų nustatymus." switch size="lg">
                 </b-form-checkbox>
             </b-col>
             <b-col sm="3"></b-col>
@@ -74,10 +74,13 @@ export default class SettingsView extends Vue {
     showSucc = false
     notificationsSupported = false
     email_notifications = 0
+    notificationsEnabled = false
 
+    called = false
     async created() {
         if ('Notification' in window && 'serviceWorker' in navigator) {
             this.notificationsSupported = true
+            this.notificationsEnabled = Notification.permission === "granted"
         }
         const response = await fetch(window.SERVER_URL + "/users/" + this.$store.state.User.identity.user_id + '/settings', {
             headers: {
@@ -93,14 +96,23 @@ export default class SettingsView extends Vue {
     }
 
     async pushNotifInput() {
+        if (this.called)
+            return
+        this.called = true
+        setTimeout(() => {this.called = false}, 70)
         if (this.notificationsSupported) {
             const result = await Notification.requestPermission();
             console.log("result:");
             console.log(result);
             if (result === 'granted') {
-                new Notification("test")
+                this.notificationsEnabled = true
+                console.log("before SUBSCRIBED");
+                await this.subscribeUser();
+                console.log("SUBSCRIBED");
+                
             }
-            this.subscribeUser();
+            else 
+                this.notificationsEnabled = false
         }
     }
 
@@ -142,6 +154,10 @@ export default class SettingsView extends Vue {
     }
 
     updateSettings() {
+        if (this.called)
+            return
+        this.called = true
+        setTimeout(() => {this.called = false}, 70)
         fetch(window.SERVER_URL + "/users/" + this.$store.state.User.identity.user_id + '/settings', {
             method: 'POST',
             headers: {
@@ -152,9 +168,9 @@ export default class SettingsView extends Vue {
         })
     }
 
-    subscribeUser() {
+    async subscribeUser() {
         if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.ready.then(function(reg) {
+            const reg = await navigator.serviceWorker.ready;
             const publicKeyBytes = [0x04,0x3d,0xdd,0x3d,0x83,0x7c,0x54,0x03,0xde,0x5c,0x27,0x4a,0xe8,0x71,0x75,
             0xf1,0xff,0x25,0x65,0x49,0x8d,0x6a,0x8a,0x06,0x14,0x27,0x85,0x9c,0x71,0xde,
             0x0d,0xa1,0x92,0x7d,0x48,0x63,0xe5,0x10,0x83,0x42,0x36,0xe7,0x9f,0x33,0xe7,
@@ -164,21 +180,21 @@ export default class SettingsView extends Vue {
             for (let i = 0; i < key.length; i++) {
                 key[i] = publicKeyBytes[i]
             }
-            reg.pushManager.subscribe({
+            const sub =  await reg.pushManager.subscribe({
                 userVisibleOnly: true,
                 applicationServerKey: key
-            }).then(function(sub) {
-                console.log('Endpoint URL: ', sub.endpoint);
-                console.log(JSON.stringify(sub));
+            })
+            console.log('Endpoint URL: ', sub.endpoint);
+            console.log(JSON.stringify(sub));
+            console.log("fetch push_auth");
                 
-                
-            }).catch(function(e) {
-                if (Notification.permission === 'denied') {
-                    console.warn('Permission for notifications was denied');
-                } else {
-                    console.error('Unable to subscribe to push', e);
-                }
-            });
+            const response = await fetch(window.SERVER_URL + `/users/${this.$store.state.User.identity.user_id}/push_auth`, {
+                method: 'POST',
+                headers: {
+                    'Authorization': 'Bearer ' + this.$store.state.User.access_token,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({auth_json: JSON.stringify(sub)})
             })
         }
     }

@@ -16,6 +16,7 @@ declare global {
 import io from 'socket.io-client'
 
 window.SERVER_URL = "http://192.168.100.7:5000"
+// window.SERVER_URL = "https://www.notifyme.ml:5000"
 window.eventBus = new Vue();
 window.SCRAPE_INTERVAL = 600;
 
