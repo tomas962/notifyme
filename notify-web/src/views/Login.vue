@@ -117,12 +117,12 @@ export default class Login extends Vue {
                 console.log("failed socketio connection");
                 
         })
-        localStorage.setItem("refresh_token", result.refresh_token);
+        //localStorage.setItem("refresh_token", result.refresh_token);
         const state: UserState = {
             // eslint-disable-next-line
             identity: decoded_token.identity, 
             access_token: result.access_token,
-            refresh_token: result.refresh_token
+            //refresh_token: result.refresh_token
         } 
         this.setUser(state)
         this.$router.push('/queries')

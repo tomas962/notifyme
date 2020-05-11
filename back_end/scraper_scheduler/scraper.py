@@ -19,7 +19,7 @@ from notifier.notifier import Notifier
 from database.car import get_cars_by_query_id
 from database.car_query import get_all_car_queries, get_car_query
 import requests
-from config import SECRET, SERVER_PORT
+from config import SECRET, SERVER_PORT, SERVER_NAME
 
 items = []
 config = {
@@ -134,7 +134,6 @@ class ScraperScheduler():
             # get old cars
             old_cars = get_cars_by_query_id(self.current_query["id"])
             # SCRAPE HERE, more threads? maybe with proxy
-            requests
             q = Queue()
             self.current_query["currently_scraping"] = True
             with db_connect().cursor() as cursor:
@@ -142,7 +141,7 @@ class ScraperScheduler():
                 cursor.connection.commit()
                 cursor.connection.close()
             
-            requests.post(f'http://localhost:{SERVER_PORT}/started_scraping_car_query/{self.current_query["user_id"]}/{self.current_query["id"]}', json={'secret':SECRET})
+            requests.post(f'{SERVER_NAME}:{SERVER_PORT}/started_scraping_car_query/{self.current_query["user_id"]}/{self.current_query["id"]}', json={'secret':SECRET}, verify=False)
             p = Process(target=self.scrape, args=(q,)) 
             p.start()
             scraped_cars = q.get(True)
@@ -153,7 +152,7 @@ class ScraperScheduler():
                 cursor.execute("UPDATE car_queries SET currently_scraping=0 WHERE id=%s", self.current_query["id"])
                 cursor.connection.commit()
                 cursor.connection.close()
-            requests.post(f'http://localhost:{SERVER_PORT}/done_scraping_car_query/{self.current_query["user_id"]}/{self.current_query["id"]}', json={'secret':SECRET})
+            requests.post(f'{SERVER_NAME}:{SERVER_PORT}/done_scraping_car_query/{self.current_query["user_id"]}/{self.current_query["id"]}', json={'secret':SECRET}, verify=False)
             print("JOINED")
             print("TIME after Q.get()")
             print(time.time())

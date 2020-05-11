@@ -2,6 +2,10 @@
     <div>
         <div id="app">
             <MyNavBar />
+            <b-alert class="text-center" :show="showCookieMsg" variant="info">Siekiant užtikrinti teikiamų 
+                paslaugų ir naršymo kokybę, šioje svetainėje naudojami slapukai (angl. cookies). Sutikdami, 
+                paspauskite mygtuką „Sutinku“ arba naršykite toliau. <b-btn @click.prevent="acceptCookies">Sutinku</b-btn></b-alert>
+            
             <b-container>
                 <router-view />
             </b-container>
@@ -43,7 +47,12 @@ export default class App extends Vue {
 	watchToken!: () => void;
 
     showScrollButton = false;
+    showCookieMsg = true;
     created() {
+        if (localStorage.getItem("cookiesAccepted"))
+            this.showCookieMsg = false
+        else
+            this.showCookieMsg = true
         //if token exists in localStorage set user info in Vuex
         console.log("APP CREATED");
         const access_token = localStorage.getItem("access_token");
@@ -82,6 +91,11 @@ export default class App extends Vue {
                 (window.pageYOffset || document.documentElement.scrollTop) >
                 800;
         }, 500);
+    }
+
+    acceptCookies() {
+        this.showCookieMsg = false;
+        localStorage.setItem("cookiesAccepted", "true")
     }
 
     scrollUp() {

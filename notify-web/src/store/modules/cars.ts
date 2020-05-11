@@ -63,7 +63,7 @@ class CarList extends VuexModule {
             if (response.status === 200){
                 response.json()
                 .then((data) => {
-                    console.log(data);
+                    data = data.reverse()
                     this.context.commit('setCars', data as Car[])
                 })
             }

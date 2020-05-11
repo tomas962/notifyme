@@ -90,6 +90,11 @@ interface MessageResponse {
 }
 
 
+interface SelectOption {
+    value: string|number|null;
+    text: string;
+}
+
 export {
     CarQueryResponse,
     CarQuery,
@@ -98,5 +103,6 @@ export {
     MakeModel,
     NewCarQuery,
     Make,
-    MessageResponse
+    MessageResponse,
+    SelectOption
 }

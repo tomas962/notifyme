@@ -1,11 +1,30 @@
 <template>
   <div>
       <h2 class="mt-3">Pranešimai</h2>
-     <b-table :tbody-tr-attr="idAttr" bordered  hover :fields="[
-        {key: 'Tema', thStyle:''},
-        {key: 'Tekstas', thStyle:''},
-        {key: 'Data', thStyle:'width: 10%'},
-     ]" responsive class="mt-3" dark :items="tableMessages" ></b-table>
+    <div class="overflow-auto">
+        <b-pagination
+        v-model="currentPage"
+        :total-rows="tableMessages.length"
+        :per-page="perPage"
+        aria-controls="msg-table"
+        ></b-pagination>
+        <b-table id="msg-table" bordered  hover :fields="[
+            {key: 'Tema', thStyle:''},
+            {key: 'Tekstas', thStyle:''},
+            {key: 'Data', thStyle:'width: 10%'},
+        ]" 
+        :per-page="perPage"
+        :current-page="currentPage"
+        responsive class="mt-3" dark :items="tableMessages" >
+        
+            <template v-slot:cell(Tekstas)="data">
+                <div v-for="line in data.value.split('\n')" :key="line">
+                    {{line}}
+                </div>
+            </template>
+
+        </b-table>
+    </div>
   </div>
 </template>
 
@@ -16,9 +35,12 @@ import {MessageResponse} from '@/models/interfaces'
 @Component
 export default class SettingsView extends Vue {
     messages: MessageResponse[] = []
+    currentPage = 1
+    perPage = 10
 
     get tableMessages(){
         const msgs = this.messages.map((msg) => {
+            
             return {
                 "Tema": msg.title,
                 "Tekstas": msg.text,
@@ -44,7 +66,7 @@ export default class SettingsView extends Vue {
         console.log("messages:");
         console.log(data);
         
-        this.messages = data;
+        this.messages = data.reverse();
         //this.formatMessages();
     }
 
@@ -54,9 +76,14 @@ export default class SettingsView extends Vue {
         }
     }
 
-    idAttr(item, row){
+    idAttr(item: any, row: any){
         console.log(item);
         return {test:item.id}
+    }
+
+    formatLine(line: string) {
+        line.match(/https?:\/\/w?w?w?\.?notifyme\.ml\S*/)
+
     }
 }   
 </script>

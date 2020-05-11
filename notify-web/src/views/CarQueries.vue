@@ -74,7 +74,7 @@
                                 <h4 id="more-params" v-on:click="formExpanded=!formExpanded" v-b-toggle.collapse-3 class="m-1 pb-1 border-bottom">
                                     <b-icon-arrow-down-short v-if="!formExpanded" scale="2"></b-icon-arrow-down-short> 
                                     <b-icon-arrow-up-short v-if="formExpanded" scale="2"></b-icon-arrow-up-short> 
-                                    Daugiau parametrų</h4>
+                                    Išsami paieška</h4>
                                 <b-collapse id="collapse-3">
                                     <b-row class="mt-3">
                                         <b-col cols="6">
@@ -138,14 +138,9 @@
 
 <script lang="ts">
 import { Component, Vue, Watch } from "vue-property-decorator";
-import {CarQueryResponse, NewCarQuery, Make} from "@/models/interfaces"
+import {CarQueryResponse, NewCarQuery, Make, SelectOption} from "@/models/interfaces"
 import CarQueryRow from "@/components/CarQueriesRow.vue"
 import {Select} from "element-ui"
-
-interface SelectOption {
-    value: string|number|null;
-    text: string;
-}
 
 interface QueryFormData {
     makesOptions: SelectOption[];
@@ -229,7 +224,7 @@ export default class CarQueries extends Vue {
             }
         });
         const data: CarQueryResponse[] = await response.json();
-        this.queries = data
+        this.queries = data.reverse()
         
     }
 

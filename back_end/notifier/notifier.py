@@ -6,6 +6,7 @@ import threading
 import pywebpush
 import json
 import database.database as db
+from config import SERVER_NAME
 
 class Notifier():
     def __init__(self, old_cars, scraped_cars, query):
@@ -71,10 +72,10 @@ class Notifier():
 
     def generate_message(self):
         lines = []
-        lines.append(f"Įvyko pokyčiai jūsų pasirinktoje paieškoje ({self.car_query['make_model']['make']} {self.car_query['make_model']['model_name']}):\n")
+        lines.append(f"Įvyko pokyčiai jūsų pasirinktoje paieškoje ({self.car_query['make_model']['make'] or 'Visos markės'} {self.car_query['make_model']['model_name'] or 'Visi modeliai'}):\n")
         for car_id, change in self.car_changes.items():
             if change == True:
-                lines.append(f"\tPridėtas naujas skelbimas: {self.new_cars[car_id]['make_name']} {self.new_cars[car_id]['model_name']}. http://192.168.100.7:8080/queries/{self.car_query['car_query']['id']}/cars/{car_id}")
+                lines.append(f"\tPridėtas naujas skelbimas: {self.new_cars[car_id]['make_name']} {self.new_cars[car_id]['model_name']}. {SERVER_NAME}/queries/{self.car_query['car_query']['id']}/cars/{car_id}")
                 continue
             
             line = "\t"
@@ -85,7 +86,7 @@ class Notifier():
                 line += f"Pasikeitė aprašymas. "
 
             if line != "\t":
-                line += f"({self.new_cars[car_id]['make_name']} {self.new_cars[car_id]['model_name']}. http://192.168.100.7:8080/queries/{self.car_query['car_query']['id']}/cars/{car_id})"
+                line += f"({self.new_cars[car_id]['make_name']} {self.new_cars[car_id]['model_name']}. {SERVER_NAME}/queries/{self.car_query['car_query']['id']}/cars/{car_id})"
                 lines.append(line)
         
         return "\n".join(lines)
@@ -117,7 +118,7 @@ class Notifier():
 
                 try:
                     pywebpush.webpush(json.loads(auth_json), 
-                        data=json.dumps({"title":"Pasikeitė paieškos rezultatai", "body":f"{msg}", "href":f"/users/{self.car_query['car_query']['user_id']}/messages/{self.msg_id}"}), 
+                        data=json.dumps({"title":"Pasikeitė paieškos rezultatai", "body":f"{self.car_query['make_model']['make']} {self.car_query['make_model']['model_name']}", "href":f"/users/{self.car_query['car_query']['user_id']}/messages"}), 
                         vapid_private_key='./vapid_private.pem', vapid_claims={"sub":"mailto:cctomass@gmail.com"})
                 except pywebpush.WebPushException as err:
                     print("Web push failed:")

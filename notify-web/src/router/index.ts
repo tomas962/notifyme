@@ -9,6 +9,7 @@ import CarView from '@/views/CarView.vue'
 import RegisterView from '@/views/RegisterView.vue'
 import SettingsView from '@/views/SettingsView.vue'
 import MessagesView from '@/views/MessagesView.vue'
+import REQueries from '@/views/REQueries.vue'
 
 Vue.use(VueRouter)
 
@@ -55,6 +56,11 @@ Vue.use(VueRouter)
     path: '/users/:user_id/messages',
     name: 'MessagesView',
     component: MessagesView
+  },
+  {
+    path: '/users/:user_id/re_queries',
+    name: 'REQueries',
+    component: REQueries
   },
 ]
 

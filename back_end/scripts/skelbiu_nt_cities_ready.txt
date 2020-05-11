@@ -1,0 +1,60 @@
+Akmenės r.,260
+Alytaus r.,4
+Alytus,2
+Anykščių r.,393
+Birštonas,42
+Biržų r.,206
+Druskininkai,3
+Elektrėnai,1191
+Ignalinos r.,413
+Jonavos r.,44
+Joniškio r.,267
+Jurbarko r.,346
+Kaišiadorių r.,53
+Kalvarija,1192
+Kaunas,43
+Kauno r.,63
+Kazlų Rūda,1193
+Kelmės r.,278
+Klaipėda,112
+Klaipėdos r.,115
+Kretingos r.,127
+Kupiškio r.,228
+Kėdainių r.,215
+Lazdijų r.,27
+Marijampolė,162
+Mažeikių r.,359
+Molėtų r.,426
+Neringa,113
+Pagėgiai,1196
+Pakruojo r.,289
+Palanga,114
+Panevėžio r.,235
+Panevėžys,205
+Pasvalio r.,247
+Plungės r.,367
+Prienų r.,86
+Radviliškio r.,298
+Raseinių r.,98
+Rietavas,1197
+Rokiškio r.,438
+Skuodo r.,136
+Tauragės r.,323
+Telšių r.,381
+Trakų r.,487
+Ukmergės r.,501
+Utenos r.,449
+Varėnos r.,16
+Vilkaviškio r.,163
+Vilniaus r.,462
+Vilnius,461
+Visaginas,459
+Zarasų r.,403
+Šakių r.,187
+Šalčininkų r.,513
+Šiauliai,259
+Šiaulių r.,311
+Šilalės r.,332
+Šilutės r.,146
+Širvintų r.,539
+Švenčionių r.,526

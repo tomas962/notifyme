@@ -6,6 +6,7 @@ from database.database import connection, db_connect
 from .init_apps import app, socketio
 import server.socketio_api
 import server.messages
+import server.re_queries
 from flask_jwt_extended import (
     JWTManager, jwt_required, create_access_token,
     get_jwt_identity, create_refresh_token, jwt_refresh_token_required, fresh_jwt_required,
@@ -33,6 +34,7 @@ app.register_blueprint(cars_api)
 app.register_blueprint(query_api)
 app.register_blueprint(scraper_api)
 app.register_blueprint(message_api)
+app.register_blueprint(server.re_queries.re_query_api)
 
 from flask_cors import CORS
 app.debug = True
@@ -79,13 +81,15 @@ def login_auth():
             access_token = create_access_token(identity={"user_id":user["id"], "group":user["user_group"], "email":user["email"]})
             refresh_token = create_refresh_token(identity={"user_id":user["id"], "group":user["user_group"], "email":user["email"]})
             cursor.connection.close()
-            return jsonify(access_token=access_token, refresh_token=refresh_token), 200
+            #return jsonify(access_token=access_token, refresh_token=refresh_token), 200
+            return jsonify(access_token=access_token), 200
 
     return jsonify({"error": "Bad email or password"}), 401
     
 @app.route('/refresh', methods=['POST'])
 @jwt_refresh_token_required
 def refresh():
+    return "", 404
     current_user = get_jwt_identity()
     ret = {
         'access_token': create_access_token(identity=current_user)

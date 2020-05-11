@@ -25,6 +25,7 @@ self.addEventListener('push', function(e) {
         console.log(event);
         const ntData = event.notification.data
         clients.openWindow(ntData.href)
+        event.notification.close()
     }
     
     e.waitUntil(
