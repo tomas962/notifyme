@@ -17,7 +17,6 @@ from .jwt_validations import validate_resource
 app.config['JWT_SECRET_KEY'] = 'dsafn87987345 3Q#$GRWE#$()_)*%@&#()nvdkJS*#@QW$%&BHDFSudsfkj'
 app.config['JWT_ACCESS_TOKEN_EXPIRES'] = timedelta(minutes=60)
 app.config['JWT_REFRESH_TOKEN_EXPIRES'] = timedelta(days=7)
-app.config['JWT_TOKEN_LOCATION'] = ['headers', 'json']
 #app.config['SECRET_KEY'] = 'secret!'
 
 jwt = JWTManager(app)

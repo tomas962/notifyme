@@ -32,6 +32,14 @@ window.socket.on('connect', () => {
     window.socket.emit("join", {"access_token":ac})
 })
 
+window.socket.on('reconnect', () => {
+  console.log("socketio reconnect");
+  console.log(socket);
+  const ac = localStorage.getItem("access_token")
+  if (ac)
+    window.socket.emit("join", {"access_token":ac})
+})
+
 
 Vue.use(ElementUI)
 // Install BootstrapVue

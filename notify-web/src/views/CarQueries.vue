@@ -3,7 +3,7 @@
         
 
         <b-row class="mt-3">
-            <b-col cols="8"><h1>Jūsų Paieškos</h1></b-col>
+            <b-col cols="8"><h2>Jūsų Paieškos - Automobiliai</h2></b-col>
             <b-col>
                 <b-button v-on:click="getFormData();" class="btn-info" v-b-modal.queryEditModal>Nauja paieška</b-button>
                 <b-modal v-on:cancel="onCancelClick()" v-on:ok="okClicked()" ok-title="Išsaugoti" cancel-title="Atšaukti" id="queryEditModal" :title='editForm ? "Redaguojama paieška" : "Nauja paieška"' size="lg">

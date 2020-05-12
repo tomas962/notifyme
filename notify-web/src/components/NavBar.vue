@@ -8,7 +8,7 @@
         <b-navbar-nav>
             <b-nav-item to="/login" v-if="identity.email == ''">Prisijungti</b-nav-item>
             <b-nav-item v-if="identity.email" to="/queries">Automobiliai</b-nav-item>
-            <b-nav-item v-if="identity.email" :to="`/users/${identity.user_id}/re_queries`">Nekilnojamas turtas</b-nav-item>
+            <b-nav-item v-if="identity.email" :to="`/users/${identity.user_id}/re_queries`">Nekilnojamasis turtas</b-nav-item>
             <b-nav-item v-if="identity.email" :to="`/users/${identity.user_id}/messages`">Pranešimai</b-nav-item>
         </b-navbar-nav>
         <!-- Right aligned nav items -->
@@ -65,7 +65,12 @@ li {
   display: inline-block;
   margin: 0 10px;
 }
-a {
-  color: #42b983;
+
+.nav-link {
+  // color: rgb(166, 255, 190) !important
+}
+
+nav > a {
+  color: darkcyan !important;
 }
 </style>
