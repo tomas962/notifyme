@@ -366,8 +366,6 @@ class AutopliusAd(CarAd):
 
     def scrape_imgs(self):
         self.scraped_params["picture_href"] = []
-        # self.scraped_params["picture_href"].append(self.response.css("div.announcement-media-gallery > div.thumbnail > img::attr(src)").get())
-        # self.scraped_params["picture_href"][0] = self.scraped_params["picture_href"][0].strip() if self.scraped_params["picture_href"][0] is not None else None
         js_code: str = self.response.css('body > div.body-wrapper > div.page-wrapper > div.content-container > div.row.native-baner-theme > div.col-7 > script:nth-child(4)::text').get()
         if js_code:
             pic_json = js_code.split("mediaGalleryItems")[1].strip(" =;\n\t")
