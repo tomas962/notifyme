@@ -249,7 +249,7 @@
 
            <b-row v-if="car.comments" class="mt-2">
                <b-col>
-                   <div v-for="c in car.comments" :key="c">{{c}}</div>
+                   <div v-for="c in comments" :key="c">{{c}}<br></div>
                </b-col>
            </b-row>
 
@@ -428,9 +428,9 @@ export default {
                 }
             });
             const data = await response.json();
-            if (data.comments)
-                data.comments = data.comments.replace(/<div class="announcement-description">/, "").replace(/<\/div>/g, "").replace(/&amp;/g, "&")
-                    .replace(/<span>/, "").replace(/<\/span>/, "").replace(/<div class="comments" itemprop="description">/, "").split('<br>')
+            // if (data.comments)
+            //     data.comments = data.comments.replace(/<div class="announcement-description">/, "").replace(/<\/div>/g, "").replace(/&amp;/g, "&")
+            //         .replace(/<span>/, "").replace(/<\/span>/, "").replace(/<div class="comments" itemprop="description">/, "").split('<br>')
 
             this.car = data
             
@@ -498,7 +498,14 @@ export default {
                 return "Autoplius.lt nuoroda"
             else
                 return ""
-        }   
+        },
+
+        comments(){
+            if(this.car.comments)
+                return this.car.comments.split('\n')
+            else
+                return []
+        }
     },
 
     created() {

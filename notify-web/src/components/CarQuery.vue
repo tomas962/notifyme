@@ -30,7 +30,7 @@
                         </b-row>
                         <b-row>
                             <b-col class="text-center" cols="12">
-                                <b-btn :disabled="query.car_query.currently_scraping ? true : false" @click="setPage({page: 1})" :to="'/queries/' + query.car_query.id + '/cars'" class="btn-success">
+                                <b-btn :disabled="query.car_query.currently_scraping ? true : false" @click="setPage({page: 1})" :to="'/users/'+identity.user_id+'/queries/' + query.car_query.id + '/cars'" class="btn-success">
                                     <b-spinner v-if="query.car_query.currently_scraping ? true : false" small></b-spinner>
                                     {{query.car_query.currently_scraping ? 'Paieška vykdoma' : 'Rezultatai'}}
                                 </b-btn>

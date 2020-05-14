@@ -1,6 +1,7 @@
 from scrapy.responsetypes import Response
 from database.database import db_connect
 import re
+import pymysql
 
 re_db_mappings = {
     # skelbiu.lt
@@ -36,6 +37,8 @@ re_db_mappings = {
     "Vandentiekis":"water",
     "Kanalizacija":"sewage",
     "Dujos":"gas",
+    "Buto plotas (kv. m)":"area",
+    "Būklė":"installation",
 
     "?":"city",
     "?1":"city_id",
@@ -49,6 +52,8 @@ re_db_mappings = {
     "?9":"price_per_area",
     "?10":"phone",
     "?11":"href",
+    "?12":"query_id",
+    "?13":"pictures",
 
 
     "Naudingas plotas (kv. m)": "?",
@@ -70,6 +75,7 @@ class ReAd():
         self.response = response
         self.scraped_params = {}
         self.prepared_data = {}
+        self.scraped_params["query_id"] = query_id
 
     def extract_relevant_attributes(self):
         """Extracts only relevant attributes, to return for later data processing."""
@@ -103,6 +109,8 @@ class ReAd():
         ad["water"] = self.prepared_data["water"]
         ad["sewage"] = self.prepared_data["sewage"]
         ad["gas"] = self.prepared_data["gas"]
+        ad["pictures"] = self.prepared_data["pictures"]
+        ad["query_id"] = self.prepared_data["query_id"]
         return ad
 
     def prepare_data(self):
@@ -145,6 +153,19 @@ class ReAd():
                     href=%(href)s, when_scraped=unix_timestamp(), year_reconstructed=%(year_reconstructed)s, 
                     water=%(water)s, sewage=%(sewage)s, gas=%(gas)s
                     WHERE id=%(id)s""", self.prepared_data)
+                
+                try:
+                    cursor.execute("INSERT INTO re_query_ad_fk (query_id, re_ad_id) VALUES (%(query_id)s, %(id)s)", self.prepared_data)
+                except pymysql.IntegrityError as err:
+                    print("RE ad already existed: ")
+                    print(err)
+                
+                try:
+                    cursor.executemany("INSERT INTO `re_ad_pictures`(`re_ad_id`, `picture_href`) VALUES (%s, %s)",
+                        [(self.prepared_data["id"], p_href) for p_href in self.prepared_data["pictures"]])
+                except pymysql.IntegrityError as err:
+                    print("Picture already exists: ")
+                    print(err)
             else:
                 cursor.execute(f"""INSERT INTO `re_ads`(`city_id`, `title`, `village`, `installation`, 
                     `type`, `house_type`, `year`, `site_area`, `heating`, `area`, `street`, `description`, 
@@ -157,6 +178,11 @@ class ReAd():
                     %(key_value)s, %(room_count)s, %(href)s, unix_timestamp(), %(year_reconstructed)s, %(water)s, 
                     %(sewage)s, %(gas)s)""", self.prepared_data)
                 self.prepared_data["id"] = cursor.lastrowid
+
+                cursor.execute("INSERT INTO re_query_ad_fk (query_id, re_ad_id) VALUES (%(query_id)s, %(id)s)", self.prepared_data)
+
+                cursor.executemany("INSERT INTO `re_ad_pictures`(`re_ad_id`, `picture_href`) VALUES (%s, %s)",
+                        [(self.prepared_data["id"], p_href) for p_href in self.prepared_data["pictures"]])
 
             cursor.connection.commit()
             cursor.connection.close()
@@ -212,6 +238,18 @@ class SkelbiuAd(ReAd):
             features = [x.strip() for x in features]
             self.scraped_params["features"] = "|".join(features)
 
+        pictures = []
+        for script in self.response.css("body > script::text").getall():
+            s = script.strip()
+            if s.startswith("var adId"):
+                for line in s.splitlines():
+                    if "full_size_src" in line:
+                        pictures.append(line.split("'")[1])
+                break
+        
+        self.scraped_params["pictures"] = pictures
+        print(pictures)
+
 class DomoAd(ReAd):
 
     def parse(self):
@@ -246,3 +284,8 @@ class DomoAd(ReAd):
         city = self.response.css("div.breadcrumb > div:nth-child(1) > a > span::text").get()
         self.scraped_params["city"] = city.replace("sav.", "").strip()
         
+
+        pictures = []
+        for pic in self.response.css(".small-thumbs img::attr(src)").getall():
+            pictures.append(pic.replace("_small", "_big"))
+        self.scraped_params["pictures"] = pictures

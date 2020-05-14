@@ -1,12 +1,12 @@
 <template>
     <div>
         
-
+        <b-alert class="mt-2" variant="danger" :show="showErr" dismissible v-on:dismissed="showErr=false">{{errMsg}}</b-alert>
         <b-row class="mt-3">
             <b-col cols="8"><h2>Jūsų Paieškos - Nekilnojamasis turtas</h2></b-col>
             <b-col>
-                <b-button v-on:click="getFormData();" class="btn-info" v-b-modal.queryEditModal>Nauja paieška</b-button>
-                <b-modal v-on:cancel="onCancelClick()" v-on:ok="okClicked()" ok-title="Išsaugoti" cancel-title="Atšaukti" id="queryEditModal" :title='editForm ? "Redaguojama paieška" : "Nauja paieška"' size="lg">
+                <b-button v-on:click="getFormData();" class="btn-info" v-b-modal.reQueryEditModal>Nauja paieška</b-button>
+                <b-modal v-on:cancel="onCancelClick()" v-on:ok="okClicked()" ok-title="Išsaugoti" cancel-title="Atšaukti" id="reQueryEditModal" :title='editForm ? "Redaguojama paieška" : "Nauja paieška"' size="lg">
                     <b-form>
                         <b-row>
                             <b-col>
@@ -55,7 +55,7 @@
                         </b-row>
                         <b-row class="mt-3">          
                             <b-col>
-                                <div>
+                                <div v-if="newQuery.category_id!=3">
                                 <h4 id="more-params" v-on:click="formExpanded=!formExpanded" v-b-toggle.collapse-3 class="m-1 pb-1 border-bottom">
                                     <b-icon-arrow-down-short v-if="!formExpanded" scale="2"></b-icon-arrow-down-short> 
                                     <b-icon-arrow-up-short v-if="formExpanded" scale="2"></b-icon-arrow-up-short> 
@@ -74,7 +74,7 @@
                                                 </b-row>
                                             </b-form-group>
                                         </b-col>
-                                        <b-col cols="6">
+                                        <b-col v-if="newQuery.category_id!=3" cols="6">
                                             <b-form-group label="Statybos metai">
                                                 <b-row>
                                                     <b-col cols="6">
@@ -89,9 +89,9 @@
                                     </b-row>
                                     <b-row class="mt-3">
                                         <b-col cols="6">
-                                            <b-form-select v-model="newQuery.house_type_id" :options="queryFormData.reHouseTypes"></b-form-select>
+                                            <b-form-select v-if="newQuery.category_id==2" v-model="newQuery.house_type_id" :options="queryFormData.reHouseTypes"></b-form-select>
                                         </b-col>
-                                        <b-col>
+                                        <b-col cols="6">
                                             <b-form-select v-model="newQuery.type_id" :options="queryFormData.reTypes"></b-form-select>
                                         </b-col>
                                     </b-row>
@@ -114,12 +114,14 @@
                 </div>
             </b-col>
         </b-row>
+        <ReQueryRow v-for="query in queriesBy4" :key="query.reduce((acc, el) => acc * el.id, 1)" :queries4="query"></ReQueryRow>
     </div>
 </template>
 
 <script lang="ts">
-import { Component, Vue } from "vue-property-decorator";
-import {SelectOption} from "@/models/interfaces"
+import { Component, Vue, Watch } from "vue-property-decorator";
+import {SelectOption, ReQueryResponse} from "@/models/interfaces"
+import ReQueryRow from '@/components/ReQueriesRow.vue'
 
 interface ReQueryDtata {
     cities: SelectOption[];
@@ -166,8 +168,14 @@ interface ReQuery {
     query_id: number|null;
 }
 
-@Component
+@Component({
+    components:{
+        ReQueryRow
+    }
+})
 export default class REQueries extends Vue {
+    showErr = false
+    errMsg = ""
 
     newQuery: ReQuery = {
         city_id: null,
@@ -194,9 +202,92 @@ export default class REQueries extends Vue {
     }
     editForm = false
     formExpanded = false
+
+    queriesBy4: ReQueryResponse[][] = []
+    queries: ReQueryResponse[] = []
+
+    beforeDestroy() {
+        window.eventBus.$off('re-query-edit')
+        window.eventBus.$off('re-query-deleted')
+        window.socket.off('re_query_started')
+        window.socket.off('re_query_ended')
+    }
+
     created(){
         console.log("requeries created");
+        this.getQueries();
+
+        window.socket.on('re_query_started', (data: {user_id: number; query_id: number}) => {
+            console.log('re query started:');
+            console.log(data);
+            const q = this.queries.find((query) => 
+                query.user_id == data.user_id && query.id == data.query_id
+            )
+            if (q)
+                q.currently_scraping = 1
+        })
+
+        window.socket.on('re_query_ended', (data: {user_id: number; query_id: number}) => {
+            console.log('re query ended:');
+            console.log(data);
+            const q = this.queries.find((query) => 
+                query.user_id == data.user_id && query.id == data.query_id
+            )
+            console.log(q);
+            
+            if (q){
+                q.currently_scraping = 0
+                q.last_scraped = (Date.now() / 1000) | 0;
+            }
+        })
+
+        window.eventBus.$on('re-query-deleted', () => {
+            console.log("re query delted");
+            this.getQueries();
+        })
+
+        window.eventBus.$on("re-query-edit", async (query: ReQueryResponse) => {
+            console.log("ON RE-QUERY-EDIT EMMITED");
+            
+            this.editForm = true;
+            this.newQuery.city_id = query.city_id
+            this.newQuery.category_id = query.category_id
+            this.newQuery.rooms_to = query.rooms_to
+            this.newQuery.rooms_from = query.rooms_from
+            this.newQuery.search_term = query.search_term
+            this.newQuery.house_type_id = query.house_type_id
+            this.newQuery.sites = query.sites ? query.sites.split(',') : []
+            this.newQuery.query_id = query.id
+            this.newQuery.price_from = query.price_from
+            this.newQuery.price_to = query.price_to
+            this.newQuery.year_from = query.year_from
+            this.newQuery.year_to = query.year_to
+            this.newQuery.area_from = query.area_from
+            this.newQuery.area_to = query.area_to
+            this.newQuery.type_id = query.type_id
+            this.newQuery.rooms_from = query.rooms_from
+
+            this.getFormData();
+        })
+    }
+
+    @Watch('queries')
+    onQueriesChanged(newQueries: ReQueryResponse[]) {  
+        const tmp: ReQueryResponse[][] = []
+        for (let i = 0; i < newQueries.length; i+=4) {
+            const row: ReQueryResponse[] = []
+            row.push(newQueries[i])
+            if (newQueries.length > i+1)
+                row.push(newQueries[i+1])
+            if (newQueries.length > i+2)
+                row.push(newQueries[i+2])
+            if (newQueries.length > i+3)
+                row.push(newQueries[i+3])
+            tmp.push(row)
+        }
+        console.log("RE QUERIES CHANGED");
         
+        this.queriesBy4 = tmp;
     }
 
     async getCities(){
@@ -294,9 +385,9 @@ export default class REQueries extends Vue {
         this.getReTypes();
         this.getReHouseTypes();
     }
-    onCancelClick(){
-        console.log();
-        
+    onCancelClick() {
+        this.editForm = false;
+        this.newQuery = this.defaultQueryValues()
     }
 
     defaultQueryValues() {
@@ -315,7 +406,7 @@ export default class REQueries extends Vue {
             search_term: null,
             house_type_id: null,
             sites: ["domoplius.lt", "skelbiu.lt"],
-            query_id: null
+            query_id: null,
         }
     }
 
@@ -328,10 +419,19 @@ export default class REQueries extends Vue {
         console.log("post/put query:");
         console.log(this.newQuery);
         
-        
+        let response: Response
         if (this.newQuery.query_id === null){ //add new
-            const response = await fetch(window.SERVER_URL + "/users/" + this.$store.state.User.identity.user_id + "/re_queries", {
+            response = await fetch(window.SERVER_URL + "/users/" + this.$store.state.User.identity.user_id + "/re_queries", {
                 method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + this.$store.state.User.access_token
+                },
+                body: JSON.stringify(this.newQuery)
+            })
+        } else {
+            response = await fetch(window.SERVER_URL + "/users/" + this.$store.state.User.identity.user_id + "/re_queries/" + this.newQuery.query_id, {
+                method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
                     'Authorization': 'Bearer ' + this.$store.state.User.access_token
@@ -340,15 +440,40 @@ export default class REQueries extends Vue {
             })
         }
 
-        // this.getQueries();
+        if (!response.ok){
+            this.showErr = true
+            this.errMsg = "Įvyko klaida ištrinant paiešką."
+            return
+        }
+        this.getQueries();
         this.newQuery = this.defaultQueryValues()
+    }
+
+    async getQueries(){
+        const response = await fetch(window.SERVER_URL + "/users/" + this.$store.state.User.identity.user_id + "/re_queries", {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + this.$store.state.User.access_token
+            }
+        })
+
+        if(!response.ok){
+            this.showErr = true
+            this.errMsg = "Įvyko klaida kraunant paieškas."
+            return
+        }
+
+        const data: ReQueryResponse[] = await response.json()
+        console.log(data);
+        this.queries = data.reverse();
     }
 }
     
 
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss">
 
 .domo-text {
     color: #7eba47;

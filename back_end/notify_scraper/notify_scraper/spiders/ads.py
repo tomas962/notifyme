@@ -316,8 +316,9 @@ class AutogidasAd(CarAd):
             addons += addon.get().strip() + ", "
         addons = addons[:-2]
         self.scraped_params["features"] = addons
-        comment = self.response.css('div.comments').get()
-        self.scraped_params["comments"] = comment.strip() if comment is not None else None
+        comment = self.response.css('div.comments::text').getall()
+        if comment:
+            self.scraped_params["comments"] = "\n".join(comment)
         for param in self.response.css('div.param'):
             value = param.css('div.price::text').get() or param.css('div.right::text').get()
             self.scraped_params[db_translations[param.css('div.left::text').get().strip()]] = value.strip()
@@ -385,8 +386,9 @@ class AutopliusAd(CarAd):
             addons = addons[:-2] + "\n"
         
         self.scraped_params["features"] = addons
-        comment = self.response.css("div.announcement-description").get()
-        self.scraped_params["comments"] = comment.strip() if comment is not None else None
+        comment = self.response.css("div.announcement-description::text").getall()
+        if comment:
+            self.scraped_params["comments"] = "\n".join(comment)
 
         for param in self.response.css('div.parameter-row'):
             value = param.css('div.parameter-value::text').get()
@@ -484,8 +486,9 @@ class AutobilisAd(CarAd):
         
         comment_block = self.response.css("div.advert-price-MainInfo-comments")
         if comment_block is not None:
-            comment = comment_block.css('div.advert-price-MainInfo-text > span').get()
-            self.scraped_params["comments"] = comment.strip() if comment is not None else None
+            comment = comment_block.css('div.advert-price-MainInfo-text > span::text').getall()
+            if comment:
+                self.scraped_params["comments"] = "\n".join(comment)
 
         self.gen_location()
 

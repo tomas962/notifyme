@@ -10,6 +10,8 @@ import RegisterView from '@/views/RegisterView.vue'
 import SettingsView from '@/views/SettingsView.vue'
 import MessagesView from '@/views/MessagesView.vue'
 import REQueries from '@/views/REQueries.vue'
+import ReAdList from '@/views/ReAdList.vue'
+import ReAdView from '@/views/ReAdView.vue'
 
 Vue.use(VueRouter)
 
@@ -23,9 +25,14 @@ Vue.use(VueRouter)
   //   component: () => import(/* webpackChunkName: "about" */ '../views/About.vue')
   // },
   {
-    path: '/queries/:query_id/cars',
+    path: '/users/:user_id/queries/:query_id/cars',
     name: 'Cars',
     component: CarList
+  },
+  {
+    path: '/users/:user_id/re_queries/:query_id/re_ads',
+    name: 'ReAds',
+    component: ReAdList
   },
   {
     path: '/login',
@@ -33,12 +40,12 @@ Vue.use(VueRouter)
     component: Login
   },
   {
-    path: '/queries',
+    path: '/users/:user_id/queries',
     name: 'Queries',
     component: CarQueries
   },
   {
-    path: '/queries/:query_id/cars/:car_id',
+    path: '/users/:user_id/queries/:query_id/cars/:car_id',
     name: 'CarView',
     component: CarView
   },
@@ -48,7 +55,7 @@ Vue.use(VueRouter)
     component: RegisterView
   },
   {
-    path: '/settings',
+    path: '/users/:user_id/settings',
     name: 'SettingsView',
     component: SettingsView
   },
@@ -61,6 +68,11 @@ Vue.use(VueRouter)
     path: '/users/:user_id/re_queries',
     name: 'REQueries',
     component: REQueries
+  },
+  {
+    path: '/users/:user_id/re_queries/:query_id/re_ads/:re_ad_id',
+    name: 'ReAdView',
+    component: ReAdView
   },
 ]
 

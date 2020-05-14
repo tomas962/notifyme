@@ -64,6 +64,11 @@ class DomoReQuery():
             self.new_params["building_rooms_from"] = self.old_params.get("rooms_from") or ""
             self.new_params["building_rooms_to"] = self.old_params.get("rooms_to") or ""
 
+
+        if self.query_prefix == "sklypai":
+            self.new_params["site_size_from"] = self.old_params.get("area_from") or ""
+            self.new_params["site_size_to"] = self.old_params.get("area_to") or ""
+
         self.new_params["building_build_date_from"] = self.old_params.get("year_from") or ""
         self.new_params["building_build_date_to"] = self.old_params.get("year_to") or ""
 

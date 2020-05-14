@@ -2,6 +2,7 @@
     <div>
         
 
+        <b-alert class="mt-2" variant="danger" :show="showErr" dismissible v-on:dismissed="showErr=false">{{errMsg}}</b-alert>
         <b-row class="mt-3">
             <b-col cols="8"><h2>Jūsų Paieškos - Automobiliai</h2></b-col>
             <b-col>
@@ -160,6 +161,8 @@ interface QueryFormData {
 export default class CarQueries extends Vue {
     formExpanded = false;
     editForm = false;
+    showErr = false;
+    errMsg = ""
 
     intervalID = 0;
     queriesBy4: CarQueryResponse[][] = []
@@ -250,7 +253,6 @@ export default class CarQueries extends Vue {
         window.eventBus.$off('car-query-deleted')
         window.socket.off('car_query_started')
         window.socket.off('car_query_ended')
-        clearInterval(this.intervalID)
     }
 
     created() {
@@ -411,8 +413,9 @@ export default class CarQueries extends Vue {
         }
         console.log("AFTER:");
         console.log(this.newQuery);
+        let response: Response
         if (this.newQuery.query_id === null){ //add new
-            const response = await fetch(window.SERVER_URL + "/users/" + this.$store.state.User.identity.user_id + "/queries", {
+            response = await fetch(window.SERVER_URL + "/users/" + this.$store.state.User.identity.user_id + "/queries", {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -422,7 +425,7 @@ export default class CarQueries extends Vue {
             })
         }
         else { //update existing
-            const response = await fetch(window.SERVER_URL + "/users/" + this.$store.state.User.identity.user_id + "/queries/" + this.newQuery.query_id, {
+            response = await fetch(window.SERVER_URL + "/users/" + this.$store.state.User.identity.user_id + "/queries/" + this.newQuery.query_id, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
@@ -431,6 +434,11 @@ export default class CarQueries extends Vue {
                 body: JSON.stringify(this.newQuery)
             })
 
+        }
+
+        if (!response.ok){
+            this.showErr = true
+            this.errMsg = "Įvyko klaida ištrinant paiešką."
         }
         this.getQueries();
         this.newQuery = this.defaultQueryValues()

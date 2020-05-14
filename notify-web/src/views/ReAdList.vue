@@ -1,40 +1,40 @@
 <template>
 <div>
-    <!-- <a href="#" v-on:click="sortCars((a, b) => a.price - b.price);">SORT </a> -->
     <b-row class="text-center mt-2">
         <b-col>
             <b-pagination 
             v-model="currentPage"
-            :total-rows="cars.length"
+            :total-rows="re_ads.length"
             :per-page="perPage"
             align="center"
             ></b-pagination>
         </b-col>
     </b-row>
     
-    <CarComp v-for="car in carPage" :key="car.id" :car="car" />
+    <ReAdComp v-for="ad in adPage" :key="ad.id" :re_ad="ad" />
 </div>
 </template>
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator'
-import CarComp from '@/components/Car.vue'
+import ReAdComp from '@/components/ReAd.vue'
 import {namespace} from 'vuex-class'
-import {Car} from '../store/modules/cars'
+import {ReAd} from '@/models/interfaces'
 
-const carsns = namespace('CarList')
 const UI = namespace('UIState')
 
 @Component({
 components: {
-    CarComp
+    ReAdComp
 }
 })
-export default class CarList extends Vue {
+export default class ReAdList extends Vue {
     query_id = -1;
+    user_id = 0;
 
     perPage = 10;
 
+    re_ads: ReAd[] = []
     get currentPage () {
         return this.carAdsPage
     }
@@ -49,34 +49,39 @@ export default class CarList extends Vue {
     @UI.Action
     setPage!: (state: {page: number}) => void
 
-
-    @carsns.State
-    public cars!: Car[];
-
-    @carsns.Action
-    public fetchCars!: (query_id: {query_id: number}) => void
-
-    @carsns.Action
-    public sortCars!: (sortFn: (a: Car, b: Car) => number) => void
-
     created() {
+        console.log("ReAdList created");
+        
         if (this.currentPage == null) {
             this.currentPage = 1
         }
         this.query_id = parseInt(this.$route.params.query_id, 10);
-        this.fetchCars({query_id: this.query_id});
+        this.user_id = parseInt(this.$route.params.user_id, 10);
+        this.getReAds()
         console.log("_currentPage:");
         console.log(this.currentPage);
         
     }
 
-    get carPage() {
+    async getReAds() {
+        const response = await fetch(window.SERVER_URL + `/users/${this.user_id}/re_queries/${this.query_id}/re_ads`, {
+            headers: {
+                'Authorization': 'Bearer ' + this.$store.state.User.access_token
+            }
+        })
+
+        const data: ReAd[] = await response.json();
+        console.log(data);
+        this.re_ads = data.reverse();
+    }
+
+    get adPage() {
         const start = (this.currentPage-1) * this.perPage
         const end = start + this.perPage
         console.log(start);
         console.log(end);
         
-        return this.cars.slice(start, end);
+        return this.re_ads.slice(start, end);
     }
 
 }

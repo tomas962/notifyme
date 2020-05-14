@@ -41,7 +41,7 @@ class DomopliusSpider(scrapy.Spider):
         #     f.write(response.text)
 
 
-        # hrefs = ['https://domoplius.lt/skelbimai/parduodamas-gyvenamasis-namas-vilniuje-pavilnyje-strielciuku-g-6815701.html']
+        # hrefs = ['https://domoplius.lt/skelbimai/parduodamas-1-kambario-butas-klaipedoje-vetrungeje-taikos-pr-6660931.html']
         for href in hrefs:
             next_page = response.urljoin(href)
             yield scrapy.Request(next_page, callback=self.parse_ad, 

@@ -19,6 +19,10 @@ class SkelbiuSpider(scrapy.Spider):
             raise ValueError("No re_query_id passed to spider")
             return
         query_from_db = get_re_query(int(self.re_query_id))
+        if query_from_db is None: # don't scrape
+            print("WARNING: Skelbiu: Not scraping (query not found):")
+            print(query_from_db)
+            return None
         qr = SkelbiuReQuery(query_from_db)
         re_query = qr.generate()
         if re_query is None: # don't scrape
@@ -39,7 +43,7 @@ class SkelbiuSpider(scrapy.Spider):
         hrefs = response.css('div.itemReview > h3 > a::attr(href)').getall()
         # with open("tmp.html", "w") as f:
         #     f.write(response.text)
-        # hrefs = ["https://www.skelbiu.lt/skelbimai/uab-vilmestos-projektai-parduoda-buta-pastatytame-name-46518185.html"]
+        # hrefs = ["https://www.skelbiu.lt/skelbimai/parduodamas-vieno-auksto-privatus-namas-isskirtineje-miesto-48001317.html"]
         for href in hrefs:
             next_page = response.urljoin(href)
             yield scrapy.Request(next_page, callback=self.parse_ad, 

@@ -53,6 +53,41 @@ interface CarQueryResponse {
     make_model: MakeModel;
 }
 
+interface ReQueryResponse {
+    area_from: number|null;
+    area_to: number|null;
+    category_id: number|null;
+    category_name: string|null;
+    city: string|null;
+    city_id: number|null;
+    domo_category_id: number|null;
+    domo_city_id: number|null;
+    domo_house_type_id: number|null;
+    domo_type_id: number|null;
+    house_type_id: number|null;
+    house_type_name: string|null;
+    id: number;
+    last_scraped: number|null|undefined;
+    price_from: number|null;
+    price_to: number|null;
+    rooms_from: number|null;
+    rooms_to: number|null;
+    scrape_interval: number|null;
+    search_term: string|null;
+    sites: string|null;
+    skelbiu_category_id: number|null;
+    skelbiu_city_id: number|null;
+    skelbiu_house_type_id: number|null;
+    skelbiu_type_id: number|null;
+    type_id: number|null;
+    type_name: string|null;
+    user_id: number;
+    was_scraped: number|null;
+    year_from: number|null;
+    year_to: number|null;
+    currently_scraping: number|null|undefined;
+}
+
 interface NewCarQuery {
     [key: string]: any;
     make_id: number|null;
@@ -95,6 +130,43 @@ interface SelectOption {
     text: string;
 }
 
+
+interface ReAd {
+    area: string|null;
+    city: string|null;
+    city_id: number
+    description: string|null;
+    domo_id: number|null;
+    energy_class: string|null;
+    features: string|null;
+    floor: string|null;
+    floor_count: number|null;
+    gas: string|null;
+    heating: string|null;
+    house_type: string|null;
+    href: string|null;
+    id: number|null;
+    installation: string|null;
+    neighborhood: string|null;
+    phone: string|null;
+    price: number|null;
+    price_per_area: string|null;
+    room_count: number|null;
+    sewage: string|null;
+    site_area: string|null;
+    skelbiu_id: number|null;
+    street: string|null;
+    title: string|null;
+    type: string|null;
+    village: string|null;
+    water: string|null;
+    when_scraped: number|null;
+    year: string|null;
+    year_reconstructed: string|null;
+    pictures: string[];
+    picture_href?: object[];
+}
+
 export {
     CarQueryResponse,
     CarQuery,
@@ -104,5 +176,7 @@ export {
     NewCarQuery,
     Make,
     MessageResponse,
-    SelectOption
+    SelectOption,
+    ReQueryResponse,
+    ReAd
 }
