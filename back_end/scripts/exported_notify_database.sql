@@ -3,8 +3,8 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3306
--- Generation Time: Apr 24, 2020 at 10:01 PM
--- Server version: 5.7.29-0ubuntu0.18.04.1
+-- Generation Time: May 15, 2020 at 01:45 AM
+-- Server version: 5.7.30-0ubuntu0.18.04.1
 -- PHP Version: 7.2.24-0ubuntu0.18.04.4
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
@@ -73,7 +73,7 @@ CREATE TABLE `car_ads` (
   `color` varchar(50) DEFAULT NULL,
   `gearbox` enum('Automatinė','Mechaninė') DEFAULT NULL,
   `driven_wheels` enum('Priekiniai varantys ratai','Galiniai varantys ratai','Visi varantys ratai') DEFAULT NULL,
-  `damage` enum('Be defektų','Daužtas','Degęs','Pavarų dėžės defektas','Pažeistas krušos','Skendęs','Variklio defektas','Kiti stambūs defektai') DEFAULT NULL,
+  `damage` enum('Be defektų','Daužtas','Degęs','Pavarų dėžės defektas','Pažeistas krušos','Skendęs','Variklio defektas','Kiti stambūs defektai','Smulkūs kėbulo defektai') DEFAULT NULL,
   `steering_column` enum('Kairėje','Dešinėje') DEFAULT NULL,
   `door_count` enum('2/3','4/5','6/7') DEFAULT NULL,
   `cylinder_count` tinyint(4) DEFAULT NULL,
@@ -94,50 +94,27 @@ CREATE TABLE `car_ads` (
   `vin_code` varchar(50) DEFAULT NULL,
   `autop_id` bigint(20) DEFAULT NULL,
   `autob_id` bigint(20) DEFAULT NULL,
-  `query_id` int(11) DEFAULT NULL,
   `href` varchar(200) DEFAULT NULL,
-  `picture_href` varchar(200) DEFAULT NULL,
+  `picture_href` varchar(500) DEFAULT NULL,
   `mileage` int(11) DEFAULT NULL,
-  `location` varchar(100) DEFAULT NULL
+  `location` varchar(100) DEFAULT NULL,
+  `when_scraped` bigint(20) DEFAULT NULL,
+  `phone` varchar(20) DEFAULT NULL,
+  `deleted` tinyint(1) NOT NULL DEFAULT '0',
+  `first_reg_country` varchar(100) DEFAULT NULL,
+  `el_range` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+-- --------------------------------------------------------
+
 --
--- Dumping data for table `car_ads`
+-- Table structure for table `car_pictures`
 --
 
-INSERT INTO `car_ads` (`make`, `model`, `year`, `engine`, `fuel_type`, `body_type`, `color`, `gearbox`, `driven_wheels`, `damage`, `steering_column`, `door_count`, `cylinder_count`, `gear_count`, `seat_count`, `ts_to`, `weight`, `wheels`, `fuel_urban`, `fuel_overland`, `fuel_overall`, `features`, `comments`, `id`, `autog_id`, `price`, `export_price`, `vin_code`, `autop_id`, `autob_id`, `query_id`, `href`, `picture_href`, `mileage`, `location`) VALUES
-(10, 11023, '2002', '1.8 L, 125 kW (170 AG)', 2, 1, 'Kita', 'Automatinė', 'Visi varantys ratai', 'Be defektų', 'Kairėje', '4/5', NULL, NULL, NULL, '2021-05-16', NULL, NULL, NULL, NULL, 10, 'Elektra valdomi langai, Elektra valdomi veidrodėliai, Elektra valdomos sėdynės, Elektra šildomos sėdynės, Vairo stiprintuvas, Autopilotas, Multifunkcinis vairas, Liukas, Odinis salonas, Lieti ratlankiai, ABS, Šviesos davikliai, Priešrūkiniai žibintai, ESP, Dieniniai žibintai, Centrinis užraktas, Signalizacija, SRS oro pagalvės, CD grotuvas', 'Vienas savininkas Lietuvoje nuo 2009m. (pirkta prie 65000myl. - yra audi centro išrašas). Važinėta labai nedaug vidutiniškai 500km/mėn. Todėl maža rida.', 38, NULL, 2800, NULL, 'WAULC68E32A308247', NULL, 425862, 3, 'https://www.autobilis.lt/advert/425862/audi-a4-sedanas-2002-benzinas', NULL, 175000, 'Lietuva, Klaipėda'),
-(10, 11023, '2001', '2.0 L, 96 kW (131 AG)', 2, 1, 'Pilka', 'Automatinė', 'Priekiniai varantys ratai', 'Be defektų', 'Kairėje', '4/5', NULL, NULL, NULL, '2021-07-12', NULL, NULL, NULL, NULL, 9, 'Elektra valdomi langai, Elektra valdomi veidrodėliai, Vairo stiprintuvas, Vilkimo kablys, ABS, Priešrūkiniai žibintai, ESP, Centrinis užraktas, Signalizacija, SRS oro pagalvės, USB jungtis, CD grotuvas', 'Parvaryta iš vokietijos. Parvarius iš vokiečių vokiečių pakeistas pagrindinio diržo komplektas, termostatas, pakeisti variklio tepalai bei įdėtas naujas akumuliatorius, pakeistos galinės stabdžių kaladėlės. Investuota apie 600e. Automobilis nenuvaikytas, salonas gražus bei nepratrintas, kėbulas neturi nei vienos rudelės. Dėl automobilio skambinti numeriu 862841846.', 39, NULL, 1400, NULL, NULL, NULL, 355678, 3, 'https://www.autobilis.lt/advert/355678/audi-a4-sedanas-2001-benzinas', NULL, 113000, 'Lietuva, Klaipėda'),
-(10, 11023, '2004', '2.0 L, 96 kW (131 AG)', 2, 1, 'Pilka', 'Automatinė', 'Priekiniai varantys ratai', NULL, 'Kairėje', '4/5', NULL, NULL, NULL, '2020-06-05', NULL, NULL, NULL, NULL, 8, 'Elektra valdomi langai, Vairo stiprintuvas, Autopilotas, Bluetooth, Lieti ratlankiai, ABS, Priešrūkiniai žibintai, Centrinis užraktas, Signalizacija, CD grotuvas', NULL, 40, NULL, 1300, NULL, 'WAUZZZ8E14A177204', NULL, 431015, 3, 'https://www.autobilis.lt/advert/431015/audi-a4-sedanas-2004-benzinas', NULL, 254062, 'Lietuva, Klaipėda'),
-(10, 11023, '2001/01', '2.0 l. 96 kW (131 Ag)', 2, 1, 'Pilka', 'Automatinė', 'Priekiniai varantys ratai', 'Be defektų', 'Kairėje', '4/5', NULL, NULL, 5, NULL, NULL, NULL, NULL, NULL, NULL, 'Lengvo lydinio ratlankiai, Audio grotuvas, Signalizacija / Imobilaizeris, Stabilumo kontrolės sistema, Parduodama lizingu, Lietuvoje neeksploatuotas', 'AUTOMOBILIS PARVEZTAS IS VOKIETIJOS!', 41, 133048415, 1850, NULL, NULL, NULL, NULL, 3, 'https://autogidas.lt/skelbimas/audi-a4-benzinas--2001-m-sedanas-0133048415.html', 'https://img.autogidas.lt/4_15_172460473/audi-a4-sedanas-2001.jpg', 200000, 'Lietuva, Marijampolė'),
-(10, 11023, '2002/10', '2.0 l. 102 kW (139 Ag)', 2, 1, 'Pilka', 'Automatinė', 'Priekiniai varantys ratai', 'Be defektų', 'Kairėje', '4/5', 4, NULL, 5, '2021-12-01', NULL, 'R16', NULL, NULL, NULL, 'El. langai, El. sėdynės, Oro kondicionierius, Oro pagalvės, Signalizacija / Imobilaizeris', 'Ganėtinai tvarkingas auto, pakeista galinei Guolei,  pries 800km keistas smakraktis, sankabos diskas ,  isminamas guolis domint keitimas i  motociklą', 42, 132929732, 1800, NULL, NULL, NULL, NULL, 3, 'https://autogidas.lt/skelbimas/audi-a4-benzinas--2002-m-sedanas-0132929732.html', 'https://autogidas.lt/static/images/b_nofoto.gif', NULL, 'Lietuva, Druskininkai'),
-(10, 11023, '2002/05', '2.0 l. 96 kW (131 Ag)', 2, 1, 'Pilka', 'Mechaninė', 'Priekiniai varantys ratai', 'Be defektų', 'Kairėje', '4/5', 4, 5, NULL, NULL, NULL, 'R16', NULL, NULL, NULL, 'El. langai, Klimato kontrolė, Oro kondicionierius, Šildomos sėdynės, Lengvo lydinio ratlankiai, Žibintai „Xenon“, Audio grotuvas, Kritulių jutiklis, Kruizo kontrolė, Oro pagalvės, Signalizacija / Imobilaizeris, Stabilumo kontrolės sistema, Serviso knygelė, Lietuvoje neeksploatuotas', 'Automobilis grįžo savo eiga iš Vokietijos,  geros būklės,  Lietuvoje neeksploatuotas.', 43, 133032443, 2000, NULL, NULL, NULL, NULL, 3, 'https://autogidas.lt/skelbimas/audi-a4-benzinas--2002-m-b6-0133032443.html', 'https://img.autogidas.lt/4_15_171966343/audi-a4-b6-sedanas-2002.jpg', 250000, 'Lietuva, Marijampolė'),
-(10, 11023, '2000/04', '1.8 l. 92 kW (125 Ag)', 2, 1, 'Mėlyna', 'Automatinė', 'Priekiniai varantys ratai', 'Be defektų', 'Kairėje', '4/5', NULL, NULL, NULL, NULL, NULL, 'R15', 11, 8, 10, 'Veliūro salonas, Klimato kontrolė, Oro kondicionierius, Kablys, Audio grotuvas, Navigacija / GPS, Oro pagalvės, Signalizacija / Imobilaizeris', 'Parduodu tvarkinga audi a4 facelift modelis, AUTOMATAS, metai lietuvoj, parvaryta is vokietijos, pakeisti tepalai, filtrai, praeita TA, 2021, juokiu defektu, stovis tikrai geras, salonas kaip naujas, daug privalumu, oro kondicionerius, el.langai, changeris, vazioja puikia, cinkotas kebulas, jokiu rudziu, keli pabraizimai, sedi ir vazioji, juokiu papildomu investiciju, galit tikrinti servise.parduodu nes su vaiku per maza.', 44, 133044089, 1850, NULL, NULL, NULL, NULL, 3, 'https://autogidas.lt/skelbimas/audi-a4-benzin--2000-m-sedan-0133044089.html', 'https://img.autogidas.lt/4_15_172320748/audi-a4-sedanas-2000.jpg', 208000, 'Lietuva, Klaipėda'),
-(10, 11023, '2002/09', '2.0 l. 96 kW (131 Ag)', 2, 1, 'Sidabrinė', 'Automatinė', 'Priekiniai varantys ratai', 'Be defektų', 'Kairėje', '4/5', 4, 5, 5, '2020-05-01', 1895, 'R15', 10.9, 6.2, 7.9, 'El. langai, Klimato kontrolė, Lengvo lydinio ratlankiai, Stoglangis, Audio grotuvas, Atstumo jutiklių sistema, Traukos kontrolės sistema', 'Variklio tepalai pakeisti prieš ~2 mėn. Variklis ir greičių dėžė veikia gerai. Pridedu vasarinius ratus su lengvojo lydinio ratlankiais.', 45, 132921251, 1500, 1500, NULL, NULL, NULL, 3, 'https://autogidas.lt/skelbimas/audi-a4-benzinas--2002-m-b6-multitronic-0132921251.html', 'https://img.autogidas.lt/4_15_169772815/audi-a4-b6-multitronic-sedanas-2002.jpg', NULL, 'Lietuva, Vilnius'),
-(10, 11023, '2003/11', '1.8 l. 125 kW (170 Ag)', 2, 1, 'Juoda', 'Mechaninė', 'Visi varantys ratai', 'Be defektų', 'Kairėje', '4/5', 4, 5, NULL, '2022-02-01', NULL, 'R17', NULL, NULL, 9.5, 'El. langai, Klimato kontrolė, Odinis salonas, Oro kondicionierius, Šildomos sėdynės, Kablys, Lengvo lydinio ratlankiai, Žibintai „Xenon“, Stoglangis, Atstumo jutiklių sistema, Kruizo kontrolė, Oro pagalvės', '1.8T Quattro,  S4 moldingai,  slenksčiai.', 46, 133062773, 2650, NULL, NULL, NULL, NULL, 3, 'https://autogidas.lt/skelbimas/audi-a4-benzinas--2003-m-b6-0133062773.html', 'https://img.autogidas.lt/4_15_172985740/audi-a4-b6-sedanas-2003.jpg', 234200, 'Lietuva, Vilnius'),
-(10, 11023, '2001-08', '2000 cm³', 2, 1, NULL, 'Automatinė', NULL, NULL, 'Kairėje', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '', 'Tech iki 2022 02 11', 47, NULL, 1600, NULL, NULL, 10493467, NULL, 3, 'https://autoplius.lt/skelbimai/audi-a4-2-0-l-sedanas-2001-benzinas-10493467.html', 'https://autoplius-img.dgn.lt/ann_3_103690563/audi-a4-2-0-l-sedanas-2001-benzinas.jpg', NULL, 'Jonava, Lietuva'),
-(10, 11023, '2000-05', '1600 cm³, 100 AG (74kW)', 2, 1, NULL, 'Mechaninė', NULL, NULL, 'Kairėje', NULL, NULL, NULL, NULL, '2021-05-01', NULL, NULL, NULL, NULL, NULL, 'Salonas: Tamsinti stiklai, El. valdomos sėdynės\nElektronika: El. valdomi veidrodėliai, Kritulių jutiklis\nApsauga: Imobilaizeris, Signalizacija\nAudio/video įranga: MP3 grotuvas\nEksterjeras: Lengvojo lydinio ratlankiai, Rūko žibintai\nSaugumas: Traukos kontrolės sistema, ESP\n', 'IDEALI Audi A4,-S4. Retas modelis. Originali galiniai parktronikai. Pries 8000km pakeistas pagrindinis dirzas, restauroti priekiniai suportai, naujas akumas, viskas daryta sau, sedi ir vazioji. Netilps vaiko vezimelis, reikia universalo=( Del kainos tik prie masinos kalbesim, daug nenuliaisiu. Говорю и по русски', 48, NULL, 1550, NULL, NULL, 10766713, NULL, 3, 'https://autoplius.lt/skelbimai/audi-a4-1-6-l-sedanas-2000-benzinas-10766713.html', 'https://autoplius-img.dgn.lt/ann_3_106918535/audi-a4-1-6-l-sedanas-2000-benzinas.jpg', 257000, 'Vilnius, Lietuva'),
-(10, 11023, '2001-07', '2000 cm³, 129 AG (95kW)', 2, 1, NULL, 'Automatinė', NULL, NULL, 'Kairėje', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'Elektronika: Autopilotas\nEksterjeras: Lengvojo lydinio ratlankiai\nKiti ypatumai: Neeksploatuota Lietuvoje\n', NULL, 49, NULL, 1490, NULL, NULL, 10635435, NULL, 3, 'https://autoplius.lt/skelbimai/audi-a4-2-0-l-sedanas-2001-benzinas-10635435.html', 'https://autoplius-img.dgn.lt/ann_3_105358967/audi-a4-2-0-l-sedanas-2001-benzinas.jpg', 215000, 'Utena, Lietuva'),
-(10, 11023, '2000-12', '2000 cm³, 130 AG (96kW)', 2, 1, NULL, 'Automatinė', NULL, 'Pavarų dėžės defektas', 'Kairėje', NULL, NULL, NULL, NULL, '2021-10-01', NULL, NULL, NULL, NULL, NULL, 'Kiti ypatumai: Domina keitimas\n', 'Greiciu dezes elektronines dalies gedimas', 50, NULL, 1000, NULL, NULL, 10557487, NULL, 3, 'https://autoplius.lt/skelbimai/audi-a4-2-0-l-sedanas-2000-benzinas-10557487.html', 'https://autoplius-img.dgn.lt/ann_3_104466375/audi-a4-2-0-l-sedanas-2000-benzinas.jpg', 274533, 'Birštonas, Lietuva'),
-(10, 11023, '2003-11', '1781 cm³, 169 AG (125kW)', 2, 1, NULL, 'Mechaninė', 'Visi varantys ratai', NULL, 'Kairėje', NULL, NULL, NULL, 5, '2022-02-01', 1503, 'R17', NULL, NULL, NULL, 'Salonas: Šildomos sėdynės, Odinis salonas, Stoglangis\nElektronika: Borto kompiuteris, Atstumo jutiklių sistema, Autopilotas\nAudio/video įranga: CD grotuvas, Žemų dažnių garsiakalbis\nTiuningas (patobulinimai): Patobulinta pakaba\nEksterjeras: Žibintai „Xenon“, Rūko žibintai, Kablys, Priekinių žibintų plovimo įtaisas\nSaugumas: ESP, ISOFIX tvirtinimo taškai\n', '1.8T Quattro, S4 moldingai, slenksčiai.', 51, NULL, 2650, NULL, NULL, 10819209, NULL, 3, 'https://autoplius.lt/skelbimai/audi-a4-1-8-l-sedanas-2003-benzinas-10819209.html', 'https://autoplius-img.dgn.lt/ann_3_109243017/audi-a4-1-8-l-sedan-2003-benzin.jpg', 234200, 'Vilnius, Lietuva'),
-(10, 11023, '2002-12', '2000 cm³, 130 AG (96kW)', 2, 1, NULL, 'Mechaninė', 'Priekiniai varantys ratai', NULL, 'Kairėje', NULL, NULL, NULL, NULL, '2022-04-01', NULL, 'R16', NULL, NULL, NULL, 'Elektronika: El. valdomi veidrodėliai, Borto kompiuteris, Kritulių jutiklis, Šildomi veidrodėliai, Autopilotas\nApsauga: Imobilaizeris, Signalizacija\nAudio/video įranga: CD grotuvas\nEksterjeras: Rūko žibintai, Kablys\nKiti ypatumai: Neeksploatuota Lietuvoje, Parduodama lizingu\nSaugumas: Traukos kontrolės sistema, ESP\n', 'REGISTRA REGISTRUOJA!', 52, NULL, 1750, NULL, NULL, 10823217, NULL, 3, 'https://autoplius.lt/skelbimai/audi-a4-2-0-l-sedanas-2002-benzinas-10823217.html', 'https://autoplius-img.dgn.lt/ann_3_107664257/audi-a4-2-0-l-sedanas-2002-benzinas.jpg', 230000, 'Vilnius, Lietuva'),
-(10, 11023, '2001', '2000 cm³, 130 AG (96kW)', 2, 1, NULL, 'Mechaninė', 'Priekiniai varantys ratai', NULL, 'Kairėje', NULL, NULL, NULL, NULL, '2021-09-01', NULL, NULL, NULL, NULL, NULL, '', 'Tvarkinga audi pakeisti visi stabdžių diskai su kaladėm, suportas galinis, tepalai filtrai, kaires puses naujas sparnas,nesenei pakeistas pagr diržo komplektas,įdeta galine kamera su vaizdo registratorium (VORDON)', 53, NULL, 1350, NULL, NULL, 11020093, NULL, 3, 'https://autoplius.lt/skelbimai/audi-a4-2-0-l-sedanas-2001-benzinas-11020093.html', 'https://autoplius-img.dgn.lt/ann_3_110668055/audi-a4-2-0-l-sedanas-2001-benzinas.jpg', 330000, 'Kaunas, Lietuva'),
-(10, 11023, '2002-01', '2000 cm³, 130 AG (96kW)', 2, 1, NULL, 'Mechaninė', 'Priekiniai varantys ratai', NULL, 'Kairėje', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'Salonas: Tamsinti stiklai, Daugiafunkcinis vairas, Šildomos sėdynės\nElektronika: El. valdomi veidrodėliai, Šildomi veidrodėliai\nAudio/video įranga: CD grotuvas\nEksterjeras: Lengvojo lydinio ratlankiai, Kablys\nKiti ypatumai: Neeksploatuota Lietuvoje, Katalizatorius\nSaugumas: ESP\n', NULL, 54, NULL, 1450, 1450, NULL, 10807795, NULL, 3, 'https://autoplius.lt/skelbimai/audi-a4-2-0-l-sedanas-2002-benzinas-10807795.html', NULL, NULL, 'Telšiai, Lietuva'),
-(10, 11023, '2000-05', '1800 cm³, 125 AG (92kW)', 2, 1, NULL, 'Automatinė', 'Priekiniai varantys ratai', NULL, 'Kairėje', NULL, NULL, NULL, 5, NULL, NULL, 'R15', NULL, NULL, NULL, 'Salonas: Stoglangis\nElektronika: El. valdomi veidrodėliai, Borto kompiuteris, Šildomi veidrodėliai, Atstumo jutiklių sistema\nApsauga: Signalizacija\nAudio/video įranga: CD grotuvas, MP3 grotuvas\nEksterjeras: Žibintai „Xenon“, Rūko žibintai, Priekinių žibintų plovimo įtaisas\nKiti ypatumai: Neeksploatuota Lietuvoje, Katalizatorius\nSaugumas: Traukos kontrolės sistema, ESP\n', 'Automobilis iš Vokietijos, tvarkingas', 55, NULL, 1350, 1350, NULL, 10628187, NULL, 3, 'https://autoplius.lt/skelbimai/audi-a4-1-8-l-sedanas-2000-benzinas-10628187.html', 'https://autoplius-img.dgn.lt/ann_3_105319625/audi-a4-1-8-l-sedanas-2000-benzinas.jpg', 218706, 'Marijampolė, Lietuva'),
-(10, 11023, '2001-12', '1984 cm³, 130 AG (96kW)', 2, 1, NULL, 'Automatinė', 'Priekiniai varantys ratai', NULL, 'Kairėje', NULL, NULL, NULL, 5, NULL, 1345, 'R16', 9.9, 5.2, 6.9, 'Elektronika: El. valdomi veidrodėliai, Borto kompiuteris, Kritulių jutiklis, Šildomi veidrodėliai, Atstumo jutiklių sistema\nApsauga: Imobilaizeris, Signalizacija\nAudio/video įranga: CD grotuvas, MP3 grotuvas, AUX jungtis\nEksterjeras: Lengvojo lydinio ratlankiai\nKiti ypatumai: Neeksploatuota Lietuvoje, Parduodama lizingu, Serviso knygelė, Katalizatorius, Keli raktų komplektai\nSaugumas: ESP, ISOFIX tvirtinimo taškai\n', 'AUTOMOBILIS PARVEZTAS IS VOKIETIJOS!', 56, NULL, 1750, 1750, NULL, 11004955, NULL, 3, 'https://autoplius.lt/skelbimai/audi-a4-2-0-l-sedanas-2001-benzinas-11004955.html', 'https://autoplius-img.dgn.lt/ann_3_110371093/audi-a4-2-0-l-sedanas-2001-benzinas.jpg', 200000, 'Marijampolė, Lietuva'),
-(10, 11023, '2001', '1595 cm³, 118 AG (87kW)', 2, 1, NULL, 'Mechaninė', 'Priekiniai varantys ratai', NULL, 'Kairėje', NULL, NULL, NULL, 5, NULL, 1245, NULL, 10.8, 6.1, 7.7, 'Eksterjeras: Lengvojo lydinio ratlankiai\n', NULL, 57, NULL, 1800, 1800, '', 10584773, NULL, 3, 'https://autoplius.lt/skelbimai/audi-a4-1-6-l-sedanas-2001-benzinas-10584773.html', 'https://autoplius-img.dgn.lt/ann_3_104840867/audi-a4-1-6-l-sedanas-2001-benzinas.jpg', 248000, 'Kaunas, Lietuva'),
-(10, 11023, '2003-01', '1984 cm³, 130 AG (96kW)', 2, 1, NULL, 'Mechaninė', 'Priekiniai varantys ratai', NULL, 'Kairėje', NULL, NULL, NULL, 5, '2022-04-01', 1340, 'R16', 11.5, 6, 8, 'Salonas: Tamsinti stiklai, Daugiafunkcinis vairas\nElektronika: El. valdomi veidrodėliai, Borto kompiuteris, Kritulių jutiklis, Šildomi veidrodėliai, Atstumo jutiklių sistema, Autopilotas\nApsauga: Imobilaizeris, Signalizacija\nAudio/video įranga: CD grotuvas, MP3 grotuvas, Laisvų rankų įranga\nEksterjeras: Lengvojo lydinio ratlankiai, Rūko žibintai, Žieminių padangų komplektas\nKiti ypatumai: Neeksploatuota Lietuvoje, Parduodama lizingu, Serviso knygelė, Garantija, Katalizatorius, Keli raktų komplektai\nSaugumas: Traukos kontrolės sistema, ESP, ISOFIX tvirtinimo taškai\n', 'Is vokietijos', 58, NULL, 1999, 1999, NULL, 10119147, NULL, 3, 'https://autoplius.lt/skelbimai/audi-a4-2-0-l-sedanas-2003-benzinas-10119147.html', NULL, 290, 'Jurbarkas, Lietuva'),
-(10, 11023, '2002', '1984 cm³, 149 AG (110kW)', 2, 1, NULL, 'Automatinė', 'Priekiniai varantys ratai', NULL, 'Kairėje', NULL, NULL, NULL, 5, NULL, 1350, NULL, 9.9, 5.4, 7.1, 'Salonas: Odinis salonas\nElektronika: El. valdomi veidrodėliai, Borto kompiuteris, Kritulių jutiklis, Atstumo jutiklių sistema, Autopilotas\nApsauga: Imobilaizeris, Signalizacija\nAudio/video įranga: CD grotuvas\nEksterjeras: Lengvojo lydinio ratlankiai, Rūko žibintai\nKiti ypatumai: Neeksploatuota Lietuvoje, Serviso knygelė\nSaugumas: Traukos kontrolės sistema, ESP\n', NULL, 59, NULL, 1650, 1650, NULL, 9456087, NULL, 3, 'https://autoplius.lt/skelbimai/audi-a4-2-0-l-sedanas-2002-benzinas-9456087.html', 'https://autoplius-img.dgn.lt/ann_3_91705301/audi-a4-2-0-l-sedanas-2002-benzinas.jpg', 230000, 'Tauragė, Lietuva'),
-(10, 11023, '2002-08', '1984 cm³, 130 AG (96kW)', 2, 1, NULL, 'Automatinė', 'Priekiniai varantys ratai', NULL, 'Kairėje', NULL, NULL, NULL, 5, NULL, 1345, NULL, 10.9, 6.2, 7.9, 'Elektronika: El. valdomi veidrodėliai, Šildomi veidrodėliai, Atstumo jutiklių sistema, Autopilotas\nApsauga: Imobilaizeris, Signalizacija\nAudio/video įranga: CD grotuvas\nEksterjeras: Lengvojo lydinio ratlankiai, Kablys\n', NULL, 60, NULL, 1650, NULL, NULL, 10692837, NULL, 3, 'https://autoplius.lt/skelbimai/audi-a4-2-0-l-sedanas-2002-benzinas-10692837.html', 'https://autoplius-img.dgn.lt/ann_3_106034107/audi-a4-2-0-l-sedanas-2002-benzinas.jpg', NULL, 'Marijampolė, Lietuva'),
-(10, 11023, '2003', '1984 cm³, 130 AG (96kW)', 2, 1, NULL, 'Automatinė', 'Priekiniai varantys ratai', NULL, 'Kairėje', NULL, NULL, NULL, 5, '2022-03-01', 1345, 'R16', 10.9, 6.2, 7.9, 'Salonas: Odinis salonas\n', 'Sveiki,', 61, NULL, 1600, NULL, NULL, 10650755, NULL, 3, 'https://autoplius.lt/skelbimai/audi-a4-2-0-l-sedanas-2003-benzinas-10650755.html', 'https://autoplius-img.dgn.lt/ann_3_105560093/audi-a4-2-0-l-sedanas-2003-benzinas.jpg', 380000, 'Vilnius, Lietuva'),
-(10, 11023, '2002-09', '1984 cm³, 130 AG (96kW)', 2, 1, NULL, 'Automatinė', 'Priekiniai varantys ratai', 'Kiti stambūs defektai', 'Kairėje', NULL, NULL, NULL, 5, '2020-05-01', 1345, 'R15', 10.9, 6.2, 7.9, 'Eksterjeras: Lengvojo lydinio ratlankiai\n', 'Variklio tepalai pakeisti prieš ~2 mėn. Variklis ir greičių dėžė veikia gerai. Pridedu vasarinius ratus su lengvojo lydinio ratlankiais.', 62, NULL, 1500, 1500, NULL, 10580499, NULL, 3, 'https://autoplius.lt/skelbimai/audi-a4-2-0-l-sedanas-2002-benzinas-10580499.html', 'https://autoplius-img.dgn.lt/ann_3_104764743/audi-a4-2-0-l-sedanas-2002-benzinas.jpg', NULL, 'Vilnius, Lietuva'),
-(10, 11023, '2002-01', '2400 cm³, 169 AG (125kW)', 2, 1, NULL, 'Automatinė', 'Priekiniai varantys ratai', NULL, 'Kairėje', NULL, NULL, NULL, 5, NULL, 1550, NULL, 10, 8, 9, 'Salonas: Tamsinti stiklai, Daugiafunkcinis vairas, Odinis salonas\nElektronika: El. valdomi veidrodėliai\nApsauga: Imobilaizeris\nAudio/video įranga: CD grotuvas\nEksterjeras: Lengvojo lydinio ratlankiai\nSaugumas: ESP\n', '', 63, NULL, 1199, NULL, '', 10785299, NULL, 3, 'https://autoplius.lt/skelbimai/audi-a4-2-4-l-sedanas-2002-benzinas-10785299.html', 'https://autoplius-img.dgn.lt/ann_3_107128959/audi-a4-2-4-l-sedanas-2002-benzinas.jpg', 261000, 'Tallinn, Estija'),
-(10, 11023, '2002-01', '1984 cm³, 130 AG (96kW)', 2, 1, NULL, 'Automatinė', 'Priekiniai varantys ratai', NULL, 'Kairėje', NULL, NULL, NULL, 5, NULL, 1345, NULL, NULL, 6.2, 7.9, 'Elektronika: Autopilotas\nEksterjeras: Lengvojo lydinio ratlankiai, Kablys\nKiti ypatumai: Neeksploatuota Lietuvoje\n', NULL, 64, NULL, 1600, NULL, NULL, 10742107, NULL, 3, 'https://autoplius.lt/skelbimai/audi-a4-2-0-l-sedanas-2002-benzinas-10742107.html', 'https://autoplius-img.dgn.lt/ann_3_106674367/audi-a4-2-0-l-sedanas-2002-benzinas.jpg', NULL, 'Kaunas, Lietuva'),
-(10, 11023, '2000', '1595 cm³, 100 AG (74kW)', 2, 1, NULL, 'Mechaninė', 'Priekiniai varantys ratai', NULL, 'Kairėje', NULL, NULL, NULL, 5, NULL, 1185, 'R15', NULL, NULL, 8, '', 'Naujos stabdžiu kaladės, žvakės, filtrai, tepalai. Tvarkingas automobilis. Paruoštas naudojimui. Daugiau info telefonu  860062493', 65, NULL, 1450, NULL, NULL, 10699091, NULL, 3, 'https://autoplius.lt/skelbimai/audi-a4-1-6-l-sedanas-2000-benzinas-10699091.html', 'https://autoplius-img.dgn.lt/ann_3_106117589/audi-a4-1-6-l-sedan-2000-benzin.jpg', 231000, 'Vilnius, Lietuva'),
-(10, 11023, '2001-10', '2000 cm³', 2, 1, NULL, 'Automatinė', NULL, NULL, 'Kairėje', NULL, NULL, NULL, NULL, '2022-01-01', NULL, NULL, NULL, NULL, NULL, 'Salonas: Tamsinti stiklai\nEksterjeras: Lengvojo lydinio ratlankiai, Kablys\n', 'Nesenai Lietuvoje, būklė gera.', 66, NULL, 1600, NULL, NULL, 10615947, NULL, 3, 'https://autoplius.lt/skelbimai/audi-a4-2-0-l-sedanas-2001-benzinas-10615947.html', 'https://autoplius-img.dgn.lt/ann_3_105697679/audi-a4-2-0-l-sedanas-2001-benzinas.jpg', 200000, 'Kaunas, Lietuva'),
-(10, 11023, '2000-04', '1800 cm³, 125 AG (92kW)', 2, 1, NULL, 'Automatinė', 'Priekiniai varantys ratai', NULL, 'Kairėje', NULL, NULL, NULL, NULL, '2021-05-01', NULL, 'R15', NULL, NULL, NULL, 'Elektronika: El. valdomi veidrodėliai, Šildomi veidrodėliai, Navigacija/GPS\nApsauga: Imobilaizeris\nAudio/video įranga: CD grotuvas, CD keitiklis, Laisvų rankų įranga\nEksterjeras: Rūko žibintai, Kablys, Žieminių padangų komplektas\nKiti ypatumai: Serviso knygelė, Katalizatorius\n', 'Parduodu tvarkinga audi a4 facelift modelis, AUTOMATAS, metai lietuvoj, parvaryta is vokietijos, pakeisti tepalai, filtrai, praeita TA, 2021, juokiu defektu, stovis tikrai geras, salonas kaip naujas, daug privalumu, oro kondicionerius, el.langai, changeris, vazioja puikia, cinkotas kebulas, jokiu rudziu, keli pabraizimai, sedi ir vazioji, juokiu papildomu investiciju, galit tikrinti servise.parduodu nes su vaiku per maza.', 67, NULL, 1850, NULL, NULL, 10882751, NULL, 3, 'https://autoplius.lt/skelbimai/audi-a4-1-8-l-sedanas-2000-benzinas-10882751.html', 'https://autoplius-img.dgn.lt/ann_3_108569371/audi-a4-1-8-l-sedanas-2000-benzinas.jpg', 208000, 'Klaipėda, Lietuva'),
-(10, 11023, '2002-01', '2000 cm³, 130 AG (96kW)', 2, 1, NULL, 'Mechaninė', 'Priekiniai varantys ratai', NULL, 'Kairėje', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'Salonas: Tamsinti stiklai, Daugiafunkcinis vairas, Šildomos sėdynės\nElektronika: El. valdomi veidrodėliai, Šildomi veidrodėliai, Autopilotas\nAudio/video įranga: CD grotuvas\nEksterjeras: Lengvojo lydinio ratlankiai, Rūko žibintai, Kablys\nKiti ypatumai: Neeksploatuota Lietuvoje, Katalizatorius\nSaugumas: ESP\n', NULL, 68, NULL, 1450, 1450, NULL, 11027521, NULL, 3, 'https://autoplius.lt/skelbimai/audi-a4-2-0-l-sedanas-2002-benzinas-11027521.html', 'https://autoplius-img.dgn.lt/ann_3_110815121/audi-a4-2-0-l-sedanas-2002-benzinas.jpg', NULL, 'Telšiai, Lietuva'),
-(10, 11023, '2001/12', '2.0 l. 96 kW (131 Ag)', 2, 1, 'Sidabrinė', 'Automatinė', 'Priekiniai varantys ratai', 'Be defektų', 'Kairėje', '4/5', NULL, NULL, 5, NULL, NULL, 'R16', NULL, NULL, NULL, 'El. langai, Klimato kontrolė, Audio grotuvas, Oro pagalvės', 'Tvarkingas automobilis,  kėbulas turi smulkių kosmetinių defektų.', 69, 133082690, 1350, NULL, NULL, NULL, NULL, 3, 'https://autogidas.lt/skelbimas/audi-a4-benzinas--2001-m-b6-0133082690.html', 'https://img.autogidas.lt/4_15_173696851/audi-a4-b6-sedanas-2001.jpg', 272000, 'Lietuva, Marijampolė');
+CREATE TABLE `car_pictures` (
+  `car_id` int(11) NOT NULL,
+  `picture_href` varchar(500) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -154,26 +131,17 @@ CREATE TABLE `car_queries` (
   `year_to` int(11) DEFAULT NULL,
   `power_from` int(11) DEFAULT NULL,
   `power_to` int(11) DEFAULT NULL,
-  `user_id` int(11) NOT NULL
+  `user_id` int(11) NOT NULL,
+  `city_id` int(11) DEFAULT NULL,
+  `sites` set('autogidas','autoplius','autobilis') DEFAULT NULL,
+  `scrape_interval` int(11) DEFAULT NULL,
+  `last_scraped` bigint(20) DEFAULT NULL,
+  `was_scraped` tinyint(1) DEFAULT NULL,
+  `currently_scraping` tinyint(1) NOT NULL DEFAULT '0',
+  `gearbox` enum('Automatinė','Mechaninė') DEFAULT NULL,
+  `driven_wheels` enum('Priekiniai varantys ratai','Galiniai varantys ratai','Visi varantys ratai') DEFAULT NULL,
+  `steering_column` enum('Kairėje','Dešinėje') DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
---
--- Dumping data for table `car_queries`
---
-
-INSERT INTO `car_queries` (`id`, `price_from`, `price_to`, `year_from`, `search_term`, `year_to`, `power_from`, `power_to`, `user_id`) VALUES
-(1, 1000, 2000, 2000, 'audi', 2010, NULL, NULL, 1),
-(3, 1000, 3000, 2000, NULL, 2005, NULL, NULL, 1),
-(6, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 1),
-(7, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 1),
-(8, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 1),
-(9, NULL, NULL, NULL, 'test', NULL, NULL, NULL, 1),
-(12, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 1),
-(13, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 1),
-(14, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 1),
-(15, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 1),
-(19, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 1),
-(21, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 1);
 
 -- --------------------------------------------------------
 
@@ -304,7 +272,7 @@ CREATE TABLE `makes` (
 --
 
 INSERT INTO `makes` (`make`, `id`, `autoplius_make_id`, `autobilis_make_id`) VALUES
-('All', 1, NULL, NULL),
+('Visos markės', 1, NULL, NULL),
 ('AC', 2, 105, 136),
 ('Acura', 3, 104, 9002),
 ('Aixam', 4, 108, 137),
@@ -509,6 +477,20 @@ INSERT INTO `makes` (`make`, `id`, `autoplius_make_id`, `autobilis_make_id`) VAL
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `messages`
+--
+
+CREATE TABLE `messages` (
+  `id` int(11) NOT NULL,
+  `user_id` int(11) NOT NULL,
+  `title` varchar(200) NOT NULL,
+  `text` text NOT NULL,
+  `timestamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `models`
 --
 
@@ -599,7 +581,6 @@ INSERT INTO `models` (`model_name`, `make_id`, `autobilis_model_id`, `autoplius_
 ('S3', 15, 1347, NULL, 6155),
 ('Turbo RT', 15, NULL, NULL, 6157),
 ('Turbo S', 15, NULL, NULL, 6158),
-('Series 1', 16, NULL, NULL, 6161),
 ('114', 16, NULL, NULL, 6162),
 ('116', 16, NULL, NULL, 6163),
 ('118', 16, NULL, NULL, 6164),
@@ -609,7 +590,6 @@ INSERT INTO `models` (`model_name`, `make_id`, `autobilis_model_id`, `autoplius_
 ('128', 16, NULL, NULL, 6168),
 ('130', 16, NULL, NULL, 6169),
 ('135', 16, NULL, NULL, 6170),
-('Seria 2', 16, NULL, NULL, 6171),
 ('214 Active Tourer', 16, NULL, NULL, 6172),
 ('214 Gran Tourer', 16, NULL, NULL, 6173),
 ('216 Active Tourer', 16, NULL, NULL, 6174),
@@ -625,7 +605,6 @@ INSERT INTO `models` (`model_name`, `make_id`, `autobilis_model_id`, `autoplius_
 ('225 Active Tourer', 16, NULL, NULL, 6184),
 ('228', 16, NULL, NULL, 6185),
 ('230', 16, NULL, NULL, 6186),
-('Series 3', 16, NULL, NULL, 6187),
 ('315', 16, NULL, NULL, 6188),
 ('316', 16, NULL, NULL, 6189),
 ('318', 16, NULL, NULL, 6190),
@@ -650,7 +629,6 @@ INSERT INTO `models` (`model_name`, `make_id`, `autobilis_model_id`, `autoplius_
 ('335 Gran Turismo', 16, NULL, NULL, 6209),
 ('340', 16, NULL, NULL, 6210),
 ('346', 16, NULL, NULL, 6211),
-('Series 4', 16, NULL, NULL, 6212),
 ('418 Gran Coupe', 16, NULL, NULL, 6213),
 ('420', 16, 8920, NULL, 6214),
 ('420 Gran Coupe', 16, NULL, NULL, 6215),
@@ -663,7 +641,6 @@ INSERT INTO `models` (`model_name`, `make_id`, `autobilis_model_id`, `autoplius_
 ('435', 16, NULL, NULL, 6222),
 ('435 Gran Coupe', 16, NULL, NULL, 6223),
 ('440', 16, NULL, NULL, 6224),
-('Series 5', 16, NULL, NULL, 6225),
 ('518', 16, NULL, NULL, 6226),
 ('520', 16, NULL, NULL, 6227),
 ('520 Gran Turismo', 16, NULL, NULL, 6228),
@@ -681,7 +658,6 @@ INSERT INTO `models` (`model_name`, `make_id`, `autobilis_model_id`, `autoplius_
 ('550 Gran Turismo', 16, NULL, NULL, 6240),
 ('5GT (F07)', 16, NULL, NULL, 6241),
 ('Active Hybrid 5', 16, NULL, NULL, 6242),
-('Series 6', 16, NULL, NULL, 6243),
 ('628', 16, NULL, NULL, 6244),
 ('630', 16, NULL, NULL, 6245),
 ('630 Gran Turismo', 16, NULL, NULL, 6246),
@@ -694,7 +670,6 @@ INSERT INTO `models` (`model_name`, `make_id`, `autobilis_model_id`, `autoplius_
 ('645', 16, NULL, NULL, 6253),
 ('650', 16, NULL, NULL, 6254),
 ('650 Gran Coupe', 16, NULL, NULL, 6255),
-('Series 7', 16, NULL, NULL, 6256),
 ('725', 16, NULL, NULL, 6257),
 ('728', 16, NULL, NULL, 6258),
 ('730', 16, NULL, NULL, 6259),
@@ -705,15 +680,12 @@ INSERT INTO `models` (`model_name`, `make_id`, `autobilis_model_id`, `autoplius_
 ('750', 16, NULL, NULL, 6264),
 ('760', 16, NULL, NULL, 6265),
 ('Active Hybrid 7', 16, NULL, NULL, 6266),
-('Series 8', 16, NULL, NULL, 6267),
 ('840', 16, NULL, NULL, 6268),
 ('850', 16, NULL, NULL, 6269),
-('Series i', 16, NULL, NULL, 6270),
 ('i3', 16, 8919, NULL, 6271),
 ('i3 REx', 16, NULL, NULL, 6272),
-('i8', 16, 9960, NULL, 6273),
+('i8', 16, 9960, 19808, 6273),
 ('iX3', 16, NULL, NULL, 6274),
-('Series M', 16, NULL, NULL, 6275),
 ('M1', 16, 10125, NULL, 6276),
 ('M135i', 16, NULL, NULL, 6277),
 ('M2', 16, 10126, NULL, 6278),
@@ -729,7 +701,6 @@ INSERT INTO `models` (`model_name`, `make_id`, `autobilis_model_id`, `autoplius_
 ('X6M', 16, NULL, NULL, 6288),
 ('Z3M', 16, NULL, NULL, 6289),
 ('Z4 M', 16, 10142, NULL, 6290),
-('Series X', 16, NULL, NULL, 6291),
 ('X1', 16, 10130, NULL, 6292),
 ('X2', 16, 10131, NULL, 6293),
 ('X3', 16, 10132, NULL, 6294),
@@ -737,7 +708,6 @@ INSERT INTO `models` (`model_name`, `make_id`, `autobilis_model_id`, `autoplius_
 ('X5', 16, 10133, NULL, 6296),
 ('X6', 16, 10135, NULL, 6297),
 ('X7', 16, 10137, NULL, 6298),
-('Series Z', 16, NULL, NULL, 6299),
 ('Z1', 16, 10138, NULL, 6300),
 ('Z3', 16, 10139, NULL, 6301),
 ('Z4', 16, 10141, NULL, 6302),
@@ -1485,7 +1455,7 @@ INSERT INTO `models` (`model_name`, `make_id`, `autobilis_model_id`, `autoplius_
 ('1000', 102, NULL, NULL, 8235),
 ('Chieftain', 102, NULL, NULL, 8240),
 ('Firebird / Trans Am', 102, NULL, NULL, 8242),
-('G5', 102, NULL, NULL, 8243),
+('G5', 102, NULL, 27777, 8243),
 ('Le Mans', 102, NULL, NULL, 8249),
 ('718', 103, NULL, NULL, 8261),
 ('962', 103, NULL, NULL, 8269),
@@ -1841,23 +1811,23 @@ INSERT INTO `models` (`model_name`, `make_id`, `autobilis_model_id`, `autoplius_
 ('Mulsanne', 15, 1343, 16210, 11076),
 ('S1', 15, 1345, 15968, 11077),
 ('Turbo R', 15, 1350, 25165, 11078),
-('1 serija', 16, NULL, 1318, 11079),
+('Serija 1', 16, 1832, 1318, 11079),
 ('1502', 16, NULL, 25036, 11080),
 ('1602', 16, NULL, 25033, 11081),
 ('1802', 16, NULL, 25035, 11082),
-('2 serija', 16, NULL, 19786, 11083),
+('Serija 2', 16, 9931, 19786, 11083),
 ('2002', 16, NULL, 25034, 11084),
 ('2800CS', 16, NULL, 18456, 11085),
-('3 serija', 16, NULL, 1319, 11086),
-('4 serija', 16, NULL, 18817, 11087),
-('5 serija', 16, NULL, 1313, 11088),
-('6 serija', 16, NULL, 1320, 11089),
-('7 serija', 16, NULL, 1315, 11090),
-('8 serija', 16, NULL, 1314, 11091),
-('i serija', 16, NULL, 19805, 11092),
-('M serija', 16, NULL, 11127, 11093),
-('X serija', 16, NULL, 11131, 11094),
-('Z serija', 16, NULL, 11133, 11095),
+('Serija 3', 16, 1840, 1319, 11086),
+('Serija 4', 16, 9946, 18817, 11087),
+('Serija 5', 16, 1852, 1313, 11088),
+('Serija 6', 16, 1866, 1320, 11089),
+('Serija 7', 16, 1874, 1315, 11090),
+('Serija 8', 16, 1884, 1314, 11091),
+('Serija i', 16, 10646, 19805, 11092),
+('Serija M', 16, 1887, 11127, 11093),
+('Serija X', 16, 1893, 11131, 11094),
+('Serija Z', 16, 1900, 11133, 11095),
 ('Bluecar', 148, NULL, 29867, 11096),
 ('Andere', 17, NULL, 19324, 11098),
 ('BC3', 17, NULL, 19320, 11099),
@@ -2067,8 +2037,7 @@ INSERT INTO `models` (`model_name`, `make_id`, `autobilis_model_id`, `autoplius_
 ('Tico', 30, 10210, 1142, 11309),
 ('33', 31, NULL, 25078, 11310),
 ('44', 31, NULL, 25076, 11311),
-('46', 31, NULL, 25079, 11312);
-INSERT INTO `models` (`model_name`, `make_id`, `autobilis_model_id`, `autoplius_model_id`, `id`) VALUES
+('46', 31, NULL, 25079, 11312),
 ('55', 31, NULL, 25074, 11313),
 ('600', 31, NULL, 25077, 11314),
 ('66', 31, NULL, 25075, 11315),
@@ -2080,7 +2049,8 @@ INSERT INTO `models` (`model_name`, `make_id`, `autobilis_model_id`, `autoplius_
 ('Cuore', 32, 10218, 1131, 11321),
 ('Delta', 32, NULL, 1130, 11322),
 ('Feroza', 32, 10220, 1129, 11323),
-('Freeclimber', 32, NULL, 16226, 11324),
+('Freeclimber', 32, NULL, 16226, 11324);
+INSERT INTO `models` (`model_name`, `make_id`, `autobilis_model_id`, `autoplius_model_id`, `id`) VALUES
 ('Gran Move', 32, 10221, 1128, 11325),
 ('Hi Jet', 32, NULL, 1127, 11326),
 ('Leeza', 32, 10222, 1126, 11327),
@@ -2193,7 +2163,7 @@ INSERT INTO `models` (`model_name`, `make_id`, `autobilis_model_id`, `autoplius_
 ('500 Abarth', 40, NULL, 19618, 11435),
 ('500L', 40, 9911, 19845, 11436),
 ('500X', 40, 9912, 24616, 11437),
-('850 Spider ', 40, NULL, 18459, 11438),
+('850 Spider', 40, NULL, 18459, 11438),
 ('Albea', 40, 838, 1067, 11439),
 ('Barchetta', 40, 839, 1064, 11440),
 ('Brava', 40, 840, 1063, 11441),
@@ -2854,12 +2824,12 @@ INSERT INTO `models` (`model_name`, `make_id`, `autobilis_model_id`, `autoplius_
 ('Citan', 83, 9919, 18625, 12112),
 ('CLA klasė', 83, NULL, 18761, 12114),
 ('GLB klasė', 83, NULL, 30185, 12122),
-('GLC Coupe klasė ', 83, NULL, 25129, 12123),
+('GLC Coupe klasė', 83, NULL, 25129, 12123),
 ('GLC klasė', 83, NULL, 24684, 12124),
 ('GLE Coupe klasė', 83, NULL, 24694, 12125),
 ('GLE klasė', 83, NULL, 24587, 12126),
 ('GLK class', 83, NULL, 10857, 12127),
-('GLS klasė ', 83, NULL, 24772, 12128),
+('GLS klasė', 83, NULL, 24772, 12128),
 ('M klasė', 83, NULL, 680, 12129),
 ('class', 83, NULL, 11214, 12130),
 ('R klasė', 83, NULL, 688, 12131),
@@ -2904,7 +2874,7 @@ INSERT INTO `models` (`model_name`, `make_id`, `autobilis_model_id`, `autoplius_
 ('ZR', 85, 1243, 654, 12170),
 ('ZS', 85, 1244, 653, 12171),
 ('ZT', 85, 1245, 652, 12172),
-('Mc 1 ', 86, NULL, 16129, 12173),
+('Mc 1', 86, NULL, 16129, 12173),
 ('Mgo', 86, NULL, 24768, 12174),
 ('1000', 87, NULL, 16338, 12176),
 ('1300', 87, NULL, 16340, 12177),
@@ -3156,7 +3126,6 @@ INSERT INTO `models` (`model_name`, `make_id`, `autobilis_model_id`, `autoplius_
 ('Neon', 100, 1139, 17212, 12426),
 ('Prowler', 100, 1140, 476, 12427),
 ('Voyager', 100, 1141, 474, 12428),
-(' G5', 102, NULL, 27777, 12429),
 ('6000', 102, NULL, 21495, 12430),
 ('Aztek', 102, 1008, 466, 12431),
 ('Bonneville', 102, 1009, 465, 12432),
@@ -3574,8 +3543,7 @@ INSERT INTO `models` (`model_name`, `make_id`, `autobilis_model_id`, `autoplius_
 ('Polo Cross', 134, NULL, 29905, 12860),
 ('Rabbit', 134, 10631, 16144, 12861),
 ('Routan', 134, 10632, 16542, 12862),
-('Santana', 134, 10047, 183, 12863);
-INSERT INTO `models` (`model_name`, `make_id`, `autobilis_model_id`, `autoplius_model_id`, `id`) VALUES
+('Santana', 134, 10047, 183, 12863),
 ('Scirocco', 134, 1049, 182, 12864),
 ('Sharan', 134, 1050, 181, 12865),
 ('T-Cross', 134, NULL, 28987, 12866),
@@ -3587,7 +3555,8 @@ INSERT INTO `models` (`model_name`, `make_id`, `autobilis_model_id`, `autoplius_
 ('Touran', 134, 1053, 178, 12872),
 ('Transporter', 134, 8589, 202, 12873),
 ('Up', 134, 1054, 17283, 12874),
-('Vento', 134, 1055, 177, 12875),
+('Vento', 134, 1055, 177, 12875);
+INSERT INTO `models` (`model_name`, `make_id`, `autobilis_model_id`, `autoplius_model_id`, `id`) VALUES
 ('240', 135, 738, 171, 12876),
 ('244', 135, 739, 16401, 12877),
 ('245', 135, 740, 16402, 12878),
@@ -3670,27 +3639,15 @@ INSERT INTO `models` (`model_name`, `make_id`, `autobilis_model_id`, `autoplius_
 ('R Type', 15, 1344, NULL, 13624),
 ('Speed Six', 15, 1348, NULL, 13625),
 ('T-series', 15, 1349, NULL, 13626),
-('1 Series', 16, 1832, NULL, 13627),
 ('1M', 16, 10123, NULL, 13628),
-('2 Series', 16, 9931, NULL, 13629),
 ('2 Series Active Tourer', 16, 10124, NULL, 13630),
-('3 Series', 16, 1840, NULL, 13631),
-('4 Series', 16, 9946, NULL, 13632),
-('5 Series', 16, 1852, NULL, 13633),
-('6 Series', 16, 1866, NULL, 13634),
-('7 Series', 16, 1874, NULL, 13635),
-('8 Series', 16, 1884, NULL, 13636),
 ('GT 320', 16, 10641, NULL, 13637),
 ('GT 325', 16, 10642, NULL, 13638),
 ('GT 330', 16, 10643, NULL, 13639),
 ('GT 335', 16, 10644, NULL, 13640),
 ('GT series', 16, 10645, NULL, 13641),
-('i series', 16, 10646, NULL, 13642),
-('M Series', 16, 1887, NULL, 13643),
-('X Series', 16, 1893, NULL, 13644),
 ('X5 M', 16, 10134, NULL, 13645),
 ('X6 M', 16, 10136, NULL, 13646),
-('Z Series', 16, 1900, NULL, 13647),
 ('Z3 M', 16, 10140, NULL, 13648),
 ('Blenheim', 178, 10144, NULL, 13649),
 ('Fighter', 178, 10145, NULL, 13650),
@@ -4305,6 +4262,18 @@ INSERT INTO `models` (`model_name`, `make_id`, `autobilis_model_id`, `autoplius_
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `push_notification_auth`
+--
+
+CREATE TABLE `push_notification_auth` (
+  `id` int(11) NOT NULL,
+  `user_id` int(11) NOT NULL,
+  `auth_json` varchar(800) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `query_body_style`
 --
 
@@ -4313,15 +4282,16 @@ CREATE TABLE `query_body_style` (
   `body_style_id` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+-- --------------------------------------------------------
+
 --
--- Dumping data for table `query_body_style`
+-- Table structure for table `query_car_fk`
 --
 
-INSERT INTO `query_body_style` (`query_id`, `body_style_id`) VALUES
-(3, 1),
-(19, 3),
-(21, 3),
-(19, 10);
+CREATE TABLE `query_car_fk` (
+  `query_id` int(11) NOT NULL,
+  `car_id` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -4333,16 +4303,6 @@ CREATE TABLE `query_fuel` (
   `query_id` int(11) NOT NULL,
   `fuel_id` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
---
--- Dumping data for table `query_fuel`
---
-
-INSERT INTO `query_fuel` (`query_id`, `fuel_id`) VALUES
-(15, 1),
-(19, 1),
-(21, 1),
-(3, 2);
 
 -- --------------------------------------------------------
 
@@ -4357,13 +4317,246 @@ CREATE TABLE `query_make_model` (
   `model_id` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+-- --------------------------------------------------------
+
 --
--- Dumping data for table `query_make_model`
+-- Table structure for table `re_ads`
 --
 
-INSERT INTO `query_make_model` (`query_id`, `make_id`, `id`, `model_id`) VALUES
-(21, 10, 1, 11023),
-(3, 10, 2, 11023);
+CREATE TABLE `re_ads` (
+  `id` int(11) NOT NULL,
+  `city_id` int(11) DEFAULT NULL,
+  `title` varchar(200) DEFAULT NULL,
+  `village` varchar(60) DEFAULT NULL,
+  `installation` varchar(50) DEFAULT NULL,
+  `type` varchar(50) DEFAULT NULL,
+  `house_type` varchar(50) DEFAULT NULL,
+  `year` varchar(50) DEFAULT NULL,
+  `site_area` varchar(50) DEFAULT NULL,
+  `heating` varchar(50) DEFAULT NULL,
+  `area` varchar(20) DEFAULT NULL,
+  `street` varchar(80) DEFAULT NULL,
+  `description` text,
+  `floor` varchar(30) DEFAULT NULL,
+  `neighborhood` varchar(80) DEFAULT NULL,
+  `energy_class` varchar(10) DEFAULT NULL,
+  `floor_count` int(11) DEFAULT NULL,
+  `features` text,
+  `price` int(11) DEFAULT NULL,
+  `price_per_area` varchar(20) DEFAULT NULL,
+  `phone` varchar(15) DEFAULT NULL,
+  `skelbiu_id` int(11) DEFAULT NULL,
+  `domo_id` int(11) DEFAULT NULL,
+  `room_count` int(11) DEFAULT NULL,
+  `href` varchar(500) DEFAULT NULL,
+  `when_scraped` bigint(20) DEFAULT NULL,
+  `year_reconstructed` varchar(30) DEFAULT NULL,
+  `water` varchar(50) DEFAULT NULL,
+  `sewage` varchar(50) DEFAULT NULL,
+  `gas` varchar(50) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `re_ad_pictures`
+--
+
+CREATE TABLE `re_ad_pictures` (
+  `re_ad_id` int(11) NOT NULL,
+  `picture_href` varchar(800) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `re_categories`
+--
+
+CREATE TABLE `re_categories` (
+  `id` int(11) NOT NULL,
+  `domo_id` int(11) DEFAULT NULL,
+  `skelbiu_id` int(11) DEFAULT NULL,
+  `name` varchar(50) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Dumping data for table `re_categories`
+--
+
+INSERT INTO `re_categories` (`id`, `domo_id`, `skelbiu_id`, `name`) VALUES
+(1, 1, 41, 'Butai'),
+(2, 7, 42, 'Namai'),
+(3, 5, 43, 'Sklypai');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `re_cities`
+--
+
+CREATE TABLE `re_cities` (
+  `id` int(11) NOT NULL,
+  `city` varchar(50) NOT NULL,
+  `domo_id` int(11) NOT NULL,
+  `skelbiu_id` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Dumping data for table `re_cities`
+--
+
+INSERT INTO `re_cities` (`id`, `city`, `domo_id`, `skelbiu_id`) VALUES
+(62, 'Akmenės r.', 266, 260),
+(63, 'Alytaus r.', 4, 4),
+(64, 'Alytus', 2, 2),
+(65, 'Anykščių r.', 398, 393),
+(66, 'Birštonas', 42, 42),
+(67, 'Biržų r.', 212, 206),
+(68, 'Druskininkai', 3, 3),
+(69, 'Elektrėnai', 562, 1191),
+(70, 'Ignalinos r.', 417, 413),
+(71, 'Jonavos r.', 44, 44),
+(72, 'Joniškio r.', 273, 267),
+(73, 'Jurbarko r.', 351, 346),
+(74, 'Kaišiadorių r.', 53, 53),
+(75, 'Kalvarija', 563, 1192),
+(76, 'Kaunas', 43, 43),
+(77, 'Kauno r.', 63, 63),
+(78, 'Kazlų Rūda', 564, 1193),
+(79, 'Kelmės r.', 284, 278),
+(80, 'Klaipėda', 119, 112),
+(81, 'Klaipėdos r.', 122, 115),
+(82, 'Kretingos r.', 134, 127),
+(83, 'Kupiškio r.', 234, 228),
+(84, 'Kėdainių r.', 221, 215),
+(85, 'Lazdijų r.', 27, 27),
+(86, 'Marijampolė', 169, 162),
+(87, 'Mažeikių r.', 364, 359),
+(88, 'Molėtų r.', 430, 426),
+(89, 'Neringa', 120, 113),
+(90, 'Pagėgiai', 565, 1196),
+(91, 'Pakruojo r.', 295, 289),
+(92, 'Palanga', 121, 114),
+(93, 'Panevėžio r.', 241, 235),
+(94, 'Panevėžys', 211, 205),
+(95, 'Pasvalio r.', 253, 247),
+(96, 'Plungės r.', 372, 367),
+(97, 'Prienų r.', 86, 86),
+(98, 'Radviliškio r.', 304, 298),
+(99, 'Raseinių r.', 98, 98),
+(100, 'Rietavas', 566, 1197),
+(101, 'Rokiškio r.', 442, 438),
+(102, 'Skuodo r.', 143, 136),
+(103, 'Tauragės r.', 328, 323),
+(104, 'Telšių r.', 386, 381),
+(105, 'Trakų r.', 491, 487),
+(106, 'Ukmergės r.', 504, 501),
+(107, 'Utenos r.', 453, 449),
+(108, 'Varėnos r.', 16, 16),
+(109, 'Vilkaviškio r.', 170, 163),
+(110, 'Vilniaus r.', 466, 462),
+(111, 'Vilnius', 465, 461),
+(112, 'Visaginas', 463, 459),
+(113, 'Zarasų r.', 407, 403),
+(114, 'Šakių r.', 194, 187),
+(115, 'Šalčininkų r.', 516, 513),
+(116, 'Šiauliai', 265, 259),
+(117, 'Šiaulių r.', 316, 311),
+(118, 'Šilalės r.', 337, 332),
+(119, 'Šilutės r.', 153, 146),
+(120, 'Širvintų r.', 542, 539),
+(121, 'Švenčionių r.', 529, 526);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `re_house_type`
+--
+
+CREATE TABLE `re_house_type` (
+  `id` int(11) NOT NULL,
+  `name` varchar(50) NOT NULL,
+  `skelbiu_id` int(11) NOT NULL,
+  `domo_id` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Dumping data for table `re_house_type`
+--
+
+INSERT INTO `re_house_type` (`id`, `name`, `skelbiu_id`, `domo_id`) VALUES
+(1, 'Gyvenamasis namas', 1, 787),
+(2, 'Sodo namas', 2, 789),
+(6, 'Sodyba', 2, 11171),
+(7, 'Sublokuotas namas', 3, 790),
+(8, 'Kita', 5, 11167);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `re_queries`
+--
+
+CREATE TABLE `re_queries` (
+  `id` int(11) NOT NULL,
+  `user_id` int(11) NOT NULL,
+  `city_id` int(11) DEFAULT NULL,
+  `house_type_id` int(11) DEFAULT NULL,
+  `type_id` int(11) DEFAULT NULL,
+  `category_id` int(11) DEFAULT NULL,
+  `search_term` varchar(100) DEFAULT NULL,
+  `price_from` int(11) DEFAULT NULL,
+  `price_to` int(11) DEFAULT NULL,
+  `area_from` int(11) DEFAULT NULL,
+  `area_to` int(11) DEFAULT NULL,
+  `rooms_from` int(11) DEFAULT NULL,
+  `rooms_to` int(11) DEFAULT NULL,
+  `year_from` int(11) DEFAULT NULL,
+  `year_to` int(11) DEFAULT NULL,
+  `sites` set('domoplius.lt','skelbiu.lt') DEFAULT NULL,
+  `scrape_interval` int(11) DEFAULT NULL,
+  `last_scraped` bigint(20) DEFAULT NULL,
+  `was_scraped` tinyint(1) NOT NULL DEFAULT '0',
+  `currently_scraping` tinyint(1) NOT NULL DEFAULT '0'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `re_query_ad_fk`
+--
+
+CREATE TABLE `re_query_ad_fk` (
+  `query_id` int(11) NOT NULL,
+  `re_ad_id` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `re_types`
+--
+
+CREATE TABLE `re_types` (
+  `id` int(11) NOT NULL,
+  `name` varchar(50) NOT NULL,
+  `skelbiu_id` int(11) NOT NULL,
+  `domo_id` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Dumping data for table `re_types`
+--
+
+INSERT INTO `re_types` (`id`, `name`, `skelbiu_id`, `domo_id`) VALUES
+(1, 'Mūrinis', 1, 11185),
+(2, 'Blokinis', 2, 11186),
+(3, 'Monolitinis', 3, 11187),
+(4, 'Medinis', 4, 11188),
+(5, 'Rąstinis', 7, 11190),
+(6, 'Karkasinis', 8, 11189),
+(7, 'Kitas', 10, 11191);
 
 -- --------------------------------------------------------
 
@@ -4374,16 +4567,22 @@ INSERT INTO `query_make_model` (`query_id`, `make_id`, `id`, `model_id`) VALUES
 CREATE TABLE `users` (
   `id` int(11) NOT NULL,
   `email` varchar(100) NOT NULL,
-  `password` varchar(100) NOT NULL,
-  `user_group` enum('regular','admin') NOT NULL
+  `password` varchar(1024) NOT NULL,
+  `user_group` enum('regular','admin') NOT NULL,
+  `email_notifications` tinyint(1) NOT NULL DEFAULT '1'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Dumping data for table `users`
 --
 
-INSERT INTO `users` (`id`, `email`, `password`, `user_group`) VALUES
-(1, 'admin@gmail.com', 'admin', 'admin');
+INSERT INTO `users` (`id`, `email`, `password`, `user_group`, `email_notifications`) VALUES
+(1, 'admin@gmail.com', '$2b$12$ml0ul8oG2bPOr7GLzu4f3uwRiAF/XG.8i3HPErJkeGaBu2674Vp2O', 'admin', 0),
+(2, 'user@gmail.com', '$2b$12$aQMACMCD/yMangmWZ3QiTeGWLg2wmlP4U3WsD6715UjhCU2.iUZIe', 'regular', 1),
+(3, 'user1@gmail.com', '$2b$12$gQ/jLT6rtsA4sBXOiJ2wPOoJBYeiXJ0e.rgCKCMIujDSrbDO.12JG', 'regular', 1),
+(4, 'user2@gmail.com', '$2b$12$RgicBTCE6WSs7I/QZf6Qre0/B.EIZuZfwCpr/BUsQqfLMqtKO0XXC', 'regular', 1),
+(5, 'user3@gmail.com', '$2b$12$oz40IWOSelxRwAT.CHENs.2paRr5JywPEIT1153VoSiyIw70CIEMe', 'regular', 1),
+(6, 'cctomass@gmail.com', '$2b$12$G2Jo.p6DnpdINwPsBdGmPO3NN0qy7jkGgbkGLIg2xWL0XkmPEdV2C', 'regular', 0);
 
 --
 -- Indexes for dumped tables
@@ -4409,15 +4608,21 @@ ALTER TABLE `car_ads`
   ADD KEY `body_type` (`body_type`),
   ADD KEY `fuel_type` (`fuel_type`),
   ADD KEY `make` (`make`),
-  ADD KEY `model` (`model`),
-  ADD KEY `query_id` (`query_id`);
+  ADD KEY `model` (`model`);
+
+--
+-- Indexes for table `car_pictures`
+--
+ALTER TABLE `car_pictures`
+  ADD PRIMARY KEY (`car_id`,`picture_href`);
 
 --
 -- Indexes for table `car_queries`
 --
 ALTER TABLE `car_queries`
   ADD PRIMARY KEY (`id`),
-  ADD KEY `user_id` (`user_id`);
+  ADD KEY `user_id` (`user_id`),
+  ADD KEY `city_id` (`city_id`);
 
 --
 -- Indexes for table `cities`
@@ -4445,6 +4650,13 @@ ALTER TABLE `makes`
   ADD UNIQUE KEY `make` (`make`);
 
 --
+-- Indexes for table `messages`
+--
+ALTER TABLE `messages`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `user_id` (`user_id`);
+
+--
 -- Indexes for table `models`
 --
 ALTER TABLE `models`
@@ -4453,11 +4665,25 @@ ALTER TABLE `models`
   ADD KEY `make_id` (`make_id`);
 
 --
+-- Indexes for table `push_notification_auth`
+--
+ALTER TABLE `push_notification_auth`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `user_id` (`user_id`,`auth_json`);
+
+--
 -- Indexes for table `query_body_style`
 --
 ALTER TABLE `query_body_style`
   ADD PRIMARY KEY (`query_id`,`body_style_id`),
   ADD KEY `body_style_id` (`body_style_id`);
+
+--
+-- Indexes for table `query_car_fk`
+--
+ALTER TABLE `query_car_fk`
+  ADD PRIMARY KEY (`query_id`,`car_id`),
+  ADD KEY `query_car_fk_ibfk_1` (`car_id`);
 
 --
 -- Indexes for table `query_fuel`
@@ -4474,6 +4700,71 @@ ALTER TABLE `query_make_model`
   ADD KEY `query_id` (`query_id`),
   ADD KEY `make_id` (`make_id`),
   ADD KEY `model_id` (`model_id`);
+
+--
+-- Indexes for table `re_ads`
+--
+ALTER TABLE `re_ads`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `skelbiu_id` (`skelbiu_id`),
+  ADD UNIQUE KEY `domo_id` (`domo_id`),
+  ADD KEY `city_id` (`city_id`);
+
+--
+-- Indexes for table `re_ad_pictures`
+--
+ALTER TABLE `re_ad_pictures`
+  ADD PRIMARY KEY (`re_ad_id`,`picture_href`);
+
+--
+-- Indexes for table `re_categories`
+--
+ALTER TABLE `re_categories`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `re_cities`
+--
+ALTER TABLE `re_cities`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `skelbiu_id` (`skelbiu_id`),
+  ADD UNIQUE KEY `domo_id` (`domo_id`),
+  ADD UNIQUE KEY `city` (`city`);
+
+--
+-- Indexes for table `re_house_type`
+--
+ALTER TABLE `re_house_type`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `name` (`name`),
+  ADD UNIQUE KEY `domo_id` (`domo_id`);
+
+--
+-- Indexes for table `re_queries`
+--
+ALTER TABLE `re_queries`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `city_id` (`city_id`),
+  ADD KEY `house_type_id` (`house_type_id`),
+  ADD KEY `type_id` (`type_id`),
+  ADD KEY `category_id` (`category_id`),
+  ADD KEY `user_id` (`user_id`);
+
+--
+-- Indexes for table `re_query_ad_fk`
+--
+ALTER TABLE `re_query_ad_fk`
+  ADD PRIMARY KEY (`query_id`,`re_ad_id`),
+  ADD KEY `re_ad_id` (`re_ad_id`);
+
+--
+-- Indexes for table `re_types`
+--
+ALTER TABLE `re_types`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `name` (`name`),
+  ADD UNIQUE KEY `skelbiu_id` (`skelbiu_id`),
+  ADD UNIQUE KEY `domo_id` (`domo_id`);
 
 --
 -- Indexes for table `users`
@@ -4496,13 +4787,13 @@ ALTER TABLE `body_styles`
 -- AUTO_INCREMENT for table `car_ads`
 --
 ALTER TABLE `car_ads`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=70;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `car_queries`
 --
 ALTER TABLE `car_queries`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `cities`
@@ -4523,22 +4814,70 @@ ALTER TABLE `makes`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=205;
 
 --
+-- AUTO_INCREMENT for table `messages`
+--
+ALTER TABLE `messages`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
 -- AUTO_INCREMENT for table `models`
 --
 ALTER TABLE `models`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14260;
 
 --
+-- AUTO_INCREMENT for table `push_notification_auth`
+--
+ALTER TABLE `push_notification_auth`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
 -- AUTO_INCREMENT for table `query_make_model`
 --
 ALTER TABLE `query_make_model`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `re_ads`
+--
+ALTER TABLE `re_ads`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `re_categories`
+--
+ALTER TABLE `re_categories`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+
+--
+-- AUTO_INCREMENT for table `re_cities`
+--
+ALTER TABLE `re_cities`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=122;
+
+--
+-- AUTO_INCREMENT for table `re_house_type`
+--
+ALTER TABLE `re_house_type`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+
+--
+-- AUTO_INCREMENT for table `re_queries`
+--
+ALTER TABLE `re_queries`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `re_types`
+--
+ALTER TABLE `re_types`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- Constraints for dumped tables
@@ -4551,14 +4890,26 @@ ALTER TABLE `car_ads`
   ADD CONSTRAINT `car_ads_ibfk_1` FOREIGN KEY (`body_type`) REFERENCES `body_styles` (`id`),
   ADD CONSTRAINT `car_ads_ibfk_2` FOREIGN KEY (`fuel_type`) REFERENCES `fuel_types` (`id`),
   ADD CONSTRAINT `car_ads_ibfk_3` FOREIGN KEY (`make`) REFERENCES `makes` (`id`),
-  ADD CONSTRAINT `car_ads_ibfk_4` FOREIGN KEY (`model`) REFERENCES `models` (`id`),
-  ADD CONSTRAINT `car_ads_ibfk_5` FOREIGN KEY (`query_id`) REFERENCES `car_queries` (`id`);
+  ADD CONSTRAINT `car_ads_ibfk_4` FOREIGN KEY (`model`) REFERENCES `models` (`id`);
+
+--
+-- Constraints for table `car_pictures`
+--
+ALTER TABLE `car_pictures`
+  ADD CONSTRAINT `car_pictures_ibfk_1` FOREIGN KEY (`car_id`) REFERENCES `car_ads` (`id`) ON DELETE CASCADE;
 
 --
 -- Constraints for table `car_queries`
 --
 ALTER TABLE `car_queries`
-  ADD CONSTRAINT `car_queries_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`);
+  ADD CONSTRAINT `car_queries_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`),
+  ADD CONSTRAINT `car_queries_ibfk_2` FOREIGN KEY (`city_id`) REFERENCES `cities` (`id`);
+
+--
+-- Constraints for table `messages`
+--
+ALTER TABLE `messages`
+  ADD CONSTRAINT `messages_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
 
 --
 -- Constraints for table `models`
@@ -4567,11 +4918,24 @@ ALTER TABLE `models`
   ADD CONSTRAINT `models_ibfk_1` FOREIGN KEY (`make_id`) REFERENCES `makes` (`id`) ON DELETE CASCADE;
 
 --
+-- Constraints for table `push_notification_auth`
+--
+ALTER TABLE `push_notification_auth`
+  ADD CONSTRAINT `push_notification_auth_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
+
+--
 -- Constraints for table `query_body_style`
 --
 ALTER TABLE `query_body_style`
   ADD CONSTRAINT `query_body_style_ibfk_1` FOREIGN KEY (`body_style_id`) REFERENCES `body_styles` (`id`) ON DELETE CASCADE,
   ADD CONSTRAINT `query_body_style_ibfk_2` FOREIGN KEY (`query_id`) REFERENCES `car_queries` (`id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `query_car_fk`
+--
+ALTER TABLE `query_car_fk`
+  ADD CONSTRAINT `query_car_fk_ibfk_1` FOREIGN KEY (`car_id`) REFERENCES `car_ads` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `query_car_fk_ibfk_2` FOREIGN KEY (`query_id`) REFERENCES `car_queries` (`id`) ON DELETE CASCADE;
 
 --
 -- Constraints for table `query_fuel`
@@ -4587,6 +4951,35 @@ ALTER TABLE `query_make_model`
   ADD CONSTRAINT `query_make_model_ibfk_1` FOREIGN KEY (`query_id`) REFERENCES `car_queries` (`id`) ON DELETE CASCADE,
   ADD CONSTRAINT `query_make_model_ibfk_2` FOREIGN KEY (`make_id`) REFERENCES `makes` (`id`),
   ADD CONSTRAINT `query_make_model_ibfk_3` FOREIGN KEY (`model_id`) REFERENCES `models` (`id`);
+
+--
+-- Constraints for table `re_ads`
+--
+ALTER TABLE `re_ads`
+  ADD CONSTRAINT `re_ads_ibfk_1` FOREIGN KEY (`city_id`) REFERENCES `re_cities` (`id`);
+
+--
+-- Constraints for table `re_ad_pictures`
+--
+ALTER TABLE `re_ad_pictures`
+  ADD CONSTRAINT `re_ad_pictures_ibfk_1` FOREIGN KEY (`re_ad_id`) REFERENCES `re_ads` (`id`);
+
+--
+-- Constraints for table `re_queries`
+--
+ALTER TABLE `re_queries`
+  ADD CONSTRAINT `re_queries_ibfk_1` FOREIGN KEY (`city_id`) REFERENCES `re_cities` (`id`),
+  ADD CONSTRAINT `re_queries_ibfk_2` FOREIGN KEY (`house_type_id`) REFERENCES `re_house_type` (`id`),
+  ADD CONSTRAINT `re_queries_ibfk_3` FOREIGN KEY (`type_id`) REFERENCES `re_types` (`id`),
+  ADD CONSTRAINT `re_queries_ibfk_4` FOREIGN KEY (`category_id`) REFERENCES `re_categories` (`id`),
+  ADD CONSTRAINT `re_queries_ibfk_5` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`);
+
+--
+-- Constraints for table `re_query_ad_fk`
+--
+ALTER TABLE `re_query_ad_fk`
+  ADD CONSTRAINT `re_query_ad_fk_ibfk_1` FOREIGN KEY (`query_id`) REFERENCES `re_queries` (`id`),
+  ADD CONSTRAINT `re_query_ad_fk_ibfk_2` FOREIGN KEY (`re_ad_id`) REFERENCES `re_ads` (`id`);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
