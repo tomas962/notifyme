@@ -64,7 +64,8 @@ def get_re_query(query_id):
             re_house_type.domo_id as domo_house_type_id, re_types.name as type_name,
             re_types.skelbiu_id as skelbiu_type_id, re_types.domo_id as domo_type_id,
             re_categories.name as category_name, re_categories.domo_id as domo_category_id,
-            re_categories.skelbiu_id as skelbiu_category_id, scrape_interval, last_scraped, was_scraped
+            re_categories.skelbiu_id as skelbiu_category_id, scrape_interval, last_scraped, was_scraped, 
+            currently_scraping
             FROM `re_queries` 
             LEFT JOIN re_cities ON city_id=re_cities.id
             LEFT JOIN re_house_type ON house_type_id=re_house_type.id
@@ -85,7 +86,8 @@ def get_user_re_queries(user_id):
             re_house_type.domo_id as domo_house_type_id, re_types.name as type_name,
             re_types.skelbiu_id as skelbiu_type_id, re_types.domo_id as domo_type_id,
             re_categories.name as category_name, re_categories.domo_id as domo_category_id,
-            re_categories.skelbiu_id as skelbiu_category_id, scrape_interval, last_scraped, was_scraped
+            re_categories.skelbiu_id as skelbiu_category_id, scrape_interval, last_scraped, was_scraped, 
+            currently_scraping
             FROM `re_queries` 
             LEFT JOIN re_cities ON city_id=re_cities.id
             LEFT JOIN re_house_type ON house_type_id=re_house_type.id
@@ -144,7 +146,8 @@ def get_all_re_queries():
             re_house_type.domo_id as domo_house_type_id, re_types.name as type_name,
             re_types.skelbiu_id as skelbiu_type_id, re_types.domo_id as domo_type_id,
             re_categories.name as category_name, re_categories.domo_id as domo_category_id,
-            re_categories.skelbiu_id as skelbiu_category_id, scrape_interval, last_scraped, was_scraped
+            re_categories.skelbiu_id as skelbiu_category_id, scrape_interval, last_scraped, was_scraped, 
+            currently_scraping
             FROM `re_queries` 
             LEFT JOIN re_cities ON city_id=re_cities.id
             LEFT JOIN re_house_type ON house_type_id=re_house_type.id
@@ -154,3 +157,10 @@ def get_all_re_queries():
         queries = cursor.fetchall()
         cursor.connection.close()
         return queries
+
+
+def mark_re_ads_as_deleted(ad_ids: list):
+    with db_connect().cursor() as cursor:
+        cursor.executemany("UPDATE `re_ads` SET deleted=1 WHERE re_ads.id=%s", ad_ids)
+        cursor.connection.commit()
+        cursor.connection.close()

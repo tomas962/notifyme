@@ -39,6 +39,7 @@ re_db_mappings = {
     "Dujos":"gas",
     "Buto plotas (kv. m)":"area",
     "Būklė":"installation",
+    "Plotas, a":"site_area",
 
     "?":"city",
     "?1":"city_id",
@@ -65,7 +66,11 @@ re_db_mappings = {
     "Stogas":"?",
     "Stogo danga":"?",
     "Perdanga": "?",
-    "Išorės apdaila": "?"
+    "Išorės apdaila": "?",
+    "Paskirtis": "?",
+    "1 aro kaina": "?",
+    "1 hektaro kaina": "?",
+    "Matavimų tipas": "?",
 }
 
 class ReAd():
@@ -82,6 +87,7 @@ class ReAd():
         ad = {}
         ad["id"] = self.prepared_data["id"]
         ad["city_id"] = self.prepared_data["city_id"]
+        ad["city"] = self.prepared_data["city"]
         ad["title"] = self.prepared_data["title"]
         ad["village"] = self.prepared_data["village"]
         ad["installation"] = self.prepared_data["installation"]
@@ -248,7 +254,6 @@ class SkelbiuAd(ReAd):
                 break
         
         self.scraped_params["pictures"] = pictures
-        print(pictures)
 
 class DomoAd(ReAd):
 
@@ -266,14 +271,27 @@ class DomoAd(ReAd):
             self.scraped_params["price"] = self.scraped_params["price"].strip(" €").replace(" ","")
 
 
-        idx = 0
+        idx = -1
         for row in self.response.css("div.medium.info-block > div"):
-            if idx == 3:
-                descr = row.css("::text").getall()
-                if descr:
+            idx -= 1
+            if idx >= 0:
+                if idx == 0:
+                    descr = row.css("::text").getall()
                     self.scraped_params["description"] = "".join(descr)
-                break
-            idx += 1
+                    break
+            else:
+                text = row.css("::text").getall()
+                text = "".join(text).strip()
+                if text.startswith("Komentarai"):
+                    idx = 2
+
+        feature_list = []
+        for ft in self.response.css("li.fr::text").getall():
+            feature_list.append(ft.strip())
+        for ft in self.response.css("li.fl::text").getall():
+            feature_list.append(ft.strip())
+
+        self.scraped_params["features"] = "|".join(feature_list)
 
         title = self.response.css(".fl.title-view::text").get()
         self.scraped_params["title"] = title.strip() if title else None

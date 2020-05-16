@@ -39,11 +39,6 @@ from flask_cors import CORS
 app.debug = True
 CORS(app, support_credentials=True)
 
-# @app.after_request
-# def after_request_h(response: Response):
-#     print(request)
-#     print(response.headers)
-#     return response
 
 @app.route("/")
 def hello():

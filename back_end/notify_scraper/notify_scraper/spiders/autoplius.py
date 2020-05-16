@@ -42,7 +42,7 @@ class AutopliusSpider(scrapy.Spider):
         
         for href in hrefs:
             next_page = response.urljoin(href)
-            yield scrapy.Request(href, callback=self.parse_ad, 
+            yield scrapy.Request(next_page, callback=self.parse_ad, 
                 headers={"user-agent": 
                     "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.163 Safari/537.36"})
         

@@ -75,7 +75,7 @@ class Notifier():
         lines.append(f"Įvyko pokyčiai jūsų pasirinktoje paieškoje ({self.car_query['make_model']['make'] or 'Visos markės'} {self.car_query['make_model']['model_name'] or 'Visi modeliai'}):\n")
         for car_id, change in self.car_changes.items():
             if change == True:
-                lines.append(f"\tPridėtas naujas skelbimas: {self.new_cars[car_id]['make_name']} {self.new_cars[car_id]['model_name']}. {SERVER_NAME}/queries/{self.car_query['car_query']['id']}/cars/{car_id}")
+                lines.append(f"\tPridėtas naujas skelbimas: {self.new_cars[car_id]['make_name']} {self.new_cars[car_id]['model_name']}. {SERVER_NAME}/users/{self.car_query['car_query']['user_id']}/queries/{self.car_query['car_query']['id']}/cars/{car_id}")
                 continue
             
             line = "\t"
@@ -86,7 +86,7 @@ class Notifier():
                 line += f"Pasikeitė aprašymas. "
 
             if line != "\t":
-                line += f"({self.new_cars[car_id]['make_name']} {self.new_cars[car_id]['model_name']}. {SERVER_NAME}/queries/{self.car_query['car_query']['id']}/cars/{car_id})"
+                line += f"({self.new_cars[car_id]['make_name']} {self.new_cars[car_id]['model_name']}. {SERVER_NAME}/users/{self.car_query['car_query']['user_id']}/queries/{self.car_query['car_query']['id']}/cars/{car_id})"
                 lines.append(line)
         
         return "\n".join(lines)

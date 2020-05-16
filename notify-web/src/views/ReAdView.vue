@@ -23,7 +23,7 @@
            </b-row>
            <b-row v-if="re_ad.price_per_area" class="mt-2">
                <b-col cols="5">
-                   1 kv. m kaina
+                   Ploto vieneto kaina
                </b-col>
                <b-col class="param">
                    {{re_ad.price_per_area}}
@@ -182,14 +182,14 @@
                </b-col>
            </b-row>
 
-            <b-row v-if="features" class="mt-5">
+            <b-row v-if="features.length > 0" class="mt-5">
                <b-col class="param" cols="3" sm="5" md="5" lg="4">
                    <div>Ypatybės</div>
                </b-col>
                <b-col class="border-bottom mb-2"></b-col>
            </b-row>
 
-           <b-row v-if="features" class="mt-2">
+           <b-row v-if="features.length > 0" class="mt-2">
                <b-col>
                    <ul>
                        <li v-for="feature in features" :key="feature">

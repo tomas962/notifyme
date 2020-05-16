@@ -30,7 +30,7 @@
                         </b-row>
                         <b-row>
                             <b-col class="text-center" cols="12">
-                                <b-btn :disabled="query.car_query.currently_scraping ? true : false" @click="setPage({page: 1})" :to="'/users/'+identity.user_id+'/queries/' + query.car_query.id + '/cars'" class="btn-success">
+                                <b-btn :disabled="query.car_query.currently_scraping ? true : false" @click="setPage({page: 1})" :to="'/users/'+$route.params.user_id+'/queries/' + query.car_query.id + '/cars'" class="btn-success">
                                     <b-spinner v-if="query.car_query.currently_scraping ? true : false" small></b-spinner>
                                     {{query.car_query.currently_scraping ? 'Paieška vykdoma' : 'Rezultatai'}}
                                 </b-btn>
@@ -143,7 +143,7 @@ export default class CarQueryComp extends Vue {
         console.log("deleting query:");
         console.log(this.query);
         
-        const response = await fetch(window.SERVER_URL + "/users/" + this.$store.state.User.identity.user_id + "/queries/" + this.query.car_query.id, {
+        const response = await fetch(window.SERVER_URL + "/users/" + this.$route.params.user_id + "/queries/" + this.query.car_query.id, {
             headers: {
                 'Authorization': 'Bearer ' + this.$store.state.User.access_token
             },
@@ -159,7 +159,7 @@ export default class CarQueryComp extends Vue {
     }
 
     async requestQueryStart() {
-        const response = await fetch(window.SERVER_URL + `/users/${this.$store.state.User.identity.user_id}/queries/${this.query.car_query.id}/start`, {
+        const response = await fetch(window.SERVER_URL + `/users/${this.$route.params.user_id}/queries/${this.query.car_query.id}/start`, {
             headers: {
                 'Authorization': 'Bearer ' + this.$store.state.User.access_token
             },

@@ -62,7 +62,7 @@ export default class CarComp extends Vue {
         const re_ad = this.re_ad
         return `${re_ad.area ? re_ad.area + ' | ' : ''}${re_ad.room_count ? re_ad.room_count + ' kamb. | ' : ''}
             ${re_ad.floor_count ? re_ad.floor_count + ' aukštai | ' : ''}${re_ad.year ? re_ad.year + ' m | ' : ''}
-            ${re_ad.floor ? re_ad.floor + ' | ' : ''}${re_ad.city ? re_ad.city : ""}`
+            ${re_ad.floor ? re_ad.floor + ' | ' : ''}${re_ad.city ? re_ad.city + ' | ' : ""}${re_ad.site_area ? "Sklypo plotas: " + re_ad.site_area : ""}`
     }
 }
 </script>

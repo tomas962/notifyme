@@ -43,8 +43,6 @@ class AutogidasSpider(scrapy.Spider):
         
         urls = ["https://autogidas.lt/skelbimai/automobiliai/?" + urlencode(car_query)]
 
-        print("GENERATED AUTOGIDAS QUERY:")
-        print(urls)
         print("STARTED CRAWLING AUTOGIDAS")
         
         for url in urls:

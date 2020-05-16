@@ -44,7 +44,7 @@ def post_query(user_id):
     query["sites"] = ",".join(query["sites"])
     print(query)
     new_query_id = insert_re_query(query)
-    values["id"] = new_query_id
+    query["id"] = new_query_id
     scraper_interface.update_re_query(query)
     return "", 200
 
@@ -83,7 +83,7 @@ def put_query(user_id, query_id):
 def get_queries(user_id):
     if res := validate_resource(user_id) != True:
         return res
-    
+
     queries = get_user_re_queries(user_id)
     return jsonify(queries)
 
@@ -135,7 +135,7 @@ def re_ad(user_id, query_id, re_ad_id):
 
 @re_query_api.route("/users/<int:user_id>/re_queries/<int:query_id>/start", methods=['POST'])
 @jwt_required
-def start_scraping_car_query(user_id, query_id):
+def start_scraping_re_query(user_id, query_id):
     user = get_jwt_identity()
     if user["group"] != "admin":
         return jsonify({"error":"Only admin can access this endpoint"}), 403

@@ -19,6 +19,10 @@ class DomopliusSpider(scrapy.Spider):
             raise ValueError("No re_query_id passed to spider")
             return
         query_from_db = get_re_query(int(self.re_query_id))
+        if query_from_db is None: # don't scrape
+            print("WARNING: Domoplius: Not scraping:")
+            print(query_from_db)
+            return None
         qr = DomoReQuery(query_from_db)
         re_query = qr.generate()
         if re_query is None: # don't scrape
@@ -28,7 +32,6 @@ class DomopliusSpider(scrapy.Spider):
         assert re_query is not None, "RE query not found!"
 
         urls = ["https://domoplius.lt/skelbimai/" + qr.query_prefix + "?" + urlencode(re_query)]
-        print(urls)
         print("STARTED CRAWLING DOMOPLIUS")
         for url in urls:
             rq = scrapy.Request(url=url, callback=self.parse, headers={"user-agent": 
@@ -41,7 +44,7 @@ class DomopliusSpider(scrapy.Spider):
         #     f.write(response.text)
 
 
-        # hrefs = ['https://domoplius.lt/skelbimai/parduodamas-1-kambario-butas-klaipedoje-vetrungeje-taikos-pr-6660931.html']
+        # hrefs = ['https://domoplius.lt/skelbimai/parduodamas-sklypas-moletu-r-sav-kaselineje-6880420.html']
         for href in hrefs:
             next_page = response.urljoin(href)
             yield scrapy.Request(next_page, callback=self.parse_ad, 

@@ -125,7 +125,7 @@ export default class Login extends Vue {
             //refresh_token: result.refresh_token
         } 
         this.setUser(state)
-        this.$router.push('/queries')
+        this.$router.push('/users/'+state.identity.user_id+'/queries')
         
     }
     

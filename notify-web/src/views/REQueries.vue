@@ -236,6 +236,8 @@ export default class REQueries extends Vue {
             console.log(q);
             
             if (q){
+                console.log("setting currently_scraping = 0");
+                
                 q.currently_scraping = 0
                 q.last_scraped = (Date.now() / 1000) | 0;
             }

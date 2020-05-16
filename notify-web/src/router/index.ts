@@ -12,6 +12,7 @@ import MessagesView from '@/views/MessagesView.vue'
 import REQueries from '@/views/REQueries.vue'
 import ReAdList from '@/views/ReAdList.vue'
 import ReAdView from '@/views/ReAdView.vue'
+import HomePage from '@/views/HomePage.vue'
 
 Vue.use(VueRouter)
 
@@ -74,6 +75,11 @@ Vue.use(VueRouter)
     name: 'ReAdView',
     component: ReAdView
   },
+  {
+    path: '/',
+    name: 'HomePage',
+    component: HomePage
+  },
 ]
 
 const router = new VueRouter({
@@ -83,10 +89,9 @@ const router = new VueRouter({
 })
 
 router.beforeEach((to, from, next) => {
-  //if (!((store.state as any).User as User).identity.email && to.path !== '/login' && to.path !== '/register')
   if (!localStorage.getItem("access_token") && to.path !== '/login' && to.path !== '/register')
     next({ path: '/login' })
-  else 
+  else
     next()
 })
 

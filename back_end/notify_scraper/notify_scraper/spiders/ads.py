@@ -1,8 +1,6 @@
 # from scrapy.crawler import CrawlerProcess
 # from notify_scraper.notify_scraper.spiders.autogidas import AutogidasSpider
 import os
-print(os.getcwd())
-print(__package__)
 import sys
 sys.path.insert(0,'..')
 from database.database import connection, db_connect

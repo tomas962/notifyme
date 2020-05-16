@@ -23,7 +23,8 @@
                 Tiesioginiai pranešimai į įrenginį (ang. "Push Notifications")
             </b-col>
             <b-col cols="6" sm="3" class="text-center">
-                <b-form-checkbox @input="pushNotifInput" v-model="notificationsEnabled" v-b-tooltip.hover title="Jei neleidžia įjungti, patikrinkite savo naršyklės pranešimų nustatymus." switch size="lg">
+                <b-form-checkbox @input="pushNotifInput" v-model="notificationsEnabled" v-b-tooltip.hover title="Jei neleidžia įjungti, patikrinkite savo naršyklės pranešimų nustatymus. 
+                    Norint išjungti, reikia tai padaryti per naršyklės nustatymus." switch size="lg">
                 </b-form-checkbox>
             </b-col>
             <b-col sm="3"></b-col>

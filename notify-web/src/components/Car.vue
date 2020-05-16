@@ -26,7 +26,6 @@
                     <p>{{car.mileage ? car.mileage + " km.," : ""}} {{car.body_type_name}}, {{car.location}}</p>
                 </b-col>
                 <b-col>
-                    <a :href="car.href">Nuoroda</a>
                 </b-col>
             </b-row>
         </b-col>

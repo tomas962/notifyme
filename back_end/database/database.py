@@ -1,17 +1,17 @@
 import pymysql.cursors
-
+import config
 # Connect to the database
-connection = pymysql.connect(host='localhost',
-                             user='phpmyadmin',
-                             password='kompas88',
+connection = pymysql.connect(host=config.DATABASE_HOST,
+                             user=config.DATABASE_USERNAME,
+                             password=config.DATABASE_PASSWORD,
                              db='notify',
                              charset='utf8mb4',
                              cursorclass=pymysql.cursors.DictCursor)
 
 def db_connect():
-    return pymysql.connect(host='localhost',
-                             user='phpmyadmin',
-                             password='kompas88',
+    return pymysql.connect(host=config.DATABASE_HOST,
+                             user=config.DATABASE_USERNAME,
+                             password=config.DATABASE_PASSWORD,
                              db='notify',
                              charset='utf8mb4',
                              cursorclass=pymysql.cursors.DictCursor)

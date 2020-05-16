@@ -2,17 +2,16 @@ from flask import Flask, request, Response, jsonify
 app = Flask(__name__)
 import time
 from .scraper import CarScraperScheduler
-from.re_scraper import ReScraperScheduler
+from .re_scraper import ReScraperScheduler
 import socket
 
-# car_scraper_scheduler = CarScraperScheduler()
+car_scraper_scheduler = CarScraperScheduler()
 re_scraper_scheduler = ReScraperScheduler()
 
 @app.route("/queries", methods=['POST'])
 def add_query():
     query = request.get_json()
     print("NEW QUERY:")
-    print(query)
     car_scraper_scheduler.update_queries(query)
     print("TIME AFTER UPDATE QUERY:")
     print(time.time())
@@ -23,7 +22,6 @@ def add_query():
 def delete_query(user_id, query_id):
     query = request.get_json()
     print("DELETING QUERY:")
-    print(query)
     car_scraper_scheduler.delete_query(query_id)
     print("TIME AFTER DELETE QUERY:")
     print(time.time())
@@ -42,7 +40,6 @@ def start_scraping_car_query(user_id, query_id):
 def delete_re_query(user_id, query_id):
     query = request.get_json()
     print("DELETING RE QUERY:")
-    print(query)
     re_scraper_scheduler.delete_query(query_id)
     print("TIME AFTER DELETE RE QUERY:")
     print(time.time())
@@ -52,7 +49,6 @@ def delete_re_query(user_id, query_id):
 def add_re_query():
     query = request.get_json()
     print("NEW RE QUERY:")
-    print(query)
     re_scraper_scheduler.update_queries(query)
     print("TIME AFTER UPDATE QUERY:")
     print(time.time())

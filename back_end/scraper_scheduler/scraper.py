@@ -22,15 +22,16 @@ import requests
 from config import SECRET, SERVER_PORT, SERVER_NAME, SPIDER_CONFIG
 
 items = []
-config = SPIDER_CONFIG
-config['ITEM_PIPELINES'] = {'scraper_scheduler.scraper.ItemCollector': 100}
+config = SPIDER_CONFIG.copy()
+config['ITEM_PIPELINES'] = {'scraper_scheduler.scraper.CarItemCollector': 100}
 
 
-class ItemCollector():
+class CarItemCollector():
     def __init__(self):
         self.ids_seen = set()
 
     def process_item(self, item, spider):
+        print("CarItemCollector CALLED")
         items.append(item)
 
 
@@ -74,12 +75,7 @@ class CarScraperScheduler():
         print("SCRAPING QUERY NR: " + str(self.current_query["id"]))
         print("SUBPROCCESS PID:")
         print(os.getpid())
-        print('__name__:')
-        print(__name__)
         sett = Settings(config)
-        # print("SETTINGS:")
-        # print(vars(sett))
-        # exit(0)
         process = CrawlerProcess(sett)
         if "sites" in self.current_query and self.current_query["sites"] is not None and "autobilis" in self.current_query["sites"]:
             process.crawl(AutobilisSpider, car_query_id=self.current_query["id"])
@@ -126,11 +122,8 @@ class CarScraperScheduler():
             if self.current_query is None or time.time() < self.current_query["next_scrape"]:
                 continue
 
-            # print("SCRAPER TURNED OFF")
-            # time.sleep(99999999)
             # get old cars
             old_cars = get_cars_by_query_id(self.current_query["id"])
-            # SCRAPE HERE, more threads? maybe with proxy
             q = Queue()
             self.current_query["currently_scraping"] = True
             with db_connect().cursor() as cursor:
@@ -157,7 +150,8 @@ class CarScraperScheduler():
             # get new cars
             # check differences and notify
             ttt = time.time()
-            notif = Notifier(old_cars, scraped_cars, self.full_queries[self.current_query["id"]])
+            if self.current_query["id"] in self.full_queries:
+                notif = Notifier(old_cars, scraped_cars, self.full_queries[self.current_query["id"]])
             print("NOTIFIER TOOK TIME:")
             print(time.time() - ttt)
             # update last scraped

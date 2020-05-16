@@ -19,7 +19,7 @@
                         <b-row>
                             <b-col v-if="identity.group == 'admin'" class="text-center mb-1" cols="12">
                                 <b-btn :disabled="query.currently_scraping || nextScrape <= 0 ? true : false" 
-                                class="btn-info" v-b-tooltip.hover title="Priverstinai pradėti paiešką" @click="; /*requestQueryStart()*/">
+                                class="btn-info" v-b-tooltip.hover title="Priverstinai pradėti paiešką" @click="requestQueryStart()">
                                     Pradėti paiešką
                                 </b-btn>
                             </b-col>
@@ -159,22 +159,22 @@ export default class ReQueryComp extends Vue {
         }
     }
 
-    // async requestQueryStart() {
-    //     const response = await fetch(window.SERVER_URL + `/users/${this.$store.state.User.identity.user_id}/queries/${this.query.car_query.id}/start`, {
-    //         headers: {
-    //             'Authorization': 'Bearer ' + this.$store.state.User.access_token
-    //         },
-    //         method: 'POST'
-    //     })
+    async requestQueryStart() {
+        const response = await fetch(window.SERVER_URL + `/users/${this.$store.state.User.identity.user_id}/re_queries/${this.query.id}/start`, {
+            headers: {
+                'Authorization': 'Bearer ' + this.$store.state.User.access_token
+            },
+            method: 'POST'
+        })
 
-    //     if (!response.ok) {
-    //         this.errMsg = "Įvyko klaida pradedant paiešką."
-    //         this.showErr = true
-    //     } else {
-    //         this.query.car_query.last_scraped = ((Date.now() / 1000) | 0) - window.SCRAPE_INTERVAL;
-    //     }
+        if (!response.ok) {
+            this.errMsg = "Įvyko klaida pradedant paiešką."
+            this.showErr = true
+        } else {
+            this.query.last_scraped = ((Date.now() / 1000) | 0) - window.SCRAPE_INTERVAL;
+        }
 
-    // }
+    }
 }
 </script>
 

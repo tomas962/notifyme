@@ -16,13 +16,14 @@ from scrapy.settings import Settings
 import requests
 from database.re_queries import get_all_re_queries, get_query_re_ads
 from config import SECRET, SERVER_PORT, SERVER_NAME, SCRAPE_INTERVAL, SPIDER_CONFIG
+from notifier.re_notifier import ReNotifier
 
 items = []
-config = SPIDER_CONFIG
-config['ITEM_PIPELINES'] = {'scraper_scheduler.re_scraper.ItemCollector': 100}
+config = SPIDER_CONFIG.copy()
+config['ITEM_PIPELINES'] = {'scraper_scheduler.re_scraper.ReItemCollector': 100}
 
 
-class ItemCollector():
+class ReItemCollector():
     def __init__(self):
         self.ids_seen = set()
 
@@ -66,12 +67,7 @@ class ReScraperScheduler():
         print("SCRAPING RE QUERY NR: " + str(self.current_query["id"]))
         print("SUBPROCCESS PID:")
         print(os.getpid())
-        print('__name__:')
-        print(__name__)
         sett = Settings(config)
-        # print("SETTINGS:")
-        # print(vars(sett))
-        # exit(0)
         process = CrawlerProcess(sett)
         if "sites" in self.current_query and self.current_query["sites"] is not None and "skelbiu" in self.current_query["sites"]:
             process.crawl(SkelbiuSpider, re_query_id=self.current_query["id"])
@@ -147,7 +143,7 @@ class ReScraperScheduler():
             # get new ads
             # check differences and notify
             ttt = time.time()
-            #TODO notif = Notifier(old_cars, scraped_cars, self.full_queries[self.current_query["id"]])
+            notif = ReNotifier(old_ads, scraped_ads, self.current_query)
             print("NOTIFIER TOOK TIME:")
             print(time.time() - ttt)
             # update last scraped

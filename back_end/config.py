@@ -4,8 +4,12 @@ SERVER_PORT=5000
 SECRET="h45nkgfak@#$(*&($@#JHFGVBBDSF(*@#$^(*&@#%(*&BVJVCISUJDGF(@#*&$*#@*$%"
 SERVER_NAME="https://www.notifyme.ml"
 SCRAPER_SERVER_NAME="http://www.notifyme.ml"
+DATABASE_USERNAME="phpmyadmin"
+DATABASE_PASSWORD="database88*"
+DATABASE_HOST="localhost"
+DATABASE_PORT=3306
 
 SPIDER_CONFIG={
     'COOKIES_ENABLED': False, 
-    'DOWNLOAD_DELAY': 0.8,
+    'DOWNLOAD_DELAY': 0.6,
 }

@@ -8,6 +8,8 @@ import ElementUI from "element-ui"
 import 'element-ui/lib/theme-chalk/index.css';
 import Lingallery from 'lingallery';
 import '@/assets/main.css'
+import {SCRAPER_INTERVAL, SERVER_URL} from "./config"
+
 Vue.component('lingallery', Lingallery);
 declare global {
   interface Window { SERVER_URL: string; eventBus: Vue; SCRAPE_INTERVAL: number; socket: SocketIOClient.Socket }
@@ -16,9 +18,9 @@ declare global {
 import io from 'socket.io-client'
 
 //window.SERVER_URL = "http://192.168.100.7:5000"
-window.SERVER_URL = "https://www.notifyme.ml:5000"
+window.SERVER_URL = SERVER_URL
 window.eventBus = new Vue();
-window.SCRAPE_INTERVAL = 600;
+window.SCRAPE_INTERVAL = SCRAPER_INTERVAL;
 
 const socket = io(window.SERVER_URL)
 window.socket = socket

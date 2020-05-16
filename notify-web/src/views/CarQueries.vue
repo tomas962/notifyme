@@ -221,7 +221,7 @@ export default class CarQueries extends Vue {
     }
 
     async getQueries() {
-        const response = await fetch(window.SERVER_URL + "/users/" + this.$store.state.User.identity.user_id + "/queries", {
+        const response = await fetch(window.SERVER_URL + "/users/" + this.$route.params.user_id + "/queries", {
             headers: {
                 'Authorization': 'Bearer ' + this.$store.state.User.access_token
             }
@@ -415,7 +415,7 @@ export default class CarQueries extends Vue {
         console.log(this.newQuery);
         let response: Response
         if (this.newQuery.query_id === null){ //add new
-            response = await fetch(window.SERVER_URL + "/users/" + this.$store.state.User.identity.user_id + "/queries", {
+            response = await fetch(window.SERVER_URL + "/users/" + this.$route.params.user_id + "/queries", {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -425,7 +425,7 @@ export default class CarQueries extends Vue {
             })
         }
         else { //update existing
-            response = await fetch(window.SERVER_URL + "/users/" + this.$store.state.User.identity.user_id + "/queries/" + this.newQuery.query_id, {
+            response = await fetch(window.SERVER_URL + "/users/" + this.$route.params.user_id + "/queries/" + this.newQuery.query_id, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
