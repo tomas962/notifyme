@@ -319,7 +319,14 @@ class AutogidasAd(CarAd):
             self.scraped_params["comments"] = "\n".join(comment)
         for param in self.response.css('div.param'):
             value = param.css('div.price::text').get() or param.css('div.right::text').get()
-            self.scraped_params[db_translations[param.css('div.left::text').get().strip()]] = value.strip()
+            try:
+                self.scraped_params[db_translations[param.css('div.left::text').get().strip()]] = value.strip()
+            except KeyError as err:
+                with open("autogidas.log", 'a') as f:
+                    f.write("\n\n")
+                    f.write(str(self.response.url))
+                    f.write("\n")
+                    f.write(f"KeyError: {err}\n")
 
         img = self.response.css("img.show::attr(src)").get()
         self.scraped_params["picture_href"] = img.strip() if img is not None else None
@@ -392,7 +399,14 @@ class AutopliusAd(CarAd):
             value = param.css('div.parameter-value::text').get()
             if value is None:
                 continue
-            key = db_translations[param.css('div.parameter-label::text').get().strip()]
+            try:
+                key = db_translations[param.css('div.parameter-label::text').get().strip()]
+            except KeyError as err:
+                with open("autoplius.log", 'a') as f:
+                    f.write("\n\n")
+                    f.write(str(self.response.url))
+                    f.write("\n")
+                    f.write(f"KeyError: {err}\n")
             if key is None:
                 continue
             self.scraped_params[key] = value.strip()
@@ -469,7 +483,14 @@ class AutobilisAd(CarAd):
         self.scraped_params["autob_id"] = self.response.url.split("/")[4]
 
         for row in self.response.css("div.row.car-info-r"):
-            key = db_translations[row.css('div.col-sm-6.car-info-h > p::text').get().strip()]
+            try:
+                key = db_translations[row.css('div.col-sm-6.car-info-h > p::text').get().strip()]
+            except KeyError as err:
+                with open("autobilis.log", 'a') as f:
+                    f.write("\n\n")
+                    f.write(str(self.response.url))
+                    f.write("\n")
+                    f.write(f"KeyError: {err}\n")
             value = row.css('div.col-sm-6.car-info-c > p::text').get()
             self.scraped_params[key] = value.strip() if value is not None else None
 

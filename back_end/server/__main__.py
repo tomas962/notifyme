@@ -3,6 +3,7 @@ import sys
 import bcrypt
 import pymysql
 from database.database import connection, db_connect
+from database.user import get_users
 from .init_apps import app, socketio
 import server.socketio_api
 import server.messages
@@ -70,6 +71,8 @@ def login_auth():
             cursor.connection.close()
             return jsonify({"error": "Bad email or password"}), 401
 
+        if user['banned'] == 1:
+            return jsonify({"error": "This user is banned"}), 401
         
         if bcrypt.checkpw(bytes(password, 'utf-8'), bytes(user["password"], 'utf-8')):
             access_token = create_access_token(identity={"user_id":user["id"], "group":user["user_group"], "email":user["email"]})
@@ -94,6 +97,8 @@ def refresh():
 @app.route('/register', methods=['POST'])
 def register_user():
     userjson = request.get_json()
+    if not userjson:
+        return "", 400
     if "email" not in userjson or userjson["email"] is None:
         return jsonify({"error":"email error"}), 400
 
@@ -118,6 +123,19 @@ def register_user():
 
         hashed_pw = bcrypt.hashpw(bytes(userjson["password"], 'utf-8'), bcrypt.gensalt())
         cursor.execute("INSERT INTO `users`(`email`, `password`, `user_group`) VALUES (%s, %s, %s)", (userjson["email"], hashed_pw, 'regular'))
+        cursor.connection.commit()
+        cursor.connection.close()
+        return Response(status=200)
+
+@app.route('/users/<int:user_id>', methods=['DELETE'])
+@jwt_required
+def delete_user(user_id):
+    if (res := validate_resource(user_id)) != True:
+        return res
+    with db_connect().cursor() as cursor:
+        rows_affected = cursor.execute("DELETE FROM users WHERE id=%s", user_id)
+        if rows_affected == 0:
+            return "", 404
         cursor.connection.commit()
         cursor.connection.close()
         return Response(status=200)
@@ -155,7 +173,7 @@ def change_password():
 @app.route('/users/<int:user_id>/settings', methods=['GET'])
 @jwt_required
 def user_settings(user_id):
-    if res := validate_resource(user_id) != True:
+    if (res := validate_resource(user_id)) != True:
         return res
 
     with db_connect().cursor() as cursor:
@@ -166,7 +184,7 @@ def user_settings(user_id):
 @app.route('/users/<int:user_id>/settings', methods=['POST'])
 @jwt_required
 def update_user_settings(user_id):
-    if res := validate_resource(user_id) != True:
+    if (res := validate_resource(user_id)) != True:
         return res
 
     settings = request.get_json()
@@ -183,7 +201,7 @@ def update_user_settings(user_id):
 @app.route('/users/<int:user_id>/push_auth', methods=['POST'])
 @jwt_required
 def push_auth_post(user_id):
-    if res := validate_resource(user_id) != True:
+    if (res := validate_resource(user_id)) != True:
         return res
     
     data = request.get_json()
@@ -196,6 +214,39 @@ def push_auth_post(user_id):
         cursor.connection.commit()
         cursor.connection.close()
         return "", 200
+
+
+@app.route("/users", methods=['GET'])
+@jwt_required
+def user_list():
+    user = get_jwt_identity()
+    if user["group"] != "admin":
+        return jsonify({"error":"Only admin can access this endpoint"}), 403
+
+    users = get_users()
+    return jsonify(users)
+
+
+@app.route("/users/<int:user_id>", methods=['PUT'])
+@jwt_required
+def ban_or_unban_user(user_id):
+    user = get_jwt_identity()
+    if user["group"] != "admin":
+        return jsonify({"error":"Only admin can access this endpoint"}), 403
+
+    data = request.get_json()
+    print(data)
+    if not data or "banned" not in data or (data['banned'] != 0 and data['banned'] != 1):
+        return "", 400
+
+    with db_connect().cursor() as cursor:
+        rows_affected = cursor.execute("UPDATE users SET banned=%s WHERE id=%s AND user_group!='admin'", (data['banned'], user_id))
+        cursor.connection.commit()
+        cursor.connection.close()
+        if rows_affected == 0:
+            return "", 404
+        return "", 200
+
 
 print("__name__")
 print(__name__)

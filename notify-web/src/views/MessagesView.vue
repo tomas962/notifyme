@@ -20,6 +20,7 @@
             <template v-slot:cell(Tekstas)="data">
                 <div v-for="line in data.value.split('\n')" :key="line">
                     {{line}}
+                    <a :href="formatLine(line)">{{formatLine(line) ? "nuoroda" : ""}}</a>
                 </div>
             </template>
 
@@ -82,8 +83,11 @@ export default class SettingsView extends Vue {
     }
 
     formatLine(line: string) {
-        line.match(/https?:\/\/w?w?w?\.?notifyme\.ml\S*/)
-
+        console.log(line.match(/https?:\/\/w?w?w?\.?notifyme\.ml\S*/));
+        const link = line.match(/https?:\/\/w?w?w?\.?notifyme\.ml\S*/)
+        if(link)
+            return link[0]
+        return ""
     }
 }   
 </script>

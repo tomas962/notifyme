@@ -167,6 +167,15 @@ interface ReAd {
     picture_href?: object[];
 }
 
+interface User {
+    email: string;
+    email_notifications: number;
+    id: number;
+    user_group: string;
+    banned: number;
+}
+
+
 export {
     CarQueryResponse,
     CarQuery,
@@ -178,5 +187,6 @@ export {
     MessageResponse,
     SelectOption,
     ReQueryResponse,
-    ReAd
+    ReAd,
+    User
 }

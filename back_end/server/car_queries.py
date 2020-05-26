@@ -16,7 +16,7 @@ def user_query_list(user_id):
 @query_api.route("/users/<int:user_id>/queries", methods=["POST"])
 @jwt_required
 def post_car_query(user_id):
-    if res := validate_resource(user_id) != True:
+    if (res := validate_resource(user_id)) != True:
         return res
     json = request.get_json()
     query_values = {}
@@ -46,6 +46,11 @@ def post_car_query(user_id):
     query_values["make_id"] = json["make_id"] if "make_id" in json else None
     query_values["model_id"] = json["model_id"] if "model_id" in json else None
 
+    if "sites" in json:
+        for site in json["sites"]:
+            if site != "autogidas" and site != "autoplius" and site != "autobilis":
+                return {"error":"Invalid 'sites': Only 'autogidas'|'autoplius'|'autobilis' sites are allowed"}, 400
+
     query_values["sites"] = ",".join(json["sites"]) if "sites" in json else None
 
     with db_connect().cursor() as cursor:
@@ -62,7 +67,7 @@ def put_car_query(user_id, query_id):
     jwt = get_jwt_identity()
     query = get_car_query(query_id)
     if query is None:
-        if res := validate_resource(user_id) != True:
+        if (res := validate_resource(user_id)) != True:
             return res
     elif query["car_query"]["user_id"] != jwt["user_id"]:
         if jwt["group"] != "admin":
@@ -96,8 +101,15 @@ def put_car_query(user_id, query_id):
     # query_make_model
     query_values["make_id"] = json["make_id"] if "make_id" in json else None
     query_values["model_id"] = json["model_id"] if "model_id" in json else None
+    
+    if "sites" in json:
+        for site in json["sites"]:
+            if site != "autogidas" and site != "autoplius" and site != "autobilis":
+                return {"error":"Invalid 'sites': Only 'autogidas'|'autoplius'|'autobilis' sites are allowed"}, 400
+        
 
     query_values["sites"] = ",".join(json["sites"]) if "sites" in json else None
+
 
     with db_connect().cursor() as cursor:
         cursor.execute("SELECT * FROM car_queries WHERE user_id=%(user_id)s AND id=%(id)s", query_values)
@@ -134,7 +146,7 @@ def del_query(user_id, query_id):
 @query_api.route("/users/<int:user_id>/queries/state")
 @jwt_required
 def user_car_queries_state(user_id):
-    if res := validate_resource(user_id) != True:
+    if (res := validate_resource(user_id)) != True:
         return res
     car_queries = get_car_queries_state(user_id)
     return jsonify(car_queries)

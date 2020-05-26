@@ -36,12 +36,19 @@ def get_all_house_re_types():
 @re_query_api.route('/users/<int:user_id>/re_queries', methods=['POST'])
 @jwt_required
 def post_query(user_id):
-    if res := validate_resource(user_id) != True:
+    if (res := validate_resource(user_id)) != True:
         return res
     
     query = request.get_json()
     query["user_id"] = user_id
-    query["sites"] = ",".join(query["sites"])
+
+    if "sites" in query:
+        for site in query["sites"]:
+            if site != "skelbiu.lt" and site != "domoplius.lt":
+                return {"error":"Invalid 'sites': Only 'skelbiu.lt'|'domoplius.lt' sites are allowed"}, 400
+
+
+    query["sites"] = ",".join(query["sites"]) if "sites" in query else None
     print(query)
     new_query_id = insert_re_query(query)
     query["id"] = new_query_id
@@ -54,7 +61,7 @@ def put_query(user_id, query_id):
     jwt = get_jwt_identity()
     query = get_re_query(query_id)
     if query is None:
-        if res := validate_resource(user_id) != True:
+        if (res := validate_resource(user_id)) != True:
             return res
     elif query["user_id"] != jwt["user_id"]:
         if jwt["group"] != "admin":
@@ -81,7 +88,7 @@ def put_query(user_id, query_id):
 @re_query_api.route('/users/<int:user_id>/re_queries', methods=['GET'])
 @jwt_required
 def get_queries(user_id):
-    if res := validate_resource(user_id) != True:
+    if (res := validate_resource(user_id)) != True:
         return res
 
     queries = get_user_re_queries(user_id)
@@ -105,7 +112,7 @@ def del_re_query(user_id, query_id):
 @re_query_api.route("/users/<int:user_id>/re_queries/<int:query_id>/re_ads", methods=["GET"])
 @jwt_required
 def re_ad_list(user_id, query_id):
-    if res := validate_resource(user_id) != True:
+    if (res := validate_resource(user_id)) != True:
         return res
 
     with db_connect().cursor() as cursor:
@@ -119,7 +126,7 @@ def re_ad_list(user_id, query_id):
 @re_query_api.route("/users/<int:user_id>/re_queries/<int:query_id>/re_ads/<int:re_ad_id>", methods=["GET"])
 @jwt_required
 def re_ad(user_id, query_id, re_ad_id):
-    if res := validate_resource(user_id) != True:
+    if (res := validate_resource(user_id)) != True:
         return res
 
     with db_connect().cursor() as cursor:

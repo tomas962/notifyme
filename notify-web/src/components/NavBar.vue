@@ -7,6 +7,7 @@
     <b-collapse id="nav-collapse" is-nav>
         <b-navbar-nav>
             <b-nav-item to="/login" v-if="identity.email == ''">Prisijungti</b-nav-item>
+            <b-nav-item v-if="identity.group == 'admin'" to="/users">Vartotojai</b-nav-item>
             <b-nav-item v-if="identity.email" :to="'/users/'+identity.user_id+'/queries'">Automobiliai</b-nav-item>
             <b-nav-item v-if="identity.email" :to="`/users/${identity.user_id}/re_queries`">Nekilnojamasis turtas</b-nav-item>
             <b-nav-item v-if="identity.email" :to="`/users/${identity.user_id}/messages`">Pranešimai</b-nav-item>

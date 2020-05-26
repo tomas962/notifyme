@@ -152,6 +152,9 @@ def update_car_query(cursor, query_values):
         else:
             cursor.execute("""INSERT INTO `query_fuel`(`query_id`, `fuel_id`) 
                 VALUES (%(id)s, %(fuel_id)s)""", query_values)
+    else:
+        cursor.execute("DELETE FROM query_fuel WHERE query_id=%(id)s", query_values)
+
 
     if query_values["body_style_id"] is not None:
         cursor.execute("SELECT * FROM query_body_style WHERE query_id=%(id)s", query_values)
@@ -161,6 +164,9 @@ def update_car_query(cursor, query_values):
         else:
             cursor.execute("""INSERT INTO `query_body_style`(`query_id`, `body_style_id`) 
                 VALUES (%(id)s, %(body_style_id)s)""", query_values)
+    else:
+        cursor.execute("DELETE FROM query_body_style WHERE query_id=%(id)s", query_values)
+
 
     if query_values["make_id"] is not None:
         cursor.execute("SELECT * FROM query_make_model WHERE query_id=%(id)s", query_values)
@@ -170,6 +176,9 @@ def update_car_query(cursor, query_values):
         else:
             cursor.execute("""INSERT INTO `query_make_model`(`query_id`, `make_id`, `model_id`) 
                 VALUES (%(id)s, %(make_id)s, %(model_id)s)""", query_values)
+    else:
+        cursor.execute("DELETE FROM query_make_model WHERE query_id=%(id)s", query_values)
+
 
     cursor.execute("DELETE FROM query_car_fk WHERE query_id=%(id)s", query_values)
 

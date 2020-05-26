@@ -31,6 +31,7 @@ def get_re_house_types():
 
 def insert_re_query(re_query):
     with db_connect().cursor() as cursor:
+        print(re_query)
         cursor.execute("""INSERT INTO `re_queries`(`city_id`, `house_type_id`, `type_id`, 
             `category_id`, `search_term`, `price_from`, `price_to`, `area_from`, `area_to`, 
             `rooms_from`, `rooms_to`, `year_from`, `year_to`, user_id, sites) 
@@ -111,7 +112,7 @@ def get_query_re_ads(query_id):
         cursor.execute("""SELECT re_ads.*, re_cities.city AS city  FROM `re_ads` 
             JOIN re_query_ad_fk ON re_query_ad_fk.re_ad_id=re_ads.id
             JOIN re_cities ON re_cities.id=re_ads.city_id
-            WHERE re_query_ad_fk.query_id=%s
+            WHERE re_query_ad_fk.query_id=%s AND re_ads.deleted=0
             """, query_id)
         re_ads = cursor.fetchall()
 
@@ -126,7 +127,7 @@ def get_re_ad(re_ad_id):
     with db_connect().cursor() as cursor:
         cursor.execute("""SELECT re_ads.*, re_cities.city AS city  FROM `re_ads` 
             JOIN re_cities ON re_cities.id=re_ads.city_id
-            WHERE re_ads.id=%s
+            WHERE re_ads.id=%s AND re_ads.deleted=0
             """, re_ad_id)
         re_ad = cursor.fetchone()
 

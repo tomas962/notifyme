@@ -90,6 +90,13 @@ export default class Login extends Vue {
         })
         
         if (!response.ok) {
+            const data = await response.json()
+            
+            if (data && data.error.indexOf('banned') != -1) {
+                this.errMsg = "Ši paskyra yra užblokuota!"
+                this.showErr = true
+                return
+            }
             this.errMsg = "Neteisingas el. paštas arba slaptažodis!"
             this.showErr = true
             return

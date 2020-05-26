@@ -29,6 +29,8 @@ class Notifier():
 
         print("CAR_CHANGES:")
         print(self.car_changes)
+        print("was scraped:")
+        print(self.car_query["car_query"]["was_scraped"])
 
         if self.car_query["car_query"]["was_scraped"] and len(self.car_changes) != 0:
             msg = self.generate_message()

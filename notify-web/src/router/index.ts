@@ -13,6 +13,7 @@ import REQueries from '@/views/REQueries.vue'
 import ReAdList from '@/views/ReAdList.vue'
 import ReAdView from '@/views/ReAdView.vue'
 import HomePage from '@/views/HomePage.vue'
+import UsersView from '@/views/UsersView.vue'
 
 Vue.use(VueRouter)
 
@@ -79,6 +80,11 @@ Vue.use(VueRouter)
     path: '/',
     name: 'HomePage',
     component: HomePage
+  },
+  {
+    path: '/users',
+    name: 'UsersView',
+    component: UsersView
   },
 ]
 

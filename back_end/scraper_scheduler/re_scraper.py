@@ -148,6 +148,7 @@ class ReScraperScheduler():
             print(time.time() - ttt)
             # update last scraped
             self.current_query["last_scraped"] = int(time.time())
+            self.current_query["was_scraped"] = 1
             with db_connect().cursor() as cursor:
                 cursor.execute("UPDATE re_queries SET last_scraped=%(last_scraped)s, was_scraped=1 WHERE id=%(id)s", self.current_query)
                 cursor.connection.commit()

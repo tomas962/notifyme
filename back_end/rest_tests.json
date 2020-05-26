@@ -1,0 +1,990 @@
+{
+	"info": {
+		"_postman_id": "ed450639-b560-4b5a-9990-62ac128a5160",
+		"name": "NotifyMe REST Tests",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "User API",
+			"item": [
+				{
+					"name": "Login unauthorized",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "4957d95d-3b9e-4533-8224-e575e1d14d05",
+								"exec": [
+									"pm.test(\"User authentication unauthorized\", function () {",
+									"    pm.response.to.have.status(401);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"email\":\"awertgdfgsd@gmail.com\",\n\t\"password\":\"wrongpassword123465\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{SERVER_URL}}/auth",
+							"host": [
+								"{{SERVER_URL}}"
+							],
+							"path": [
+								"auth"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Registration rejected. Invalid email",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "24e715dd-9ba5-4e70-9ba7-cc80b78529f5",
+								"exec": [
+									"pm.test(\"Status is 400\", function (){",
+									"    pm.response.to.have.status(400)",
+									"});",
+									"",
+									"pm.test(\"Error message contains 'Invalid email'\", function (){",
+									"    pm.response.to.have.jsonBody(\"error\")",
+									"    let jsonBody = pm.response.json()",
+									"    pm.expect(jsonBody.error).to.have.string(\"Invalid email\")",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"email\":\"email with spaces@gmail.com\",\n\t\"password\":\"123456789\",\n\t\"confirm_password\":\"123456789\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{SERVER_URL}}/register",
+							"host": [
+								"{{SERVER_URL}}"
+							],
+							"path": [
+								"register"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Registration rejected. Invalid password",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "c6667494-2cf3-4bf6-b3ee-f9f4c5a8d054",
+								"exec": [
+									"pm.test(\"Status is 400\", function (){",
+									"    pm.response.to.have.status(400)",
+									"});",
+									"",
+									"pm.test(\"Error message contains 'password error'\", function (){",
+									"    pm.response.to.have.jsonBody(\"error\")",
+									"    let jsonBody = pm.response.json()",
+									"    pm.expect(jsonBody.error).to.have.string(\"password error\")",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"email\":\"email@gmail.com\",\n\t\"password\":\"passwords dont match\",\n\t\"confirm_password\":\"pw dont match\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{SERVER_URL}}/register",
+							"host": [
+								"{{SERVER_URL}}"
+							],
+							"path": [
+								"register"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Registration succesful",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "4b28a651-06d9-49c4-97fa-90fd7e115db4",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200)",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"email\":\"{{USER_EMAIL}}\",\n\t\"password\":\"{{USER_PASSWORD}}\",\n\t\"confirm_password\":\"{{USER_PASSWORD}}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{SERVER_URL}}/register",
+							"host": [
+								"{{SERVER_URL}}"
+							],
+							"path": [
+								"register"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Login successful",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "d1546f64-498f-4fd9-aa17-e627904f5141",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200)",
+									"});",
+									"",
+									"function jwt_decode(jwt) {",
+									"    var parts = jwt.split('.');",
+									"    return JSON.parse(atob(parts[1]));",
+									"}",
+									"",
+									"pm.test(\"Response contains access_token\", function () {",
+									"    pm.response.to.have.jsonBody(\"access_token\")",
+									"    // save token for later tests",
+									"    const response = pm.response.json()",
+									"    const token = response.access_token",
+									"    pm.collectionVariables.set(\"access_token\", token);",
+									"    const decoded_token = jwt_decode(token)",
+									"",
+									"    pm.test(\"JWT claims: user group is 'regular'\", function () {",
+									"        pm.expect(decoded_token.identity.group).to.equal(\"regular\")",
+									"    })",
+									"",
+									"    pm.test(\"JWT claims: user_id exists and is number\", () => {",
+									"        pm.expect(decoded_token.identity).to.have.property(\"user_id\")",
+									"        pm.expect(decoded_token.identity.user_id).to.be.a(\"number\")",
+									"        pm.collectionVariables.set(\"user_id\", decoded_token.identity.user_id)",
+									"    })",
+									"})",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"email\":\"{{USER_EMAIL}}\",\n\t\"password\":\"{{USER_PASSWORD}}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{SERVER_URL}}/auth",
+							"host": [
+								"{{SERVER_URL}}"
+							],
+							"path": [
+								"auth"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete other user should fail",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "7cd022db-c6f3-402f-8f33-cfb66db8e3a4",
+								"exec": [
+									"pm.test(\"Response status is 403\", () => {",
+									"    pm.response.to.have.status(403)",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "0232f972-b080-4cce-8b10-74ea56fcf7e0",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{SERVER_URL}}/users/2",
+							"host": [
+								"{{SERVER_URL}}"
+							],
+							"path": [
+								"users",
+								"2"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "Test cars related API",
+			"item": [
+				{
+					"name": "Car query POST unsuccesful",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "9058c444-8f0e-48a2-ac58-30efdb56fc62",
+								"exec": [
+									"pm.test(\"Response code is 400\", () => {",
+									"    pm.response.to.have.status(400)",
+									"})",
+									"",
+									"pm.test(\"Error message contains \\\"Invalid 'sites'\\\"\", () => {",
+									"    var jsonData = pm.response.json();",
+									"    pm.response.to.have.jsonBody(\"error\")",
+									"    pm.expect(jsonData.error).to.have.string(\"Invalid 'sites'\")",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"make_id\": 10,\n\t\"model_id\": 11019,\n\t\"sites\": [\n\t\t\"autogidas\",\n\t\t\"wrongsite\",\n\t\t\"ll\"\n\t]\n}\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{SERVER_URL}}/users/{{user_id}}/queries",
+							"host": [
+								"{{SERVER_URL}}"
+							],
+							"path": [
+								"users",
+								"{{user_id}}",
+								"queries"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Car query POST succesful",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "d80634c3-c4eb-4677-b9f5-50c570d122a2",
+								"exec": [
+									"pm.test(\"Response code is 200\", () => {",
+									"    pm.response.to.have.status(200)",
+									"})",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"make_id\": 10,\n\t\"model_id\": 11019,\n\t\"sites\": [\n\t\t\"autogidas\",\n\t\t\"autobilis\",\n\t\t\"autoplius\"\n\t]\n}\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{SERVER_URL}}/users/{{user_id}}/queries",
+							"host": [
+								"{{SERVER_URL}}"
+							],
+							"path": [
+								"users",
+								"{{user_id}}",
+								"queries"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Car query list",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "be9cd51a-2cb9-4cc6-be1a-40200b500c40",
+								"exec": [
+									"pm.test(\"Response code is 200\", () => {",
+									"    pm.response.to.have.status(200)",
+									"})",
+									"",
+									"pm.test(\"Response is array of length 1\", () => {",
+									"    let data = pm.response.json()",
+									"    pm.expect(data).to.be.an('array').that.is.not.empty;",
+									"    pm.expect(data).to.have.lengthOf(1);",
+									"",
+									"    pm.collectionVariables.set(\"car_query_id\", data[0].car_query.id);",
+									"    pm.collectionVariables.set(\"new_car_query_id\", data[0].car_query.id + 1000);",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{SERVER_URL}}/users/{{user_id}}/queries",
+							"host": [
+								"{{SERVER_URL}}"
+							],
+							"path": [
+								"users",
+								"{{user_id}}",
+								"queries"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Car query PUT existing request",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "ba739f35-a8a4-4c10-9810-cc116a04d03a",
+								"exec": [
+									"pm.test(\"Response code is 200\", () => {",
+									"    pm.response.to.have.status(200)",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"make_id\": 10,\n\t\"model_id\": 11019,\n\t\"sites\": [\n\t\t\"autogidas\",\n\t\t\"autobilis\",\n\t\t\"autoplius\"\n\t]\n}\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{SERVER_URL}}/users/{{user_id}}/queries/{{car_query_id}}",
+							"host": [
+								"{{SERVER_URL}}"
+							],
+							"path": [
+								"users",
+								"{{user_id}}",
+								"queries",
+								"{{car_query_id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Car query PUT new request",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "05d2116f-5fd3-4146-82d3-b9168688e5c7",
+								"exec": [
+									"pm.test(\"Response code is 201\", () => {",
+									"    pm.response.to.have.status(201)",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"make_id\": 65,\n\t\"model_id\": null,\n\t\"sites\": [\n\t\t\"autogidas\",\n\t\t\"autobilis\",\n\t\t\"autoplius\"\n\t]\n}\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{SERVER_URL}}/users/{{user_id}}/queries/{{new_car_query_id}}",
+							"host": [
+								"{{SERVER_URL}}"
+							],
+							"path": [
+								"users",
+								"{{user_id}}",
+								"queries",
+								"{{new_car_query_id}}"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"auth": {
+				"type": "bearer"
+			},
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "Test real estate related API",
+			"item": [
+				{
+					"name": "RE query POST unsuccesful",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "43946a66-005a-49e6-a74c-8fd9cddc00bc",
+								"exec": [
+									"pm.test(\"Response code is 400\", () => {",
+									"    pm.response.to.have.status(400)",
+									"})",
+									"",
+									"pm.test(\"Error message contains \\\"Invalid 'sites'\\\"\", () => {",
+									"    pm.response.to.have.jsonBody(\"error\")",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"category_id\":2,\n\t\"city_id\":92,\n\t\"house_type_id\":6,\n\t\"sites\": [\n\t\t\"wrongsite\",\n\t\t\"ll\"\n\t]\n}\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{SERVER_URL}}/users/{{user_id}}/re_queries",
+							"host": [
+								"{{SERVER_URL}}"
+							],
+							"path": [
+								"users",
+								"{{user_id}}",
+								"re_queries"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "RE query POST succesful",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "0f854c82-0d10-4bd8-beed-472a39ad5fbc",
+								"exec": [
+									"pm.test(\"Response code is 200\", () => {",
+									"    pm.response.to.have.status(200)",
+									"})",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"category_id\": 2,\n    \"city_id\": 92,\n    \"house_type_id\": 6,\n    \"sites\": [\n        \"skelbiu.lt\",\n        \"domoplius.lt\"\n    ],\n    \"type_id\": null,\n    \"search_term\": null,\n    \"area_from\": null,\n    \"area_to\": null,\n    \"price_from\": null,\n    \"price_to\": null,\n    \"rooms_from\": null,\n    \"rooms_to\": null,\n    \"year_from\": null,\n    \"year_to\": null\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{SERVER_URL}}/users/{{user_id}}/re_queries",
+							"host": [
+								"{{SERVER_URL}}"
+							],
+							"path": [
+								"users",
+								"{{user_id}}",
+								"re_queries"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "RE query list",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "51a53313-14a9-441a-bb45-a19a885718c2",
+								"exec": [
+									"pm.test(\"Response code is 200\", () => {",
+									"    pm.response.to.have.status(200)",
+									"})",
+									"",
+									"pm.test(\"Response is array of length 1\", () => {",
+									"    let data = pm.response.json()",
+									"    pm.expect(data).to.be.an('array').that.is.not.empty;",
+									"    pm.expect(data).to.have.lengthOf(1);",
+									"",
+									"    pm.collectionVariables.set(\"re_query_id\", data[0].id);",
+									"    pm.collectionVariables.set(\"new_re_query_id\", data[0].id + 1000);",
+									"})",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{SERVER_URL}}/users/{{user_id}}/re_queries",
+							"host": [
+								"{{SERVER_URL}}"
+							],
+							"path": [
+								"users",
+								"{{user_id}}",
+								"re_queries"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "RE query PUT existing request",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "b618de6b-2f97-4acc-9b0e-e43464a0e005",
+								"exec": [
+									"pm.test(\"Response code is 200\", () => {",
+									"    pm.response.to.have.status(200)",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"category_id\": 1,\n    \"city_id\": 92,\n    \"house_type_id\": 6,\n    \"sites\": [\n        \"skelbiu.lt\",\n        \"domoplius.lt\"\n    ],\n    \"type_id\": null,\n    \"search_term\": null,\n    \"area_from\": 10,\n    \"area_to\": 30,\n    \"price_from\": 10000,\n    \"price_to\": 20000,\n    \"rooms_from\": null,\n    \"rooms_to\": null,\n    \"year_from\": null,\n    \"year_to\": null\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{SERVER_URL}}/users/{{user_id}}/re_queries/{{re_query_id}}",
+							"host": [
+								"{{SERVER_URL}}"
+							],
+							"path": [
+								"users",
+								"{{user_id}}",
+								"re_queries",
+								"{{re_query_id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "RE query PUT new request",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "da29083e-b5fb-4666-9cd0-ff4a319f38ce",
+								"exec": [
+									"pm.test(\"Response code is 201\", () => {",
+									"    pm.response.to.have.status(201)",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"category_id\": 1,\n    \"city_id\": 92,\n    \"house_type_id\": 6,\n    \"sites\": [\n        \"skelbiu.lt\",\n        \"domoplius.lt\"\n    ],\n    \"type_id\": null,\n    \"search_term\": null,\n    \"area_from\": 10,\n    \"area_to\": 30,\n    \"price_from\": 10000,\n    \"price_to\": 20000,\n    \"rooms_from\": null,\n    \"rooms_to\": null,\n    \"year_from\": null,\n    \"year_to\": null\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{SERVER_URL}}/users/{{user_id}}/re_queries/{{new_re_query_id}}",
+							"host": [
+								"{{SERVER_URL}}"
+							],
+							"path": [
+								"users",
+								"{{user_id}}",
+								"re_queries",
+								"{{new_re_query_id}}"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"auth": {
+				"type": "bearer"
+			},
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "Cleanup",
+			"item": [
+				{
+					"name": "Delete test  user",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "b5f4a1a7-c0b0-4d65-ac6b-0faf1b476650",
+								"exec": [
+									"pm.test(\"Response status is 200\", () => {",
+									"    pm.response.to.have.status(200)",
+									"})",
+									"",
+									"if (pm.response.code === 200) {",
+									"    pm.collectionVariables.unset(\"user_id\");",
+									"    pm.collectionVariables.unset(\"access_token\");",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{SERVER_URL}}/users/{{user_id}}",
+							"host": [
+								"{{SERVER_URL}}"
+							],
+							"path": [
+								"users",
+								"{{user_id}}"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"id": "d1be0693-1ae7-4a1a-9ada-d97c08976add",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"id": "6eb21fa2-7118-4787-a023-d6614b179887",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"id": "2ce4f12f-d1f5-4d12-b079-31166272e2f7",
+			"key": "SERVER_URL",
+			"value": "https://www.notifyme.ml:5000",
+			"type": "string"
+		},
+		{
+			"id": "22d12b58-a7b1-4366-9cc6-717f7db7cdb7",
+			"key": "USER_EMAIL",
+			"value": "testuser254123697812@gmail.com",
+			"type": "string"
+		},
+		{
+			"id": "2b197b19-5d3d-4d82-9149-8e6c9986f3e6",
+			"key": "USER_PASSWORD",
+			"value": "user_password",
+			"type": "string"
+		},
+		{
+			"id": "47687756-e25f-489b-a835-6475f4bc707b",
+			"key": "car_query_id",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"id": "9463cd7b-ff6f-4bcd-9958-805ab755e9ee",
+			"key": "new_car_query_id",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"id": "d041461b-4a33-4028-98dc-4d6e728bf49f",
+			"key": "new_re_query_id",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"id": "25a8e73e-1ce3-464d-9196-89b14896d93c",
+			"key": "re_query_id",
+			"value": "",
+			"type": "string"
+		}
+	],
+	"protocolProfileBehavior": {}
+}

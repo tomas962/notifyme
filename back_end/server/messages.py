@@ -8,7 +8,7 @@ from database.messages import get_all_user_messages
 @jwt_required
 def get_user_messages(user_id):
     print("messages route")
-    if res := validate_resource(user_id) != True:
+    if (res := validate_resource(user_id)) != True:
         return res
 
     messages = get_all_user_messages(user_id)

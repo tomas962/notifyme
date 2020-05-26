@@ -203,7 +203,14 @@ class SkelbiuAd(ReAd):
             data = row.css(".value::text").get()
             data = data.strip() if data else None
             if title and data:
-                self.scraped_params[re_db_mappings[title]] = data
+                try:
+                    self.scraped_params[re_db_mappings[title]] = data
+                except KeyError as err:
+                    with open("skelbiu.log", 'a') as f:
+                        f.write("\n\n")
+                        f.write(str(self.response.url))
+                        f.write("\n")
+                        f.write(f"KeyError: {err}\n")
         
 
         title = self.response.css("div.left-block > h1::text").get()
@@ -265,7 +272,14 @@ class DomoAd(ReAd):
             value = row.css("td > strong::text").get()
             value = value.strip() if value else None
             if value and title:
-                self.scraped_params[re_db_mappings[title]] = value
+                try:
+                    self.scraped_params[re_db_mappings[title]] = value
+                except KeyError as err:
+                    with open("domoplius.log", 'a') as f:
+                        f.write("\n\n")
+                        f.write(str(self.response.url))
+                        f.write("\n")
+                        f.write(f"KeyError: {err}\n")
 
         if "price" in self.scraped_params:
             self.scraped_params["price"] = self.scraped_params["price"].strip(" €").replace(" ","")
